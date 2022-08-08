@@ -34,7 +34,7 @@ type PetsHandler interface {
 	GetPetsID() echo.HandlerFunc
 }
 
-type ProductData interface {
+type PetsData interface {
 	Insert(insertPets Pets) Pets
 	GetAll() []Pets
 	Update(IDPets int, updatedPets Pets) Pets

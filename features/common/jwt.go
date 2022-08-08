@@ -8,6 +8,7 @@ import (
 	"petadopter/domain"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/middleware"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -50,4 +51,10 @@ func ExtractData(c echo.Context) domain.User {
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+func UseJWT(secret []byte) middleware.JWTConfig {
+	return middleware.JWTConfig{
+		SigningMethod: middleware.AlgorithmHS256,
+		SigningKey:    secret,
+	}
 }
