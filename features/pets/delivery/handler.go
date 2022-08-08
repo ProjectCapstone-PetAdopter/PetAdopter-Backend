@@ -31,7 +31,7 @@ func (ph *petsHandler) InsertPets() echo.HandlerFunc {
 		}
 
 		userid := common.ExtractData(c)
-		data, err := ph.petsUsecase.AddPets(userid, tmp.ToDomain())
+		data, _ := ph.petsUsecase.AddPets(userid, tmp.ToDomain())
 
 		if err != nil {
 			log.Println("Cannot proces data", err)
