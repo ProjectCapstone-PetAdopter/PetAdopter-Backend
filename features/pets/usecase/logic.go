@@ -19,7 +19,7 @@ func New(ud domain.PetsData, v *validator.Validate) domain.PetsUseCase {
 	}
 }
 
-func (pd *petsUseCase) AddPets(newPets domain.Pets) (domain.Pets, error) {
+func (pd *petsUseCase) AddPets(IDUser int, newPets domain.Pets) (domain.Pets, error) {
 
 	res := pd.petsData.Insert(newPets)
 

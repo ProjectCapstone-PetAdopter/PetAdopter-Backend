@@ -19,7 +19,7 @@ type Pets struct {
 }
 
 type PetsUseCase interface {
-	AddPets(newPets Pets) (Pets, error)
+	AddPets(IDUser int, newPets Pets) (Pets, error)
 	GetAllP() ([]Pets, error)
 	UpPets(IDPets int, updateData Pets) (Pets, error)
 	DelPets(IDPets int) (bool, error)

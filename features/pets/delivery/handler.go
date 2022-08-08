@@ -30,8 +30,8 @@ func (ph *petsHandler) InsertPets() echo.HandlerFunc {
 			c.JSON(http.StatusBadRequest, "error read input")
 		}
 
-		userid := common.ExtractData(c)
-		data, _ := ph.petsUsecase.AddPets(userid, tmp.ToDomain())
+		userid, _ := common.ExtractData2(c)
+		data, err := ph.petsUsecase.AddPets(userid, tmp.ToDomain())
 
 		if err != nil {
 			log.Println("Cannot proces data", err)

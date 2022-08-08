@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"petadopter/config"
+	petsdata "petadopter/features/pets/data"
 	userdata "petadopter/features/user/data"
 
 	"gorm.io/driver/mysql"
@@ -24,5 +25,5 @@ func InitDB(cfg *config.Appconfig) *gorm.DB {
 }
 
 func MigrateDB(db *gorm.DB) {
-	db.AutoMigrate(userdata.User{})
+	db.AutoMigrate(userdata.User{}, petsdata.Pets{})
 }
