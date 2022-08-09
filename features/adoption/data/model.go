@@ -11,7 +11,7 @@ type Adoption struct {
 	UserID   uint   `json:"user_id" form:"user_id"`
 	PetsID   uint   `json:"pets_id" form:"pets_id"`
 	Status   string `json:"status" form:"status"   gorm:"default:waiting"`
-	Petphoto string `json:"payment" form:"payment"`
+	Petphoto string `json:"petphoto" form:"petphoto"`
 }
 
 type Pets struct {
