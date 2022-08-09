@@ -6,6 +6,7 @@ import (
 	"petadopter/config"
 	"petadopter/factory"
 	"petadopter/utils/database/mysql"
+	auth "petadopter/utils/google"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,7 +17,8 @@ func main() {
 	mysql.MigrateDB(db)
 
 	e := echo.New()
-	factory.InitFactory(e, db)
+	authconn := auth.InitOauth()
+	factory.InitFactory(e, db, authconn)
 
 	fmt.Println("==== STARTING PROGRAM ====")
 	address := fmt.Sprintf(":%d", config.SERVERPORT)

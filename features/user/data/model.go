@@ -8,22 +8,34 @@ import (
 
 type User struct {
 	gorm.Model
-	Username     string `json:"username" form:"username" gorm:"unique"`
+	Username     string `json:"username" form:"username" validate:"required" gorm:"unique"`
+	Fullname     string `json:"fullname" form:"fullname" validate:"required"`
 	Email        string `json:"email" form:"email" validate:"required" gorm:"unique"`
 	Address      string `json:"address" form:"address" validate:"required"`
+	City         string `json:"city" form:"city" validate:"required"`
 	PhotoProfile string `json:"photoprofile" form:"photoprofile"`
 	Password     string `json:"password" form:"password" validate:"required"`
+	Phonenumber  string `json:"phonenumber" form:"phonenumber" validate:"required"`
 	Role         string
+}
+
+type UserInfo struct {
+	Email        string `json:"email"`
+	Fullname     string `json:"name"`
+	Photoprofile string `json:"picture"`
 }
 
 func (u *User) ToModel() domain.User {
 	return domain.User{
 		ID:           int(u.ID),
 		Username:     u.Username,
+		Fullname:     u.Fullname,
 		Email:        u.Email,
 		Address:      u.Address,
+		City:         u.City,
 		PhotoProfile: u.PhotoProfile,
 		Password:     u.Password,
+		Phonenumber:  u.Phonenumber,
 		Role:         u.Role,
 	}
 }
@@ -41,10 +53,13 @@ func FromModel(data domain.User) User {
 	var res User
 	res.ID = uint(data.ID)
 	res.Username = data.Username
+	res.Fullname = data.Fullname
 	res.Email = data.Email
 	res.Address = data.Address
+	res.City = data.City
 	res.PhotoProfile = data.PhotoProfile
 	res.Password = data.Password
+	res.Phonenumber = data.Phonenumber
 	res.Role = data.Role
 	return res
 }

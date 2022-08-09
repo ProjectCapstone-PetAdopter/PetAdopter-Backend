@@ -5,17 +5,89 @@ import (
 	"net/http"
 	"petadopter/domain"
 	common "petadopter/features/common"
+	auth "petadopter/utils/google"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/oauth2"
+)
+
+var (
+	oauthStateString = "pseudo-random"
 )
 
 type userHandler struct {
 	userUsecase domain.UserUseCase
+	oauth       *oauth2.Config
 }
 
-func New(us domain.UserUseCase) domain.UserHandler {
+func New(us domain.UserUseCase, o *oauth2.Config) domain.UserHandler {
 	return &userHandler{
 		userUsecase: us,
+		oauth:       o,
+	}
+}
+
+// LoginGoogle implements domain.UserHandler
+func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		url := us.oauth.AuthCodeURL(oauthStateString)
+		return c.Redirect(http.StatusFound, url)
+	}
+}
+
+// LoginGoogle implements domain.UserHandler
+func (us *userHandler) CallbackGoogle() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var newuser UserFormat
+		cost := 10
+
+		data, err, token := auth.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": "There is an error in internal server",
+			})
+		}
+
+		newuser.Email = data.Email
+		newuser.Fullname = data.Fullname
+		newuser.Photoprofile = data.Photoprofile
+		newuser.Username = data.Fullname
+
+		status := us.userUsecase.RegisterUser(newuser.ToModel(), cost, token)
+
+		if status == 400 {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    status,
+				"message": "Wrong input",
+			})
+		}
+
+		if status == 404 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    status,
+				"message": "Data not found",
+			})
+		}
+
+		if status == 409 {
+			return c.JSON(http.StatusConflict, map[string]interface{}{
+				"code":    status,
+				"message": "Cant input existing data",
+			})
+		}
+
+		if status == 500 {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    status,
+				"message": "There is an error in internal server",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"code":    200,
+			"message": "Register success",
+		})
 	}
 }
 
@@ -93,13 +165,13 @@ func (us *userHandler) Register() echo.HandlerFunc {
 
 		if bind != nil {
 			log.Println("cant bind")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
-				"message": "There is an error in internal server",
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    400,
+				"message": "Wrong input",
 			})
 		}
 
-		status := us.userUsecase.RegisterUser(newuser.ToModel(), cost)
+		status := us.userUsecase.RegisterUser(newuser.ToModel(), cost, nil)
 
 		if status == 400 {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -139,7 +211,7 @@ func (us *userHandler) Register() echo.HandlerFunc {
 // Update implements domain.UserHandler
 func (us *userHandler) Update() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var newuser UserFormat
+		var newuser UpdateFormat
 		cost := 10
 		param := common.ExtractData(c)
 		bind := c.Bind(&newuser)
@@ -152,7 +224,7 @@ func (us *userHandler) Update() echo.HandlerFunc {
 			})
 		}
 
-		status := us.userUsecase.UpdateUser(newuser.ToModel(), param.ID, cost)
+		status := us.userUsecase.UpdateUser(newuser.ToModelUpdate(), param.ID, cost)
 
 		if status == 400 {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -201,12 +273,11 @@ func (uh *userHandler) GetProfile() echo.HandlerFunc {
 				"message": "Data not found",
 			})
 		}
-
 		res["username"] = data.Username
-		res["password"] = data.Password
+		res["fullname"] = data.Fullname
+		res["phonenumber"] = data.Phonenumber
 		res["email"] = data.Email
 		res["address"] = data.Address
-		res["role"] = data.Role
 		res["photoprofile"] = data.PhotoProfile
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
