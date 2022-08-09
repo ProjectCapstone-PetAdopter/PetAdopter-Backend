@@ -73,3 +73,14 @@ func (ad *adoptionData) GetAdoptionID(adoptID int) []domain.Adoption {
 	}
 	return ParseToArr(data)
 }
+
+func (ad *adoptionData) GetAdoptionbyuser(userID int) []domain.Adoption {
+	var data []Adoption
+	err := ad.db.Where("user_id = ?", userID).Find(&data)
+
+	if err.Error != nil {
+		log.Println("problem data", err.Error.Error())
+		return nil
+	}
+	return ParseToArr(data)
+}
