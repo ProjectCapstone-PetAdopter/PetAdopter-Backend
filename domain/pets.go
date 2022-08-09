@@ -8,11 +8,12 @@ import (
 
 type Pets struct {
 	ID          int
-	Name        string
+	Petname     string
 	Gender      string
 	Age         int
 	Color       string
-	Images      string
+	Petphoto    string
+	Species     string
 	Description string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

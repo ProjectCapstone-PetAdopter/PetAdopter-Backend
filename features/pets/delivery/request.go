@@ -6,21 +6,23 @@ import (
 )
 
 type PetsInsertRequest struct {
-	Name        string `json:"name" form:"name" validate:"required"`
+	Petname     string `json:"petname" form:"petname" validate:"required"`
 	Gender      string `json:"gender" form:"gender" validate:"required"`
+	Species     string `json:"species" form:"species" validate:"required"`
 	Age         int    `json:"age" form:"age" validate:"required"`
 	Color       string `json:"color" form:"color"`
 	Description string `json:"description" form:"description"`
-	Images      string `json:"images"`
+	Petphoto    string `json:"petphoto"`
 }
 
 func (pi *PetsInsertRequest) ToDomain() domain.Pets {
 	return domain.Pets{
-		Name:        pi.Name,
+		Petname:     pi.Petname,
+		Species:     pi.Species,
 		Gender:      pi.Gender,
 		Age:         pi.Age,
 		Color:       pi.Color,
-		Images:      pi.Images,
+		Petphoto:    pi.Petphoto,
 		Description: pi.Description,
 		CreatedAt:   time.Time{},
 		UpdatedAt:   time.Time{},

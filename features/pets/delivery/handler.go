@@ -64,11 +64,14 @@ func (ph *petsHandler) UpdatePets() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, "error read update")
 		}
 
-		if tmp.Name != "" {
-			qry["name"] = tmp.Name
+		if tmp.Petname != "" {
+			qry["petname"] = tmp.Petname
 		}
 		if tmp.Gender != "" {
 			qry["gender"] = tmp.Gender
+		}
+		if tmp.Species != "" {
+			qry["species"] = tmp.Species
 		}
 		if tmp.Age != 0 {
 			qry["age"] = tmp.Age
@@ -79,8 +82,8 @@ func (ph *petsHandler) UpdatePets() echo.HandlerFunc {
 		if tmp.Description != "" {
 			qry["description"] = tmp.Description
 		}
-		if tmp.Images != "" {
-			qry["images"] = tmp.Images
+		if tmp.Petphoto != "" {
+			qry["petphoto"] = tmp.Petphoto
 		}
 		data, err := ph.petsUsecase.UpPets(cnv, tmp.ToDomain())
 
@@ -92,12 +95,13 @@ func (ph *petsHandler) UpdatePets() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"message":     "success update data",
 			"id":          data.ID,
-			"Name":        data.Name,
+			"Petname":     data.Petname,
 			"Gender":      data.Gender,
+			"Species":     data.Species,
 			"Age":         data.Age,
 			"Color":       data.Color,
 			"Description": data.Description,
-			"Images":      data.Images,
+			"Petphoto":    data.Petphoto,
 		})
 	}
 }
