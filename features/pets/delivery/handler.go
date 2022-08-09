@@ -164,3 +164,19 @@ func (ph *petsHandler) GetPetsID() echo.HandlerFunc {
 		})
 	}
 }
+
+func (ph *petsHandler) GetmyPets() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userid, _ := common.ExtractData2(c)
+		data, err := ph.petsUsecase.GetmyPets(userid)
+
+		if err != nil {
+			log.Println("Cannot get data", err)
+			return c.JSON(http.StatusBadRequest, "cannot read input")
+		}
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"message": "success get my pets",
+			"data":    data,
+		})
+	}
+}

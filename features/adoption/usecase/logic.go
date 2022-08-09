@@ -74,3 +74,12 @@ func (au *adoptionUseCase) DelAdoption(IDAdoption int) (bool, error) {
 
 	return true, nil
 }
+
+func (au *adoptionUseCase) GetmyAdoption(userID int) ([]domain.Adoption, error) {
+	res := au.adoptionData.GetAdoptionbyuser(userID)
+	if userID == -1 {
+		return nil, errors.New("error get data")
+	}
+
+	return res, nil
+}

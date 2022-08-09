@@ -22,6 +22,7 @@ type AdoptionUseCase interface {
 	UpAdoption(IDAdoption int, updateData Adoption) (Adoption, error)
 	DelAdoption(IDAdoption int) (bool, error)
 	GetSpecificAdoption(AdoptionID int) ([]Adoption, error)
+	GetmyAdoption(userID int) ([]Adoption, error)
 }
 
 type AdoptionHandler interface {
@@ -30,6 +31,7 @@ type AdoptionHandler interface {
 	UpdateAdoption() echo.HandlerFunc
 	DeleteAdoption() echo.HandlerFunc
 	GetAdoptionID() echo.HandlerFunc
+	GetMYAdopt() echo.HandlerFunc
 }
 
 type AdoptionData interface {
@@ -38,4 +40,5 @@ type AdoptionData interface {
 	Update(IDAdoption int, updatedAdoption Adoption) Adoption
 	Delete(IDAdoption int) bool
 	GetAdoptionID(AdoptionID int) []Adoption
+	GetAdoptionbyuser(userID int) []Adoption
 }
