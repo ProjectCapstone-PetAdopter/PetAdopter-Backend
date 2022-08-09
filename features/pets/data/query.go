@@ -74,3 +74,14 @@ func (pd *petsData) GetPetsID(petsID int) []domain.Pets {
 	}
 	return ParseToArr(data)
 }
+
+func (pd *petsData) GetPetsbyuser(userID int) []domain.Pets {
+	var data []Pets
+	err := pd.db.Where("user_id = ?", userID).Find(&data)
+
+	if err.Error != nil {
+		log.Println("problem data", err.Error.Error())
+		return nil
+	}
+	return ParseToArr(data)
+}

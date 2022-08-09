@@ -24,6 +24,7 @@ type PetsUseCase interface {
 	UpPets(IDPets int, updateData Pets) (Pets, error)
 	DelPets(IDPets int) (bool, error)
 	GetSpecificPets(PetsID int) ([]Pets, error)
+	GetmyPets(userID int) ([]Pets, error)
 }
 
 type PetsHandler interface {
@@ -32,6 +33,7 @@ type PetsHandler interface {
 	UpdatePets() echo.HandlerFunc
 	DeletePets() echo.HandlerFunc
 	GetPetsID() echo.HandlerFunc
+	GetmyPets() echo.HandlerFunc
 }
 
 type PetsData interface {
@@ -40,4 +42,5 @@ type PetsData interface {
 	Update(IDPets int, updatedPets Pets) Pets
 	Delete(IDPets int) bool
 	GetPetsID(PetsID int) []Pets
+	GetPetsbyuser(userID int) []Pets
 }
