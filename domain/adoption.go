@@ -8,10 +8,10 @@ import (
 
 type Adoption struct {
 	ID        int
-	IDPets    int
+	PetsID    int
 	IDUser    int
-	Status    string
 	Petphoto  string
+	Status    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

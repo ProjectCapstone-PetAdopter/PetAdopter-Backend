@@ -12,6 +12,10 @@ import (
 	pd "petadopter/features/pets/data"
 	petsDelivery "petadopter/features/pets/delivery"
 	pu "petadopter/features/pets/usecase"
+
+	ad "petadopter/features/adoption/data"
+	adoptionDelivery "petadopter/features/adoption/delivery"
+	au "petadopter/features/adoption/usecase"
 )
 
 func InitFactory(e *echo.Echo, db *gorm.DB) {
@@ -26,5 +30,10 @@ func InitFactory(e *echo.Echo, db *gorm.DB) {
 	petsCase := pu.New(petsData, valid)
 	petsHandler := petsDelivery.New(petsCase)
 	petsDelivery.RoutePets(e, petsHandler)
+
+	adoptData := ad.New(db)
+	adoptCase := au.New(adoptData, valid)
+	adoptHandler := adoptionDelivery.New(adoptCase)
+	adoptionDelivery.RouteAdopt(e, adoptHandler)
 
 }
