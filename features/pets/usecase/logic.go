@@ -19,28 +19,28 @@ func New(ud domain.PetsData, v *validator.Validate) domain.PetsUseCase {
 	}
 }
 
-func (pd *petsUseCase) AddPets(IDUser int, newPets domain.Pets) (domain.Pets, error) {
-
+func (pd *petsUseCase) AddPets(newPets domain.Pets) (domain.Pets, error) {
 	res := pd.petsData.Insert(newPets)
-
 	if res.ID == 0 {
 		return domain.Pets{}, errors.New("error insert data")
 	}
+
 	return res, nil
 }
 
-func (pd *petsUseCase) GetSpecificPets(petsID int) ([]domain.Pets, error) {
+func (pd *petsUseCase) GetSpecificPets(petsID int) ([]domain.Pets, domain.PetUser, error) {
+	petuser := pd.petsData.GetPetUser()
 	res := pd.petsData.GetPetsID(petsID)
-	if petsID == -1 {
-		return nil, errors.New("error get Pets")
+
+	if len(res) == 0 {
+		return nil, domain.PetUser{}, errors.New("error get Pet")
 	}
 
-	return res, nil
+	return res, petuser, nil
 }
 
 func (pd *petsUseCase) GetAllP() ([]domain.Pets, error) {
 	res := pd.petsData.GetAll()
-
 	if len(res) == 0 {
 		return nil, errors.New("no data found")
 	}
@@ -49,21 +49,16 @@ func (pd *petsUseCase) GetAllP() ([]domain.Pets, error) {
 }
 
 func (pd *petsUseCase) UpPets(IDPets int, updateData domain.Pets) (domain.Pets, error) {
-
-	if IDPets == -1 {
-		return domain.Pets{}, errors.New("invalid Pets")
-	}
 	result := pd.petsData.Update(IDPets, updateData)
-
 	if result.ID == 0 {
 		return domain.Pets{}, errors.New("error update data")
 	}
+
 	return result, nil
 }
 
 func (pd *petsUseCase) DelPets(IDPets int) (bool, error) {
 	res := pd.petsData.Delete(IDPets)
-
 	if !res {
 		return false, errors.New("failed delete")
 	}

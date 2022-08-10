@@ -2,17 +2,17 @@ package delivery
 
 import (
 	"petadopter/domain"
-	"time"
 )
 
 type PetsInsertRequest struct {
 	Petname     string `json:"petname" form:"petname" validate:"required"`
-	Gender      string `json:"gender" form:"gender" validate:"required"`
+	Gender      int    `json:"gender" form:"gender" validate:"required"`
 	Species     string `json:"species" form:"species" validate:"required"`
 	Age         int    `json:"age" form:"age" validate:"required"`
 	Color       string `json:"color" form:"color"`
 	Description string `json:"description" form:"description"`
 	Petphoto    string `json:"petphoto"`
+	Userid      int
 }
 
 func (pi *PetsInsertRequest) ToDomain() domain.Pets {
@@ -24,7 +24,6 @@ func (pi *PetsInsertRequest) ToDomain() domain.Pets {
 		Color:       pi.Color,
 		Petphoto:    pi.Petphoto,
 		Description: pi.Description,
-		CreatedAt:   time.Time{},
-		UpdatedAt:   time.Time{},
+		Userid:      pi.Userid,
 	}
 }

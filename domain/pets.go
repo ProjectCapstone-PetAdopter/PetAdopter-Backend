@@ -1,30 +1,32 @@
 package domain
 
 import (
-	"time"
-
 	"github.com/labstack/echo/v4"
 )
 
 type Pets struct {
 	ID          int
 	Petname     string
-	Gender      string
+	Gender      int
 	Age         int
 	Color       string
 	Petphoto    string
 	Species     string
 	Description string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Userid      int
+}
+
+type PetUser struct {
+	Fullname string
+	City     string
 }
 
 type PetsUseCase interface {
-	AddPets(IDUser int, newPets Pets) (Pets, error)
+	AddPets(newPets Pets) (Pets, error)
 	GetAllP() ([]Pets, error)
 	UpPets(IDPets int, updateData Pets) (Pets, error)
 	DelPets(IDPets int) (bool, error)
-	GetSpecificPets(PetsID int) ([]Pets, error)
+	GetSpecificPets(PetsID int) ([]Pets, PetUser, error)
 	GetmyPets(userID int) ([]Pets, error)
 }
 
@@ -44,4 +46,5 @@ type PetsData interface {
 	Delete(IDPets int) bool
 	GetPetsID(PetsID int) []Pets
 	GetPetsbyuser(userID int) []Pets
+	GetPetUser() PetUser
 }
