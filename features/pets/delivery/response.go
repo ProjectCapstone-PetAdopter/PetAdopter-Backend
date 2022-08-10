@@ -5,7 +5,7 @@ import "petadopter/domain"
 type PetsResponse struct {
 	ID          int    `json:"id"`
 	Petname     string `json:"petname" form:"petname" validate:"required"`
-	Gender      string `json:"gender" form:"gender" validate:"required"`
+	Gender      int    `json:"gender" form:"gender" validate:"required"`
 	Species     string `json:"species" form:"species" validate:"required"`
 	Age         int    `json:"age" form:"age" validate:"required"`
 	Color       string `json:"color" form:"color"`

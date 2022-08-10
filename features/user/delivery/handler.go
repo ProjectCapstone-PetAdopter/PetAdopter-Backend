@@ -279,6 +279,7 @@ func (uh *userHandler) GetProfile() echo.HandlerFunc {
 		res["email"] = data.Email
 		res["address"] = data.Address
 		res["photoprofile"] = data.PhotoProfile
+		res["city"] = data.City
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"data":    res,

@@ -2,6 +2,7 @@ package data
 
 import (
 	"petadopter/domain"
+	"petadopter/features/pets/data"
 
 	"gorm.io/gorm"
 )
@@ -17,6 +18,7 @@ type User struct {
 	Password     string `json:"password" form:"password" validate:"required"`
 	Phonenumber  string `json:"phonenumber" form:"phonenumber" validate:"required"`
 	Role         string
+	Pets         []data.Pets `gorm:"foreignKey:Userid"`
 }
 
 type UserInfo struct {
