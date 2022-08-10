@@ -27,5 +27,5 @@ func InitDB(cfg *config.Appconfig) *gorm.DB {
 }
 
 func MigrateDB(db *gorm.DB) {
-	db.AutoMigrate(userdata.User{}, petsdata.Pets{}, speciesdata.Species{}, adoptdata.Adoption{})
+	db.AutoMigrate(userdata.User{}, speciesdata.Species{}, petsdata.Pets{}, adoptdata.Adoption{})
 }

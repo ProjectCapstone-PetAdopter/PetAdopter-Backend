@@ -17,6 +17,10 @@ import (
 	ad "petadopter/features/adoption/data"
 	adoptionDelivery "petadopter/features/adoption/delivery"
 	au "petadopter/features/adoption/usecase"
+
+	sd "petadopter/features/species/data"
+	speciesDelivery "petadopter/features/species/delivery"
+	su "petadopter/features/species/usecase"
 )
 
 func InitFactory(e *echo.Echo, db *gorm.DB, oauth2 *oauth2.Config) {
@@ -36,5 +40,10 @@ func InitFactory(e *echo.Echo, db *gorm.DB, oauth2 *oauth2.Config) {
 	adoptCase := au.New(adoptData, valid)
 	adoptHandler := adoptionDelivery.New(adoptCase)
 	adoptionDelivery.RouteAdopt(e, adoptHandler)
+
+	speciesData := sd.New(db)
+	speciesCase := su.New(speciesData, valid)
+	speciesHandler := speciesDelivery.New(speciesCase)
+	speciesDelivery.RouteSpecies(e, speciesHandler)
 
 }

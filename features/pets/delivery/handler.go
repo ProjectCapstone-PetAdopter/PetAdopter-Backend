@@ -109,9 +109,6 @@ func (ph *petsHandler) UpdatePets() echo.HandlerFunc {
 		if tmp.Gender != 0 {
 			qry["gender"] = tmp.Gender
 		}
-		if tmp.Species != "" {
-			qry["species"] = tmp.Species
-		}
 		if tmp.Age != 0 {
 			qry["age"] = tmp.Age
 		}
@@ -225,7 +222,7 @@ func (ph *petsHandler) GetAllPets() echo.HandlerFunc {
 			res["id"] = data[i].ID
 			res["petname"] = data[i].Petname
 			res["petphoto"] = data[i].Petphoto
-			res["species"] = data[i].Species
+			res["species"] = data[i].Speciesid
 			res["gender"] = data[i].Gender
 			res["age"] = data[i].Age
 			res["color"] = data[i].Color
@@ -267,7 +264,7 @@ func (ph *petsHandler) GetPetsID() echo.HandlerFunc {
 
 		res["petname"] = data[0].Petname
 		res["petphoto"] = data[0].Petphoto
-		res["species"] = data[0].Species
+		res["species"] = data[0].Speciesid
 		res["gender"] = data[0].Gender
 		res["age"] = data[0].Age
 		res["color"] = data[0].Color
@@ -309,7 +306,7 @@ func (ph *petsHandler) GetmyPets() echo.HandlerFunc {
 			var res = map[string]interface{}{}
 			res["petname"] = data[i].Petname
 			res["petphoto"] = data[i].Petphoto
-			res["species"] = data[i].Species
+			res["species"] = data[i].Speciesid
 			res["gender"] = data[i].Gender
 			res["age"] = data[i].Age
 			res["color"] = data[i].Color
