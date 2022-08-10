@@ -6,15 +6,22 @@ import (
 	"gorm.io/gorm"
 )
 
+type Adoption struct {
+	gorm.Model
+	UserID   uint   `json:"user_id" form:"user_id"`
+	PetsID   uint   `json:"pets_id" form:"pets_id"`
+	Status   string `json:"status" form:"status"   gorm:"default:waiting"`
+	Petphoto string `json:"petphoto" form:"petphoto"`
+}
+
 type Pets struct {
 	gorm.Model
-	Petname     string `json:"petname" form:"petname" validate:"required"`
+	Name        string `json:"name" form:"name" validate:"required"`
 	Gender      string `json:"gender" form:"gender" validate:"required"`
-	Species     string `json:"species" form:"species" validate:"required"`
 	Age         int    `json:"age" form:"age" validate:"required"`
 	Color       string `json:"color" form:"color"`
 	Description string `json:"description" form:"description"`
-	Petphoto    string `json:"petphoto"`
+	Images      string `json:"images"`
 }
 
 type User struct {
@@ -27,23 +34,20 @@ type User struct {
 	Photo    string `json:"image_url"`
 }
 
-func (p *Pets) ToDomain() domain.Pets {
-	return domain.Pets{
-		ID:          int(p.ID),
-		Petname:     p.Petname,
-		Species:     p.Species,
-		Gender:      p.Gender,
-		Age:         p.Age,
-		Color:       p.Color,
-		Petphoto:    p.Petphoto,
-		Description: p.Description,
-		CreatedAt:   p.CreatedAt,
-		UpdatedAt:   p.UpdatedAt,
+func (a *Adoption) ToDomain() domain.Adoption {
+	return domain.Adoption{
+		ID:        int(a.ID),
+		PetsID:    int(a.PetsID),
+		IDUser:    int(a.UserID),
+		Petphoto:  a.Petphoto,
+		Status:    a.Status,
+		CreatedAt: a.CreatedAt,
+		UpdatedAt: a.UpdatedAt,
 	}
 }
 
-func ParseToArr(arr []Pets) []domain.Pets {
-	var res []domain.Pets
+func ParseToArr(arr []Adoption) []domain.Adoption {
+	var res []domain.Adoption
 
 	for _, val := range arr {
 		res = append(res, val.ToDomain())
@@ -51,14 +55,11 @@ func ParseToArr(arr []Pets) []domain.Pets {
 	return res
 }
 
-func ToLocal(data domain.Pets) Pets {
-	var res Pets
-	res.Petname = data.Petname
-	res.Species = data.Species
-	res.Gender = data.Gender
-	res.Age = data.Age
-	res.Color = data.Color
+func ToLocal(data domain.Adoption) Adoption {
+	var res Adoption
+	res.UserID = uint(data.IDUser)
+	res.PetsID = uint(data.PetsID)
 	res.Petphoto = data.Petphoto
-	res.Description = data.Description
+	res.Status = data.Status
 	return res
 }

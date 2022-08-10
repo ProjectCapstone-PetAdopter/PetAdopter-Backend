@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )
 
@@ -54,28 +55,29 @@ func (ud *userCase) Delete(userId int) (bool, error) {
 }
 
 // RegisterUser implements domain.UserUseCase
-func (ud *userCase) RegisterUser(newuser domain.User, cost int) int {
+func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.Token) int {
 	var user = data.FromModel(newuser)
-	validError := ud.valid.Struct(user)
 
-	if validError != nil {
-		log.Println("Validation errror : ", validError)
-		return 400
+	if token == nil {
+		validError := ud.valid.Struct(user)
+		if validError != nil {
+			log.Println("Validation errror : ", validError)
+			return 400
+		}
 	}
 
 	duplicate := ud.userData.CheckDuplicate(user.ToModel())
-
 	if duplicate {
 		log.Println("Duplicate Data")
 		return 409
 	}
 
 	hashed, hasherr := bcrypt.GenerateFromPassword([]byte(user.Password), cost)
-
 	if hasherr != nil {
 		log.Println("Cant encrypt: ", hasherr)
 		return 500
 	}
+
 	user.Password = string(hashed)
 	user.Role = "user"
 	insert := ud.userData.RegisterData(user.ToModel())

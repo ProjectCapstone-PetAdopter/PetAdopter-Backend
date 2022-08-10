@@ -19,20 +19,6 @@ func New(db *gorm.DB) domain.UserData {
 }
 
 // GetUserCartData implements domain.UserData
-func (ud *userData) GetUserCartData(userid int) []domain.UserCart {
-	var usercart []domain.UserCart
-
-	err := ud.db.Model(&User{}).Select("products.product_name, carts.quantity, carts.subtotal").Joins("join carts on carts.userid = users.id").
-		Joins("join products on carts.productid = products.id").Where("carts.userid = ?", userid).Find(&usercart)
-
-	if err.Error != nil {
-		log.Println("Cant get data", err.Error)
-		return nil
-	}
-
-	return usercart
-}
-
 func (ud *userData) Login(userdata domain.User) domain.User {
 	var user = FromModel(userdata)
 	err := ud.db.First(&user, "username  = ?", userdata.Username).Error

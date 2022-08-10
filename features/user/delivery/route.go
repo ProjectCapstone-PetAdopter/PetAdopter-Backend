@@ -17,6 +17,8 @@ func RouteUser(e *echo.Echo, usr domain.UserHandler) {
 	}))
 	e.Pre(middleware.RemoveTrailingSlash())
 
+	e.GET("/oauth/signup", usr.SignUpGoogle())
+	e.GET("/callback", usr.CallbackGoogle())
 	e.POST("/login", usr.Login())
 	e.DELETE("/users", usr.DeleteUser(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 	e.POST("/users", usr.Register())

@@ -10,7 +10,7 @@ import (
 type Species struct {
 	gorm.Model
 	Species string
-	Pets    []petsData.Pets
+	Pets    []petsData.Pets `gorm:"foreignKey:speciesID"`
 }
 
 func (s *Species) ToModel() domain.Species {

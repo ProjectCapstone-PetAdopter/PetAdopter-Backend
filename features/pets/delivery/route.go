@@ -22,4 +22,5 @@ func RoutePets(e *echo.Echo, pet domain.PetsHandler) {
 	e.DELETE("/pets/:id", pet.DeletePets(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 	e.GET("/pets", pet.GetAllPets())
 	e.GET("/pets/:id", pet.GetPetsID())
+	e.GET("/mypets", pet.GetmyPets())
 }

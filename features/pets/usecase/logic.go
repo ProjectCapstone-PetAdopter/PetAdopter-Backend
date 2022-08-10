@@ -70,3 +70,12 @@ func (pd *petsUseCase) DelPets(IDPets int) (bool, error) {
 
 	return true, nil
 }
+
+func (pd *petsUseCase) GetmyPets(userID int) ([]domain.Pets, error) {
+	res := pd.petsData.GetPetsbyuser(userID)
+	if userID == -1 {
+		return nil, errors.New("error get data")
+	}
+
+	return res, nil
+}

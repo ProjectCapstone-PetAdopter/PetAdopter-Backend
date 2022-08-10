@@ -10,19 +10,63 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type petsHandler struct {
-	petsUsecase domain.PetsUseCase
+type adoptionHandler struct {
+	adoptionUsecase domain.AdoptionUseCase
 }
 
-func New(cu domain.PetsUseCase) domain.PetsHandler {
-	return &petsHandler{
-		petsUsecase: cu,
+func New(pu domain.AdoptionUseCase) domain.AdoptionHandler {
+	return &adoptionHandler{
+		adoptionUsecase: pu,
+	}
+}
+func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		qry := map[string]interface{}{}
+		cnv, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			log.Println("Cannot convert to int", err.Error())
+			return c.JSON(http.StatusInternalServerError, "cannot convert id")
+		}
+
+		var tmp AdoptionInsertRequest
+		res := c.Bind(&tmp)
+
+		if res != nil {
+			log.Println(res, "Cannot parse data")
+			return c.JSON(http.StatusInternalServerError, "error read update")
+		}
+
+		if tmp.PetsID != 0 {
+			qry["pets_id"] = tmp.PetsID
+		}
+		if tmp.UserID != 0 {
+			qry["user_id"] = tmp.UserID
+		}
+		if tmp.Petphoto != "" {
+			qry["petphoto"] = tmp.Petphoto
+		}
+		if tmp.Status != "" {
+			qry["status"] = tmp.Status
+		}
+
+		data, err := ad.adoptionUsecase.UpAdoption(cnv, tmp.ToDomain())
+
+		if err != nil {
+			log.Println("Cannot update data", err)
+			c.JSON(http.StatusInternalServerError, "cannot update")
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"message": "success Update",
+			"data":    FromDomain(data),
+		})
 	}
 }
 
-func (ph *petsHandler) InsertPets() echo.HandlerFunc {
+func (ad *adoptionHandler) InsertAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var tmp PetsInsertRequest
+		var tmp AdoptionInsertRequest
 		err := c.Bind(&tmp)
 
 		if err != nil {
@@ -31,7 +75,8 @@ func (ph *petsHandler) InsertPets() echo.HandlerFunc {
 		}
 
 		userid, _ := common.ExtractData2(c)
-		data, err := ph.petsUsecase.AddPets(userid, tmp.ToDomain())
+
+		data, err := ad.adoptionUsecase.AddAdoption(userid, tmp.ToDomain())
 
 		if err != nil {
 			log.Println("Cannot proces data", err)
@@ -42,71 +87,10 @@ func (ph *petsHandler) InsertPets() echo.HandlerFunc {
 			"message": "success create data",
 			"data":    FromDomain(data),
 		})
-
 	}
 }
 
-func (ph *petsHandler) UpdatePets() echo.HandlerFunc {
-	return func(c echo.Context) error {
-
-		qry := map[string]interface{}{}
-		cnv, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			log.Println("Cannot convert to int", err.Error())
-			return c.JSON(http.StatusInternalServerError, "cannot convert id")
-		}
-
-		var tmp PetsInsertRequest
-		res := c.Bind(&tmp)
-
-		if res != nil {
-			log.Println(res, "Cannot parse data")
-			return c.JSON(http.StatusInternalServerError, "error read update")
-		}
-
-		if tmp.Petname != "" {
-			qry["petname"] = tmp.Petname
-		}
-		if tmp.Gender != "" {
-			qry["gender"] = tmp.Gender
-		}
-		if tmp.Species != "" {
-			qry["species"] = tmp.Species
-		}
-		if tmp.Age != 0 {
-			qry["age"] = tmp.Age
-		}
-		if tmp.Color != "" {
-			qry["color"] = tmp.Color
-		}
-		if tmp.Description != "" {
-			qry["description"] = tmp.Description
-		}
-		if tmp.Petphoto != "" {
-			qry["petphoto"] = tmp.Petphoto
-		}
-		data, err := ph.petsUsecase.UpPets(cnv, tmp.ToDomain())
-
-		if err != nil {
-			log.Println("Cannot update data", err)
-			c.JSON(http.StatusInternalServerError, "cannot update")
-		}
-
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message":     "success update data",
-			"id":          data.ID,
-			"Petname":     data.Petname,
-			"Gender":      data.Gender,
-			"Species":     data.Species,
-			"Age":         data.Age,
-			"Color":       data.Color,
-			"Description": data.Description,
-			"Petphoto":    data.Petphoto,
-		})
-	}
-}
-
-func (ph *petsHandler) DeletePets() echo.HandlerFunc {
+func (ad *adoptionHandler) DeleteAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
 		cnv, err := strconv.Atoi(c.Param("id"))
@@ -115,9 +99,9 @@ func (ph *petsHandler) DeletePets() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, "cannot convert id")
 		}
 
-		data, err := ph.petsUsecase.DelPets(cnv)
+		data, err := ad.adoptionUsecase.DelAdoption(cnv)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, "cannot delete Data")
+			return c.JSON(http.StatusInternalServerError, "cannot delete user")
 		}
 
 		if !data {
@@ -125,15 +109,14 @@ func (ph *petsHandler) DeletePets() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message": "success delete Data",
+			"message": "success delete",
 		})
 	}
 }
 
-func (ph *petsHandler) GetAllPets() echo.HandlerFunc {
+func (ad *adoptionHandler) GetAllAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		data, err := ph.petsUsecase.GetAllP()
-
+		data, err := ad.adoptionUsecase.GetAllAP()
 		if err != nil {
 			log.Println("Cannot get data", err)
 			return c.JSON(http.StatusBadRequest, "error read input")
@@ -152,34 +135,33 @@ func (ph *petsHandler) GetAllPets() echo.HandlerFunc {
 	}
 }
 
-func (ph *petsHandler) GetPetsID() echo.HandlerFunc {
+func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		idNews := c.Param("id")
-		id, _ := strconv.Atoi(idNews)
-		data, err := ph.petsUsecase.GetSpecificPets(id)
-
+		idOrder := c.Param("id")
+		id, _ := strconv.Atoi(idOrder)
+		data, err := ad.adoptionUsecase.GetSpecificAdoption(id)
 		if err != nil {
 			log.Println("Cannot get data", err)
 			return c.JSON(http.StatusBadRequest, "cannot read input")
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message": "success get Data",
+			"message": "success get data",
 			"data":    data,
 		})
 	}
 }
 
-func (ph *petsHandler) GetmyPets() echo.HandlerFunc {
+func (ad *adoptionHandler) GetMYAdopt() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		userid, _ := common.ExtractData2(c)
-		data, err := ph.petsUsecase.GetmyPets(userid)
+		data, err := ad.adoptionUsecase.GetmyAdoption(userid)
 
 		if err != nil {
 			log.Println("Cannot get data", err)
 			return c.JSON(http.StatusBadRequest, "cannot read input")
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message": "success get my pets",
+			"message": "success get my Data",
 			"data":    data,
 		})
 	}
