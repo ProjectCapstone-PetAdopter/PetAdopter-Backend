@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/joho/godotenv"
-	//"github.com/joho/godotenv"
 )
 
 type Appconfig struct {

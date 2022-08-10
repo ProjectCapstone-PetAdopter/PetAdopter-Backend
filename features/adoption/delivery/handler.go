@@ -74,9 +74,9 @@ func (ad *adoptionHandler) InsertAdoption() echo.HandlerFunc {
 			c.JSON(http.StatusBadRequest, "error read input")
 		}
 
-		userid, _ := common.ExtractData2(c)
+		token := common.ExtractData(c)
 
-		data, err := ad.adoptionUsecase.AddAdoption(userid, tmp.ToDomain())
+		data, err := ad.adoptionUsecase.AddAdoption(token.ID, tmp.ToDomain())
 
 		if err != nil {
 			log.Println("Cannot proces data", err)
@@ -153,8 +153,8 @@ func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 
 func (ad *adoptionHandler) GetMYAdopt() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userid, _ := common.ExtractData2(c)
-		data, err := ad.adoptionUsecase.GetmyAdoption(userid)
+		token := common.ExtractData(c)
+		data, err := ad.adoptionUsecase.GetmyAdoption(token.ID)
 
 		if err != nil {
 			log.Println("Cannot get data", err)
