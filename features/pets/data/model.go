@@ -10,12 +10,12 @@ type Pets struct {
 	gorm.Model
 	Petname     string `json:"petname" form:"petname" validate:"required"`
 	Gender      int    `json:"gender" form:"gender" validate:"required"`
-	Species     string `json:"species" form:"species" validate:"required"`
 	Age         int    `json:"age" form:"age" validate:"required"`
 	Color       string `json:"color" form:"color"`
 	Description string `json:"description" form:"description"`
 	Petphoto    string `json:"petphoto" form:"petphoto"`
 	Userid      int
+	Speciesid   int
 }
 
 type PetUser struct {
@@ -37,7 +37,6 @@ func (p *Pets) ToDomain() domain.Pets {
 	return domain.Pets{
 		ID:          int(p.ID),
 		Petname:     p.Petname,
-		Species:     p.Species,
 		Gender:      p.Gender,
 		Age:         p.Age,
 		Color:       p.Color,
@@ -66,7 +65,6 @@ func ParseToArr(arr []Pets) []domain.Pets {
 func ToLocal(data domain.Pets) Pets {
 	var res Pets
 	res.Petname = data.Petname
-	res.Species = data.Species
 	res.Gender = data.Gender
 	res.Age = data.Age
 	res.Color = data.Color

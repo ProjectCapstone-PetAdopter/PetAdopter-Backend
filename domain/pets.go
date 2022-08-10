@@ -11,7 +11,7 @@ type Pets struct {
 	Age         int
 	Color       string
 	Petphoto    string
-	Species     string
+	Speciesid   int
 	Description string
 	Userid      int
 }
