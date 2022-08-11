@@ -19,22 +19,37 @@ func New(pu domain.AdoptionUseCase) domain.AdoptionHandler {
 		adoptionUsecase: pu,
 	}
 }
+
 func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
-
+		var tmp AdoptionInsertRequest
 		qry := map[string]interface{}{}
+		token := common.ExtractData(c)
+
 		cnv, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			log.Println("Cannot convert to int", err.Error())
-			return c.JSON(http.StatusInternalServerError, "cannot convert id")
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": "internal server error",
+			})
 		}
 
-		var tmp AdoptionInsertRequest
-		res := c.Bind(&tmp)
+		if cnv <= 0 {
+			log.Println("data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
+		}
 
+		res := c.Bind(&tmp)
 		if res != nil {
-			log.Println(res, "Cannot parse data")
-			return c.JSON(http.StatusInternalServerError, "error read update")
+			log.Println("Cannot bind data", res)
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    400,
+				"message": "Wrong input data",
+			})
 		}
 
 		if tmp.PetsID != 0 {
@@ -43,23 +58,24 @@ func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 		if tmp.UserID != 0 {
 			qry["user_id"] = tmp.UserID
 		}
-		if tmp.Petphoto != "" {
-			qry["petphoto"] = tmp.Petphoto
-		}
 		if tmp.Status != "" {
 			qry["status"] = tmp.Status
 		}
 
-		data, err := ad.adoptionUsecase.UpAdoption(cnv, tmp.ToDomain())
+		tmp.UserID = token.ID
 
-		if err != nil {
+		_, errs := ad.adoptionUsecase.UpAdoption(cnv, tmp.ToDomain())
+		if errs != nil {
 			log.Println("Cannot update data", err)
-			c.JSON(http.StatusInternalServerError, "cannot update")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    400,
+				"message": "Wrong input data",
+			})
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message": "success Update",
-			"data":    FromDomain(data),
+			"code":    200,
+			"message": "Success update data",
 		})
 	}
 }
@@ -67,102 +83,207 @@ func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 func (ad *adoptionHandler) InsertAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var tmp AdoptionInsertRequest
-		err := c.Bind(&tmp)
 
+		err := c.Bind(&tmp)
 		if err != nil {
 			log.Println("Cannot parse data", err)
-			c.JSON(http.StatusBadRequest, "error read input")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    400,
+				"message": "Wrong input data",
+			})
 		}
 
 		token := common.ExtractData(c)
 
-		data, err := ad.adoptionUsecase.AddAdoption(token.ID, tmp.ToDomain())
-
-		if err != nil {
-			log.Println("Cannot proces data", err)
-			c.JSON(http.StatusInternalServerError, err)
+		if token.ID == 0 {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": "internal server error",
+			})
 		}
 
-		return c.JSON(http.StatusCreated, map[string]interface{}{
-			"message": "success create data",
-			"data":    FromDomain(data),
+		_, errs := ad.adoptionUsecase.AddAdoption(token.ID, tmp.ToDomain())
+		if errs != nil {
+			log.Println("Cannot proces data", err)
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    400,
+				"message": "Wrong input data",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"code":    200,
+			"message": "Post pet success",
 		})
 	}
 }
 
 func (ad *adoptionHandler) DeleteAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
-
 		cnv, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			log.Println("Cannot convert to int", err.Error())
-			return c.JSON(http.StatusInternalServerError, "cannot convert id")
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": "internal server error",
+			})
 		}
 
 		data, err := ad.adoptionUsecase.DelAdoption(cnv)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, "cannot delete user")
+			log.Println("cant delete data")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
 		}
 
 		if !data {
-			return c.JSON(http.StatusInternalServerError, "cannot delete")
+			log.Println("cant delete data")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message": "success delete",
+			"code":    200,
+			"message": "Success delete adoption data",
 		})
 	}
 }
 
+//get owner adoption data
 func (ad *adoptionHandler) GetAllAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		data, err := ad.adoptionUsecase.GetAllAP()
+		var arrmap = []map[string]interface{}{}
+		token := common.ExtractData(c)
+
+		data, err := ad.adoptionUsecase.GetAllAP(token.ID)
 		if err != nil {
 			log.Println("Cannot get data", err)
-			return c.JSON(http.StatusBadRequest, "error read input")
-
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
 		}
 
 		if data == nil {
 			log.Println("Terdapat error saat mengambil data")
-			return c.JSON(http.StatusInternalServerError, "Problem from database")
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
+		}
+
+		for i := 0; i < len(data); i++ {
+			var res = map[string]interface{}{}
+			res["id"] = data[i].ID
+			res["petname"] = data[i].Petname
+			res["petphoto"] = data[i].Petphoto
+			res["ownername"] = data[i].Fullname
+			res["ownerphoto"] = data[i].PhotoProfile
+			res["owneraddress"] = data[i].Address
+			res["status"] = data[i].Status
+
+			arrmap = append(arrmap, res)
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
+			"code":    200,
 			"message": "success get all Data",
-			"data":    data,
+			"data":    arrmap,
 		})
 	}
 }
 
 func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		var res = map[string]interface{}{}
 		idOrder := c.Param("id")
-		id, _ := strconv.Atoi(idOrder)
+
+		id, errs := strconv.Atoi(idOrder)
+		if errs != nil {
+			log.Println("Cannot convert to int", errs.Error())
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": "Internal Server Error",
+			})
+		}
+
 		data, err := ad.adoptionUsecase.GetSpecificAdoption(id)
 		if err != nil {
-			log.Println("Cannot get data", err)
-			return c.JSON(http.StatusBadRequest, "cannot read input")
+			log.Println("Data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
 		}
+
+		if data == nil {
+			log.Println("Data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
+		}
+
+		res["id"] = data[0].ID
+		res["petname"] = data[0].Petname
+		res["petphoto"] = data[0].Petphoto
+		res["ownername"] = data[0].Fullname
+		res["ownerphoto"] = data[0].PhotoProfile
+		res["owneraddress"] = data[0].Address
+		res["status"] = data[0].Status
+
 		return c.JSON(http.StatusOK, map[string]interface{}{
+			"code":    200,
 			"message": "success get data",
-			"data":    data,
+			"data":    res,
 		})
 	}
 }
 
+//user history adoption
 func (ad *adoptionHandler) GetMYAdopt() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		var arrmap = []map[string]interface{}{}
 		token := common.ExtractData(c)
-		data, err := ad.adoptionUsecase.GetmyAdoption(token.ID)
 
+		data, err := ad.adoptionUsecase.GetmyAdoption(token.ID)
 		if err != nil {
-			log.Println("Cannot get data", err)
-			return c.JSON(http.StatusBadRequest, "cannot read input")
+			log.Println("Data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
 		}
+
+		if data == nil {
+			log.Println("Data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
+			})
+		}
+
+		for i := 0; i < len(data); i++ {
+			var res = map[string]interface{}{}
+			res["id"] = data[i].ID
+			res["petname"] = data[i].Petname
+			res["petphoto"] = data[i].Petphoto
+			res["ownername"] = data[i].Fullname
+			res["ownerphoto"] = data[i].PhotoProfile
+			res["owneraddress"] = data[i].Address
+			res["status"] = data[i].Status
+
+			arrmap = append(arrmap, res)
+		}
+
 		return c.JSON(http.StatusOK, map[string]interface{}{
+			"code":    200,
 			"message": "success get my Data",
-			"data":    data,
+			"data":    arrmap,
 		})
 	}
 }

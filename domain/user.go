@@ -17,6 +17,7 @@ type User struct {
 	Phonenumber  string
 	Role         string
 	Pets         []Pets
+	Adoption     []Adoption
 }
 
 type UserHandler interface {
