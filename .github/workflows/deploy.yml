@@ -17,8 +17,12 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            ls -a
+            pwd
             cd /home/userbe10/PetAdopter-Backend
+            ls -a
             git pull origin main
+            ls -a
             docker stop petadopterContainer
             docker rm petadopterContainer
             docker rmi petadopter-api
