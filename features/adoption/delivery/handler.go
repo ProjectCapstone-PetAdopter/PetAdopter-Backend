@@ -30,7 +30,7 @@ func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 		if err != nil {
 			log.Println("Cannot convert to int", err.Error())
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "internal server error",
 			})
 		}
@@ -38,7 +38,7 @@ func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 		if cnv <= 0 {
 			log.Println("data not found")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -47,7 +47,7 @@ func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 		if res != nil {
 			log.Println("Cannot bind data", res)
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Wrong input data",
 			})
 		}
@@ -68,13 +68,13 @@ func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 		if errs != nil {
 			log.Println("Cannot update data", err)
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Wrong input data",
 			})
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "Success update data",
 		})
 	}
@@ -88,7 +88,7 @@ func (ad *adoptionHandler) InsertAdoption() echo.HandlerFunc {
 		if err != nil {
 			log.Println("Cannot parse data", err)
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Wrong input data",
 			})
 		}
@@ -97,7 +97,7 @@ func (ad *adoptionHandler) InsertAdoption() echo.HandlerFunc {
 
 		if token.ID == 0 {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "internal server error",
 			})
 		}
@@ -106,13 +106,13 @@ func (ad *adoptionHandler) InsertAdoption() echo.HandlerFunc {
 		if errs != nil {
 			log.Println("Cannot proces data", err)
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Wrong input data",
 			})
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "Post pet success",
 		})
 	}
@@ -124,7 +124,7 @@ func (ad *adoptionHandler) DeleteAdoption() echo.HandlerFunc {
 		if err != nil {
 			log.Println("Cannot convert to int", err.Error())
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "internal server error",
 			})
 		}
@@ -133,7 +133,7 @@ func (ad *adoptionHandler) DeleteAdoption() echo.HandlerFunc {
 		if err != nil {
 			log.Println("cant delete data")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -141,13 +141,13 @@ func (ad *adoptionHandler) DeleteAdoption() echo.HandlerFunc {
 		if !data {
 			log.Println("cant delete data")
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "Success delete adoption data",
 		})
 	}
@@ -163,7 +163,7 @@ func (ad *adoptionHandler) GetAllAdoption() echo.HandlerFunc {
 		if err != nil {
 			log.Println("Cannot get data", err)
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -171,7 +171,7 @@ func (ad *adoptionHandler) GetAllAdoption() echo.HandlerFunc {
 		if data == nil {
 			log.Println("Terdapat error saat mengambil data")
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -190,7 +190,7 @@ func (ad *adoptionHandler) GetAllAdoption() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "success get all Data",
 			"data":    arrmap,
 		})
@@ -206,7 +206,7 @@ func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 		if errs != nil {
 			log.Println("Cannot convert to int", errs.Error())
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "Internal Server Error",
 			})
 		}
@@ -215,7 +215,7 @@ func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 		if err != nil {
 			log.Println("Data not found")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -223,7 +223,7 @@ func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 		if data == nil {
 			log.Println("Data not found")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -237,7 +237,7 @@ func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 		res["status"] = data[0].Status
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "success get data",
 			"data":    res,
 		})
@@ -254,7 +254,7 @@ func (ad *adoptionHandler) GetMYAdopt() echo.HandlerFunc {
 		if err != nil {
 			log.Println("Data not found")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -262,7 +262,7 @@ func (ad *adoptionHandler) GetMYAdopt() echo.HandlerFunc {
 		if data == nil {
 			log.Println("Data not found")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -281,7 +281,7 @@ func (ad *adoptionHandler) GetMYAdopt() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "success get my Data",
 			"data":    arrmap,
 		})
