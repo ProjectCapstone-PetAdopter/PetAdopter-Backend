@@ -193,7 +193,8 @@ func (ph *petsHandler) GetAllPets() echo.HandlerFunc {
 		var arrmap = []map[string]interface{}{}
 
 		data, err := ph.petsUsecase.GetAllP()
-		if len(data) == 0 {
+
+		if err != nil {
 			log.Println("Data not found")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
 				"code":    404,
@@ -201,19 +202,11 @@ func (ph *petsHandler) GetAllPets() echo.HandlerFunc {
 			})
 		}
 
-		if err != nil {
-			log.Println("Cannot get data", err)
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
-				"message": "Internal Server Error",
-			})
-		}
-
 		if data == nil {
-			log.Println("Terdapat error saat mengambil data")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
-				"message": "Internal Server Error",
+			log.Println("Data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
 			})
 		}
 
@@ -295,10 +288,10 @@ func (ph *petsHandler) GetmyPets() echo.HandlerFunc {
 
 		data, err := ph.petsUsecase.GetmyPets(token.ID)
 		if err != nil {
-			log.Println("Cannot get data", err)
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
-				"message": "Internal Server Error",
+			log.Println("Data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "Data not found",
 			})
 		}
 

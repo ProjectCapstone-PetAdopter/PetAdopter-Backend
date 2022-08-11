@@ -24,16 +24,17 @@ func (au *adoptionUseCase) AddAdoption(IDUser int, newAdoption domain.Adoption) 
 		return domain.Adoption{}, errors.New("invalid user")
 	}
 
-	newAdoption.IDUser = IDUser
-	res := au.adoptionData.Insert(newAdoption)
+	newAdoption.UserID = IDUser
 
+	res := au.adoptionData.Insert(newAdoption)
 	if res.ID == 0 {
 		return domain.Adoption{}, errors.New("error insert")
 	}
+
 	return res, nil
 }
 
-func (au *adoptionUseCase) GetSpecificAdoption(adoptionID int) ([]domain.Adoption, error) {
+func (au *adoptionUseCase) GetSpecificAdoption(adoptionID int) ([]domain.AdoptionPet, error) {
 	res := au.adoptionData.GetAdoptionID(adoptionID)
 	if adoptionID == -1 {
 		return nil, errors.New("error get Data")
@@ -42,8 +43,8 @@ func (au *adoptionUseCase) GetSpecificAdoption(adoptionID int) ([]domain.Adoptio
 	return res, nil
 }
 
-func (au *adoptionUseCase) GetAllAP() ([]domain.Adoption, error) {
-	res := au.adoptionData.GetAll()
+func (au *adoptionUseCase) GetAllAP(userid int) ([]domain.AdoptionPet, error) {
+	res := au.adoptionData.GetAll(userid)
 
 	if len(res) == 0 {
 		return nil, errors.New("no data found")
@@ -75,7 +76,7 @@ func (au *adoptionUseCase) DelAdoption(IDAdoption int) (bool, error) {
 	return true, nil
 }
 
-func (au *adoptionUseCase) GetmyAdoption(userID int) ([]domain.Adoption, error) {
+func (au *adoptionUseCase) GetmyAdoption(userID int) ([]domain.AdoptionPet, error) {
 	res := au.adoptionData.GetAdoptionbyuser(userID)
 	if userID == -1 {
 		return nil, errors.New("error get data")
