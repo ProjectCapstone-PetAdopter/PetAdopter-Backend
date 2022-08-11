@@ -27,14 +27,14 @@ func (sh *speciesHandler) AddSpecies() echo.HandlerFunc {
 		token := common.ExtractData(c)
 		if token.Role == "user" {
 			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-				"code":    401,
+				"code":    http.StatusUnauthorized,
 				"message": "unauthorized",
 			})
 		}
 		// errGet := sh.speciesUseCase.GetUser(uint(token.ID))
 		// if errGet != nil {
 		// 	return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-		// 		"code":401,
+		// 		"code":http.StatusUnauthorized,
 		// 		"message": errGet.Error(),
 		// 	})
 		// }
@@ -44,7 +44,7 @@ func (sh *speciesHandler) AddSpecies() echo.HandlerFunc {
 		if errBind != nil {
 			log.Println("cannot parse data", errBind)
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "internal server error",
 			})
 		}
@@ -52,12 +52,12 @@ func (sh *speciesHandler) AddSpecies() echo.HandlerFunc {
 		if err != nil {
 			log.Println("cannot proces data", err)
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "internal server error",
 			})
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "succes operation",
 		})
 	}
@@ -68,12 +68,12 @@ func (sh *speciesHandler) GetSpecies() echo.HandlerFunc {
 		data, err := sh.speciesUseCase.GetAllSpecies()
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": err.Error(),
 			})
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "success get all species data",
 			"data":    data,
 		})
@@ -85,7 +85,7 @@ func (sh *speciesHandler) UpdateDataSpecies() echo.HandlerFunc {
 		token := common.ExtractData(c)
 		if token.Role == "user" {
 			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-				"code":    401,
+				"code":    http.StatusUnauthorized,
 				"message": "unauthorized",
 			})
 		}
@@ -95,7 +95,7 @@ func (sh *speciesHandler) UpdateDataSpecies() echo.HandlerFunc {
 		if err != nil {
 			log.Println(err.Error())
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Please enter data correctly",
 			})
 		}
@@ -105,7 +105,7 @@ func (sh *speciesHandler) UpdateDataSpecies() echo.HandlerFunc {
 		if err != nil {
 			log.Println(err.Error())
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": err.Error(),
 			})
 		}
@@ -113,13 +113,13 @@ func (sh *speciesHandler) UpdateDataSpecies() echo.HandlerFunc {
 		data, err := sh.speciesUseCase.UpdateSpecies(id, updatedData.ToModel())
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": err.Error(),
 			})
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "success update species " + param,
 			"data":    data,
 		})
@@ -131,7 +131,7 @@ func (sh *speciesHandler) DeleteDataSpecies() echo.HandlerFunc {
 		token := common.ExtractData(c)
 		if token.Role == "user" {
 			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-				"code":    401,
+				"code":    http.StatusUnauthorized,
 				"message": "unauthorized",
 			})
 		}
@@ -141,7 +141,7 @@ func (sh *speciesHandler) DeleteDataSpecies() echo.HandlerFunc {
 		if err != nil {
 			log.Println(err.Error())
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Please enter data correctly",
 			})
 		}
@@ -149,12 +149,12 @@ func (sh *speciesHandler) DeleteDataSpecies() echo.HandlerFunc {
 		_, errDel := sh.speciesUseCase.DeleteSpecies(id)
 		if errDel != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": err.Error(),
 			})
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "Success Operation",
 		})
 	}

@@ -44,7 +44,7 @@ func (us *userHandler) CallbackGoogle() echo.HandlerFunc {
 		data, err, token := auth.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "There is an error in internal server",
 			})
 		}
@@ -56,28 +56,28 @@ func (us *userHandler) CallbackGoogle() echo.HandlerFunc {
 
 		status := us.userUsecase.RegisterUser(newuser.ToModel(), cost, token)
 
-		if status == 400 {
+		if status == http.StatusBadRequest {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"code":    status,
 				"message": "Wrong input",
 			})
 		}
 
-		if status == 404 {
+		if status == http.StatusNotFound {
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
 				"code":    status,
 				"message": "Data not found",
 			})
 		}
 
-		if status == 409 {
+		if status == http.StatusConflict {
 			return c.JSON(http.StatusConflict, map[string]interface{}{
 				"code":    status,
 				"message": "Cant input existing data",
 			})
 		}
 
-		if status == 500 {
+		if status == http.StatusInternalServerError {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    status,
 				"message": "There is an error in internal server",
@@ -85,7 +85,7 @@ func (us *userHandler) CallbackGoogle() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "Register success",
 		})
 	}
@@ -101,7 +101,7 @@ func (us *userHandler) Login() echo.HandlerFunc {
 		if errLog != nil {
 			log.Println("invalid input")
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "There is an error in internal server",
 			})
 		}
@@ -111,7 +111,7 @@ func (us *userHandler) Login() echo.HandlerFunc {
 		if err != nil {
 			log.Println("Login failed", err)
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Wrong username or password",
 			})
 		}
@@ -124,7 +124,7 @@ func (us *userHandler) Login() echo.HandlerFunc {
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"data":    arrmap,
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "Login success",
 		})
 	}
@@ -138,19 +138,19 @@ func (us *userHandler) DeleteUser() echo.HandlerFunc {
 
 		if err != nil {
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
 
 		if !status {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "There is an error in internal server",
 			})
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "success delete user",
 		})
 	}
@@ -166,35 +166,35 @@ func (us *userHandler) Register() echo.HandlerFunc {
 		if bind != nil {
 			log.Println("cant bind")
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Wrong input",
 			})
 		}
 
 		status := us.userUsecase.RegisterUser(newuser.ToModel(), cost, nil)
 
-		if status == 400 {
+		if status == http.StatusBadRequest {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"code":    status,
 				"message": "Wrong input",
 			})
 		}
 
-		if status == 404 {
+		if status == http.StatusNotFound {
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
 				"code":    status,
 				"message": "Data not found",
 			})
 		}
 
-		if status == 409 {
+		if status == http.StatusConflict {
 			return c.JSON(http.StatusConflict, map[string]interface{}{
 				"code":    status,
 				"message": "Cant input existing data",
 			})
 		}
 
-		if status == 500 {
+		if status == http.StatusInternalServerError {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    status,
 				"message": "There is an error in internal server",
@@ -219,35 +219,35 @@ func (us *userHandler) Update() echo.HandlerFunc {
 		if bind != nil {
 			log.Println("cant bind")
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    500,
+				"code":    http.StatusInternalServerError,
 				"message": "There is an error in internal server",
 			})
 		}
 
 		status := us.userUsecase.UpdateUser(newuser.ToModelUpdate(), param.ID, cost)
 
-		if status == 400 {
+		if status == http.StatusBadRequest {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"code":    status,
 				"message": "Wrong input",
 			})
 		}
 
-		if status == 404 {
+		if status == http.StatusNotFound {
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
 				"code":    status,
 				"message": "Data not found",
 			})
 		}
 
-		if status == 409 {
+		if status == http.StatusConflict {
 			return c.JSON(http.StatusConflict, map[string]interface{}{
 				"code":    status,
 				"message": "Cant input existing data",
 			})
 		}
 
-		if status == 500 {
+		if status == http.StatusInternalServerError {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    status,
 				"message": "There is an error in internal server",
@@ -269,7 +269,7 @@ func (uh *userHandler) GetProfile() echo.HandlerFunc {
 
 		if err != nil {
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    404,
+				"code":    http.StatusNotFound,
 				"message": "Data not found",
 			})
 		}
@@ -283,7 +283,7 @@ func (uh *userHandler) GetProfile() echo.HandlerFunc {
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"data":    res,
-			"code":    200,
+			"code":    http.StatusOK,
 			"message": "get data success",
 		})
 	}
