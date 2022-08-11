@@ -11,7 +11,7 @@ type PetsInsertRequest struct {
 	Color       string `json:"color" form:"color"`
 	Description string `json:"description" form:"description"`
 	Petphoto    string `json:"petphoto"`
-	Speciesid   int    `json:"speciesid" form:"speciesid"`
+	Speciesid   int
 	Userid      int
 }
 

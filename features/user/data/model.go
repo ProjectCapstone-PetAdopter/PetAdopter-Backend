@@ -3,6 +3,7 @@ package data
 import (
 	"petadopter/domain"
 	adoptiondata "petadopter/features/adoption/data"
+	meetingData "petadopter/features/meeting/data"
 	"petadopter/features/pets/data"
 
 	"gorm.io/gorm"
@@ -21,6 +22,7 @@ type User struct {
 	Role         string
 	Pets         []data.Pets             `gorm:"foreignKey:Userid"`
 	Adoption     []adoptiondata.Adoption `gorm:"foreignKey:UserID"`
+	Meeting      []meetingData.Meeting   `gorm:"foreignKey:UserID"`
 }
 
 type UserInfo struct {
