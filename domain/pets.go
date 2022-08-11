@@ -14,6 +14,7 @@ type Pets struct {
 	Speciesid   int
 	Description string
 	Userid      int
+	Adoption    []Adoption
 }
 
 type PetUser struct {

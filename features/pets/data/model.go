@@ -2,6 +2,7 @@ package data
 
 import (
 	"petadopter/domain"
+	"petadopter/features/adoption/data"
 
 	"gorm.io/gorm"
 )
@@ -15,23 +16,14 @@ type Pets struct {
 	Description string `json:"description" form:"description"`
 	Petphoto    string `json:"petphoto" form:"petphoto"`
 	Userid      int
-	Speciesid   int `json:"speciesid" form:"speciesid"`
+	Speciesid   int
+	Adoption    []data.Adoption `gorm:"foreignKey:PetsID"`
 }
 
 type PetUser struct {
 	Fullname string
 	City     string
 }
-
-// type User struct {
-// 	gorm.Model
-// 	Username string `json:"username" form:"username" validate:"required"`
-// 	Email    string `gorm:"unique" json:"email" form:"email" validate:"required"`
-// 	Password string `json:"password" form:"password" validate:"required"`
-// 	FullName string `json:"fullname" form:"fullname" validate:"required"`
-// 	Role     string `json:"role" form:"role" gorm:"default:users"`
-// 	Photo    string `json:"image_url"`
-// }
 
 func (p *Pets) ToDomain() domain.Pets {
 	return domain.Pets{

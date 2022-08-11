@@ -9,20 +9,29 @@ import (
 type Adoption struct {
 	ID        int
 	PetsID    int
-	IDUser    int
-	Petphoto  string
+	UserID    int
 	Status    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
+type AdoptionPet struct {
+	ID           int
+	Petname      string
+	Petphoto     string
+	Fullname     string
+	PhotoProfile string
+	Address      string
+	Status       string
+}
+
 type AdoptionUseCase interface {
 	AddAdoption(IDUser int, newAdops Adoption) (Adoption, error)
-	GetAllAP() ([]Adoption, error)
+	GetAllAP(userID int) ([]AdoptionPet, error)
 	UpAdoption(IDAdoption int, updateData Adoption) (Adoption, error)
 	DelAdoption(IDAdoption int) (bool, error)
-	GetSpecificAdoption(AdoptionID int) ([]Adoption, error)
-	GetmyAdoption(userID int) ([]Adoption, error)
+	GetSpecificAdoption(AdoptionID int) ([]AdoptionPet, error)
+	GetmyAdoption(userID int) ([]AdoptionPet, error)
 }
 
 type AdoptionHandler interface {
@@ -36,9 +45,9 @@ type AdoptionHandler interface {
 
 type AdoptionData interface {
 	Insert(insertAdoption Adoption) Adoption
-	GetAll() []Adoption
+	GetAll(userID int) []AdoptionPet
 	Update(IDAdoption int, updatedAdoption Adoption) Adoption
 	Delete(IDAdoption int) bool
-	GetAdoptionID(AdoptionID int) []Adoption
-	GetAdoptionbyuser(userID int) []Adoption
+	GetAdoptionID(AdoptionID int) []AdoptionPet
+	GetAdoptionbyuser(userID int) []AdoptionPet
 }
