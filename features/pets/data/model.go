@@ -16,7 +16,7 @@ type Pets struct {
 	Description string `json:"description" form:"description"`
 	Petphoto    string `json:"petphoto" form:"petphoto"`
 	Userid      int
-	Speciesid   int
+	Speciesid   int             `json:"speciesid" form:"speciesid"`
 	Adoption    []data.Adoption `gorm:"foreignKey:PetsID"`
 }
 
