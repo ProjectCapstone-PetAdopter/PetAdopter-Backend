@@ -2,16 +2,18 @@ package data
 
 import (
 	"petadopter/domain"
+	meetingData "petadopter/features/meeting/data"
 
 	"gorm.io/gorm"
 )
 
 type Adoption struct {
 	gorm.Model
-	UserID   uint   `json:"user_id" form:"user_id"`
-	PetsID   uint   `json:"pets_id" form:"pets_id"`
-	Status   string `json:"status" form:"status"   gorm:"default:waiting"`
-	Petphoto string `json:"petphoto" form:"petphoto"`
+	UserID   uint                  `json:"user_id" form:"user_id"`
+	PetsID   uint                  `json:"pets_id" form:"pets_id"`
+	Status   string                `json:"status" form:"status"   gorm:"default:waiting"`
+	Petphoto string                `json:"petphoto" form:"petphoto"`
+	Meeting  []meetingData.Meeting `gorm:"foreignKey:AdoptionID"`
 }
 
 // type Pets struct {

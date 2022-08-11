@@ -3,7 +3,6 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	"log"
 	"petadopter/domain"
 	"petadopter/features/species/delivery"
 
@@ -57,7 +56,7 @@ func (su *speciesUseCase) UpdateSpecies(id int, UpdateSpecies domain.Species) (r
 func (su *speciesUseCase) DeleteSpecies(id int) (row int, err error) {
 	row, err = su.speciesData.Delete(id)
 	if err != nil {
-		log.Panicln("delete from usecase error", err.Error())
+		// log.Panicln("delete from usecase error", err.Error())
 		if err == gorm.ErrRecordNotFound {
 			return row, errors.New("data not found")
 		} else {
