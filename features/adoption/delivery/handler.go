@@ -113,7 +113,7 @@ func (ad *adoptionHandler) InsertAdoption() echo.HandlerFunc {
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    http.StatusOK,
-			"message": "Post pet success",
+			"message": "Post pets success",
 		})
 	}
 }

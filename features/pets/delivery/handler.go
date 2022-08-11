@@ -98,7 +98,7 @@ func (ph *petsHandler) UpdatePets() echo.HandlerFunc {
 		if res != nil {
 			log.Println(res, "Cannot parse data")
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
+				"code":    http.StatusBadRequest,
 				"message": "Please enter data correctly",
 			})
 		}
