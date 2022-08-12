@@ -15,75 +15,72 @@ type UserUseCase struct {
 }
 
 // Delete provides a mock function with given fields: userID
-func (_m *UserUseCase) Delete(userID int) (bool, error) {
+func (_m *UserUseCase) Delete(userID int) int {
 	ret := _m.Called(userID)
 
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(int) bool); ok {
+	var r0 int
+	if rf, ok := ret.Get(0).(func(int) int); ok {
 		r0 = rf(userID)
 	} else {
-		r0 = ret.Get(0).(bool)
+		r0 = ret.Get(0).(int)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(userID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // GetProfile provides a mock function with given fields: id
-func (_m *UserUseCase) GetProfile(id int) (domain.User, error) {
+func (_m *UserUseCase) GetProfile(id int) (map[string]interface{}, int) {
 	ret := _m.Called(id)
 
-	var r0 domain.User
-	if rf, ok := ret.Get(0).(func(int) domain.User); ok {
+	var r0 map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) map[string]interface{}); ok {
 		r0 = rf(id)
 	} else {
-		r0 = ret.Get(0).(domain.User)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]interface{})
+		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int) error); ok {
+	var r1 int
+	if rf, ok := ret.Get(1).(func(int) int); ok {
 		r1 = rf(id)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
 	return r0, r1
 }
 
 // Login provides a mock function with given fields: userdata
-func (_m *UserUseCase) Login(userdata domain.User) (domain.User, error) {
+func (_m *UserUseCase) Login(userdata domain.User) (map[string]interface{}, int) {
 	ret := _m.Called(userdata)
 
-	var r0 domain.User
-	if rf, ok := ret.Get(0).(func(domain.User) domain.User); ok {
+	var r0 map[string]interface{}
+	if rf, ok := ret.Get(0).(func(domain.User) map[string]interface{}); ok {
 		r0 = rf(userdata)
 	} else {
-		r0 = ret.Get(0).(domain.User)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]interface{})
+		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(domain.User) error); ok {
+	var r1 int
+	if rf, ok := ret.Get(1).(func(domain.User) int); ok {
 		r1 = rf(userdata)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
 	return r0, r1
 }
 
-// RegisterUser provides a mock function with given fields: newuser, cost, token
-func (_m *UserUseCase) RegisterUser(newuser domain.User, cost int, token *oauth2.Token) int {
-	ret := _m.Called(newuser, cost, token)
+// RegisterUser provides a mock function with given fields: newuser, cost, token, ui
+func (_m *UserUseCase) RegisterUser(newuser domain.User, cost int, token *oauth2.Token, ui domain.UserInfo) int {
+	ret := _m.Called(newuser, cost, token, ui)
 
 	var r0 int
-	if rf, ok := ret.Get(0).(func(domain.User, int, *oauth2.Token) int); ok {
-		r0 = rf(newuser, cost, token)
+	if rf, ok := ret.Get(0).(func(domain.User, int, *oauth2.Token, domain.UserInfo) int); ok {
+		r0 = rf(newuser, cost, token, ui)
 	} else {
 		r0 = ret.Get(0).(int)
 	}

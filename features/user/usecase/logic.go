@@ -1,16 +1,15 @@
 package usecase
 
 import (
-	"errors"
 	"log"
 
 	"petadopter/domain"
+	"petadopter/features/common"
 	"petadopter/features/user/data"
 
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
-	"gorm.io/gorm"
 )
 
 type userCase struct {
@@ -25,38 +24,55 @@ func New(ud domain.UserData, val *validator.Validate) domain.UserUseCase {
 	}
 }
 
-func (ud *userCase) Login(userdata domain.User) (domain.User, error) {
-
+func (ud *userCase) Login(userdata domain.User) (map[string]interface{}, int) {
+	var arrmap = map[string]interface{}{}
 	hashpw := ud.userData.GetPasswordData(userdata.Username)
 
 	err := bcrypt.CompareHashAndPassword([]byte(hashpw), []byte(userdata.Password))
-
 	if err != nil {
 		log.Println(bcrypt.ErrMismatchedHashAndPassword, err)
-		return domain.User{}, err
+		return nil, 400
 	}
 
 	login := ud.userData.Login(userdata)
-
 	if login.ID == 0 {
-		return domain.User{}, errors.New("no data")
+		log.Println("Data login not found")
+		return nil, 404
 	}
 
-	return login, nil
+	token := common.GenerateToken(login)
+
+	arrmap["token"] = token
+	arrmap["username"] = login.Username
+	arrmap["role"] = login.Role
+
+	return arrmap, 200
 }
 
-func (ud *userCase) Delete(userId int) (bool, error) {
-	res := ud.userData.Delete(userId)
+func (ud *userCase) Delete(userId int) int {
+	status := ud.userData.Delete(userId)
 
-	if !res {
-		return false, errors.New("failed to delete user")
+	if status == 404 {
+		log.Println("Cant delete data from query")
+		return 404
 	}
-	return true, nil
+
+	if status == 500 {
+		log.Println("Cant delete from query")
+		return 500
+	}
+
+	return 200
 }
 
 // RegisterUser implements domain.UserUseCase
-func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.Token) int {
+func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.Token, dataui domain.UserInfo) int {
 	var user = data.FromModel(newuser)
+	if token != nil {
+		user.Email = dataui.Email
+		user.Fullname = dataui.Fullname
+		user.PhotoProfile = dataui.Photoprofile
+	}
 
 	if token == nil {
 		validError := ud.valid.Struct(user)
@@ -121,17 +137,27 @@ func (ud *userCase) UpdateUser(newuser domain.User, userid int, cost int) int {
 	return 200
 }
 
-func (ud *userCase) GetProfile(id int) (domain.User, error) {
-	data, err := ud.userData.GetProfile(id)
+func (ud *userCase) GetProfile(id int) (map[string]interface{}, int) {
+	var res = map[string]interface{}{}
+	data, status := ud.userData.GetProfile(id)
 
-	if err != nil {
-		log.Println("Use case", err.Error())
-		if err == gorm.ErrRecordNotFound {
-			return domain.User{}, errors.New("data not found")
-		} else {
-			return domain.User{}, errors.New("server error")
-		}
+	if status == 404 {
+		log.Println("No data from query")
+		return nil, 404
 	}
 
-	return data, nil
+	if status == 500 {
+		log.Println("Cant get from query")
+		return nil, 500
+	}
+
+	res["username"] = data.Username
+	res["fullname"] = data.Fullname
+	res["phonenumber"] = data.Phonenumber
+	res["email"] = data.Email
+	res["address"] = data.Address
+	res["photoprofile"] = data.PhotoProfile
+	res["city"] = data.City
+
+	return res, 200
 }
