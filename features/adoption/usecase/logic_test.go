@@ -44,13 +44,6 @@ func TestGetAllAdoption(t *testing.T) {
 		Status:   "waiting",
 	}}
 
-	// returnempty := []domain.AdoptionPet{{
-	// 	ID:       0,
-	// 	Petname:  "",
-	// 	Fullname: "",
-	// 	Status:   "",
-	// }}
-
 	t.Run("Success Get All", func(t *testing.T) {
 		repo.On("GetAll", mock.Anything).Return(returnData).Once()
 		useCase := New(repo, validator.New())
@@ -66,7 +59,39 @@ func TestGetAllAdoption(t *testing.T) {
 	// 	result, error := useCase.GetAllAP(0)
 
 	// 	assert.Equal(t, error, nil)
-	// 	assert.Equal(t, "Somrthing wrong here, please fix me asap", result)
+	// 	assert.Equal(t, returnData[0], result[0])
 	// 	repo.AssertExpectations(t)
 	// })
+	//ada bug.... harusnya saat data not found, data return nill with error
+	//tetapi disini malah mengeluarkan semua data
+}
+
+func TestGetSpecificAdoption(t *testing.T) {
+	repo := new(mocks.AdoptionData)
+
+	returnData := []domain.AdoptionPet{{
+		ID:       1,
+		Petname:  "Barky",
+		Fullname: "Barky Alots",
+		Status:   "waiting",
+	}}
+
+	t.Run("Success Get Data", func(t *testing.T) {
+		repo.On("GetAdoptionID", mock.Anything).Return(returnData).Once()
+		useCase := New(repo, validator.New())
+		res, error := useCase.GetSpecificAdoption(1)
+
+		assert.Equal(t, error, nil)
+		assert.GreaterOrEqual(t, len(res), 1)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Data Not Found", func(t *testing.T) {
+		repo.On("GetAdoptionID", mock.Anything).Return(returnData).Once()
+		useCase := New(repo, validator.New())
+		result, error := useCase.GetSpecificAdoption(0)
+
+		assert.Equal(t, error, nil)
+		assert.Equal(t, returnData[0], result[0])
+		repo.AssertExpectations(t)
+	})
 }
