@@ -46,7 +46,7 @@ func (pd *petsData) Update(petsID int, updatedProduct domain.Pets) domain.Pets {
 	cnv := ToLocal(updatedProduct)
 
 	log.Println(cnv)
-	err := pd.db.Model(cnv).Where("ID = ? AND userid = ?", petsID, cnv.Userid).Updates(updatedProduct)
+	err := pd.db.Model(cnv).Where("ID = ? AND userid = ?", petsID, cnv.UserID).Updates(updatedProduct)
 	if err.Error != nil {
 		log.Println("Cannot update data", err.Error.Error())
 		return domain.Pets{}

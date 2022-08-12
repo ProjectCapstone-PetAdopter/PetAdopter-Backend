@@ -20,5 +20,5 @@ func RouteMeeting(e *echo.Echo, meetings domain.MeetingHandler) {
 	e.POST("/meetings", meetings.InsertMeeting(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 	e.PUT("/meetings/:id", meetings.UpdateDataMeeting(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 	e.DELETE("/meetings/:id", meetings.DeleteDataMeeting(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
-	// e.GET("/meetings", meetings.GetDataMeeting())
+	e.GET("/meetings", meetings.GetAdopt(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 }

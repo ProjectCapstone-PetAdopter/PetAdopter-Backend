@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"petadopter/domain"
+	"petadopter/features/common"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -29,9 +30,16 @@ func (mh *meetingHandler) InsertMeeting() echo.HandlerFunc {
 				"message": "Wrong input data",
 			})
 		}
-		// data := domain.Meeting{AdoptionID: int(insertMeeting.AdoptionID), UserID: userID.ID}
+		token := common.ExtractData(c)
+		insertMeeting.Userid = token.ID
+		if token.ID == 0 {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": "internal server error",
+			})
+		}
 
-		err = mh.meetingUsecase.AddMeeting(insertMeeting.ToModel())
+		_, err = mh.meetingUsecase.AddMeeting(insertMeeting.ToModel())
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    500,
@@ -106,6 +114,31 @@ func (mh *meetingHandler) DeleteDataMeeting() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    200,
 			"message": "Success Operation",
+		})
+	}
+}
+
+func (mh *meetingHandler) GetAdopt() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var meetingid int
+		data, err := mh.meetingUsecase.GetMyMeeting(meetingid)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": err.Error(),
+			})
+		}
+		if data == nil {
+			log.Println("data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "data not found",
+			})
+		}
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"code":    200,
+			"message": "success get meeting",
+			"data":    data,
 		})
 	}
 }

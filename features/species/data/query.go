@@ -21,7 +21,7 @@ func New(DB *gorm.DB) domain.SpeciesData {
 
 func (sd *speciesData) InsertSpecies(newSpecies domain.Species) (row int, err error) {
 	cnv := FromModel(newSpecies)
-	fmt.Println(cnv)
+	// fmt.Println(cnv)
 	result := sd.db.Table("species").Create(&cnv)
 	if result.Error != nil {
 		log.Println("Cannot create object", errors.New("error from db"))

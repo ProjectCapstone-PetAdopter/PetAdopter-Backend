@@ -13,7 +13,7 @@ type Adoption struct {
 	PetsID   int                   `json:"petid" form:"petid"`
 	Status   string                `gorm:"default:waiting"`
 	Petphoto string                `json:"petphoto" form:"petphoto"`
-	Meeting  []meetingData.Meeting `gorm:"foreignKey:AdoptionID"`
+	Meeting  []meetingData.Meeting `gorm:"foreignKey:Adoption_id"`
 }
 
 type AdoptionPet struct {

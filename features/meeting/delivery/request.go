@@ -6,7 +6,7 @@ type InsertMeeting struct {
 	Time       string `json:"time" form:"time"`
 	Date       string `json:"date" form:"date"`
 	Userid     int
-	AdoptionID uint `json:"adoptionid" form:"adoptionid"`
+	AdoptionID uint
 }
 
 func (i InsertMeeting) ToModel() domain.Meeting {
