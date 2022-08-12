@@ -20,30 +20,38 @@ type User struct {
 	Adoption     []Adoption
 }
 
+type UserInfo struct {
+	Email        string
+	Fullname     string
+	Photoprofile string
+}
+
 type UserHandler interface {
 	Login() echo.HandlerFunc
 	DeleteUser() echo.HandlerFunc
 	Register() echo.HandlerFunc
 	Update() echo.HandlerFunc
 	GetProfile() echo.HandlerFunc
-	CallbackGoogle() echo.HandlerFunc
+	CallbackGoogleSignUp() echo.HandlerFunc
+	CallbackGoogleLogin() echo.HandlerFunc
 	SignUpGoogle() echo.HandlerFunc
+	LoginGoogle() echo.HandlerFunc
 }
 
 type UserUseCase interface {
-	Login(userdata User) (User, error)
-	Delete(userID int) (bool, error)
-	RegisterUser(newuser User, cost int, token *oauth2.Token) int
+	Login(userdata User, token *oauth2.Token) (map[string]interface{}, int)
+	Delete(userID int) int
+	RegisterUser(newuser User, cost int, token *oauth2.Token, ui UserInfo) int
 	UpdateUser(newuser User, userid, cost int) int
-	GetProfile(id int) (User, error)
+	GetProfile(id int) (map[string]interface{}, int)
 }
 
 type UserData interface {
-	Login(userdata User) User
-	Delete(userID int) bool
+	Login(userdata User, isToken bool) User
+	Delete(userID int) int
 	RegisterData(newuser User) User
 	UpdateUserData(newuser User) User
 	CheckDuplicate(newuser User) bool
 	GetPasswordData(name string) string
-	GetProfile(userID int) (User, error)
+	GetProfile(userID int) (User, int)
 }

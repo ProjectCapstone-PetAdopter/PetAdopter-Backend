@@ -28,14 +28,14 @@ func (_m *UserData) CheckDuplicate(newuser domain.User) bool {
 }
 
 // Delete provides a mock function with given fields: userID
-func (_m *UserData) Delete(userID int) bool {
+func (_m *UserData) Delete(userID int) int {
 	ret := _m.Called(userID)
 
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(int) bool); ok {
+	var r0 int
+	if rf, ok := ret.Get(0).(func(int) int); ok {
 		r0 = rf(userID)
 	} else {
-		r0 = ret.Get(0).(bool)
+		r0 = ret.Get(0).(int)
 	}
 
 	return r0
@@ -56,7 +56,7 @@ func (_m *UserData) GetPasswordData(name string) string {
 }
 
 // GetProfile provides a mock function with given fields: userID
-func (_m *UserData) GetProfile(userID int) (domain.User, error) {
+func (_m *UserData) GetProfile(userID int) (domain.User, int) {
 	ret := _m.Called(userID)
 
 	var r0 domain.User
@@ -66,23 +66,23 @@ func (_m *UserData) GetProfile(userID int) (domain.User, error) {
 		r0 = ret.Get(0).(domain.User)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int) error); ok {
+	var r1 int
+	if rf, ok := ret.Get(1).(func(int) int); ok {
 		r1 = rf(userID)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
 	return r0, r1
 }
 
-// Login provides a mock function with given fields: userdata
-func (_m *UserData) Login(userdata domain.User) domain.User {
-	ret := _m.Called(userdata)
+// Login provides a mock function with given fields: userdata, isToken
+func (_m *UserData) Login(userdata domain.User, isToken bool) domain.User {
+	ret := _m.Called(userdata, isToken)
 
 	var r0 domain.User
-	if rf, ok := ret.Get(0).(func(domain.User) domain.User); ok {
-		r0 = rf(userdata)
+	if rf, ok := ret.Get(0).(func(domain.User, bool) domain.User); ok {
+		r0 = rf(userdata, isToken)
 	} else {
 		r0 = ret.Get(0).(domain.User)
 	}

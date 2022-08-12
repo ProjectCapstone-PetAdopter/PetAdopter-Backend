@@ -19,10 +19,14 @@ func New(db *gorm.DB) domain.UserData {
 }
 
 // GetUserCartData implements domain.UserData
-func (ud *userData) Login(userdata domain.User) domain.User {
-	var user = FromModel(userdata)
-	err := ud.db.First(&user, "username  = ?", userdata.Username).Error
-
+func (ud *userData) Login(dataLogin domain.User, isToken bool) domain.User {
+	var user = FromModel(dataLogin)
+	var err error
+	if isToken {
+		err = ud.db.First(&user, "email  = ?", dataLogin.Email).Error
+	} else {
+		err = ud.db.First(&user, "username  = ?", dataLogin.Username).Error
+	}
 	if err != nil {
 		log.Println("Cant login data", err.Error())
 		return domain.User{}
@@ -31,19 +35,19 @@ func (ud *userData) Login(userdata domain.User) domain.User {
 	return user.ToModel()
 }
 
-func (ud *userData) Delete(userID int) bool {
+func (ud *userData) Delete(userID int) int {
 	err := ud.db.Where("ID = ?", userID).Delete(&User{})
 
 	if err.Error != nil {
 		log.Println("cannot delete data", err.Error.Error())
-		return false
+		return 500
 	}
 	if err.RowsAffected < 1 {
-		log.Println("No content deleted", err.Error.Error())
-		return false
+		log.Println("No data deleted", err.Error.Error())
+		return 404
 	}
 
-	return true
+	return 200
 }
 
 // RegisterData implements domain.UserData
@@ -84,9 +88,9 @@ func (ud *userData) UpdateUserData(newuser domain.User) domain.User {
 
 // CheckDuplicate implements domain.UserData
 func (ud *userData) CheckDuplicate(newuser domain.User) bool {
-	var user User
-	err := ud.db.Find(&user, "username = ? OR email = ?", newuser.Username, newuser.Email)
-
+	var user = FromModel(newuser)
+	err := ud.db.Find(&user, "username = ? OR email = ?", user.Username, user.Email)
+	log.Println(user)
 	if err.RowsAffected == 1 {
 		log.Println("Duplicated data", err.Error)
 		return true
@@ -108,13 +112,19 @@ func (ud *userData) GetPasswordData(name string) string {
 	return user.Password
 }
 
-func (ud *userData) GetProfile(userID int) (domain.User, error) {
+func (ud *userData) GetProfile(userID int) (domain.User, int) {
 	var tmp User
-	err := ud.db.Where("ID = ?", userID).First(&tmp).Error
-	if err != nil {
-		log.Println("There is a problem with data", err.Error())
-		return domain.User{}, err
+
+	err := ud.db.Where("ID = ?", userID).First(&tmp)
+	if err.Error != nil {
+		log.Println("Cant get data", err.Error)
+		return domain.User{}, 500
 	}
 
-	return tmp.ToModel(), nil
+	if err.RowsAffected == 0 {
+		log.Println("Rows affcted = 0", err.Error)
+		return domain.User{}, 404
+	}
+
+	return tmp.ToModel(), 200
 }
