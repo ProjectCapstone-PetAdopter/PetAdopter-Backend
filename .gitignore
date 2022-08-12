@@ -1,3 +1,5 @@
 setup.env
 local.env
 *.env
+*.env
+*.out

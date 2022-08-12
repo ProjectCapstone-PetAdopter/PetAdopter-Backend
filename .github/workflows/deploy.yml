@@ -17,10 +17,14 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            ls -a
+            pwd
             cd /home/userbe10/PetAdopter-Backend
+            ls -a
             git pull origin main
+            ls -a
             docker stop petadopterContainer
             docker rm petadopterContainer
             docker rmi petadopter-api
             docker build -t petadopter-api:latest .
-            docker run -d -p 80:8000 -e Username=${{ secrets.DB_USERNAME }} -e Password=${{ secrets.DB_PASSWORD }} -e Port=${{ secrets.DB_PORT }} -e Address=${{ secrets.DB_HOST }} -e Name=${{ secrets.DB_NAME }} -e SECRET=${{ secrets.SECRET }} -e SERVERPORT=${{ secrets.SERVERPORT }} --name petadopterContainer petadopter-api:latest
+            docker run -d -p 80:8000 -e Username=${{ secrets.DB_USERNAME }} -e Password=${{ secrets.DB_PASSWORD }} -e Port=${{ secrets.DB_PORT }} -e Address=${{ secrets.DB_HOST }} -e DBName=${{ secrets.DBName }} -e SECRET=${{ secrets.SECRET }} -e SERVERPORT=${{ secrets.SERVERPORT }} --name petadopterContainer petadopter-api:latest

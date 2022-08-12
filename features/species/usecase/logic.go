@@ -49,7 +49,7 @@ func (su *speciesUseCase) UpdateSpecies(id int, UpdateSpecies domain.Species) (r
 		qry["species"] = &tmp.Species
 	}
 
-	data, err := su.speciesData.Update(id, UpdateSpecies)
+	data, _ := su.speciesData.Update(id, UpdateSpecies)
 	return data, nil
 }
 

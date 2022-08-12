@@ -46,6 +46,14 @@ func (u *User) ToModel() domain.User {
 	}
 }
 
+func (u *UserInfo) ToModelUserInfo() domain.UserInfo {
+	return domain.UserInfo{
+		Email:        u.Email,
+		Fullname:     u.Fullname,
+		Photoprofile: u.Photoprofile,
+	}
+}
+
 func ParseToArr(arr []User) []domain.User {
 	var res []domain.User
 
