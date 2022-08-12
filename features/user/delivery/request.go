@@ -61,3 +61,17 @@ func (i *UpdateFormat) ToModelUpdate() domain.User {
 		Phonenumber:  i.Phonenumber,
 	}
 }
+
+type UserInfoFormat struct {
+	Email        string `json:"email"`
+	Fullname     string `json:"name"`
+	Photoprofile string `json:"picture"`
+}
+
+func (i *UserInfoFormat) ToModelUserInfoFormat() domain.User {
+	return domain.User{
+		Email:        i.Email,
+		Fullname:     i.Fullname,
+		PhotoProfile: i.Photoprofile,
+	}
+}

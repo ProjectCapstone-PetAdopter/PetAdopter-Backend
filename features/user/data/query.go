@@ -19,10 +19,14 @@ func New(db *gorm.DB) domain.UserData {
 }
 
 // GetUserCartData implements domain.UserData
-func (ud *userData) Login(userdata domain.User) domain.User {
-	var user = FromModel(userdata)
-	err := ud.db.First(&user, "username  = ?", userdata.Username).Error
-
+func (ud *userData) Login(dataLogin domain.User, isToken bool) domain.User {
+	var user = FromModel(dataLogin)
+	var err error
+	if isToken {
+		err = ud.db.First(&user, "email  = ?", dataLogin.Email).Error
+	} else {
+		err = ud.db.First(&user, "username  = ?", dataLogin.Username).Error
+	}
 	if err != nil {
 		log.Println("Cant login data", err.Error())
 		return domain.User{}
@@ -84,9 +88,9 @@ func (ud *userData) UpdateUserData(newuser domain.User) domain.User {
 
 // CheckDuplicate implements domain.UserData
 func (ud *userData) CheckDuplicate(newuser domain.User) bool {
-	var user User
-	err := ud.db.Find(&user, "username = ? OR email = ?", newuser.Username, newuser.Email)
-
+	var user = FromModel(newuser)
+	err := ud.db.Find(&user, "username = ? OR email = ?", user.Username, user.Email)
+	log.Println(user)
 	if err.RowsAffected == 1 {
 		log.Println("Duplicated data", err.Error)
 		return true

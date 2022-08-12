@@ -51,13 +51,13 @@ func (_m *UserUseCase) GetProfile(id int) (map[string]interface{}, int) {
 	return r0, r1
 }
 
-// Login provides a mock function with given fields: userdata
-func (_m *UserUseCase) Login(userdata domain.User) (map[string]interface{}, int) {
-	ret := _m.Called(userdata)
+// Login provides a mock function with given fields: userdata, token
+func (_m *UserUseCase) Login(userdata domain.User, token *oauth2.Token) (map[string]interface{}, int) {
+	ret := _m.Called(userdata, token)
 
 	var r0 map[string]interface{}
-	if rf, ok := ret.Get(0).(func(domain.User) map[string]interface{}); ok {
-		r0 = rf(userdata)
+	if rf, ok := ret.Get(0).(func(domain.User, *oauth2.Token) map[string]interface{}); ok {
+		r0 = rf(userdata, token)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(map[string]interface{})
@@ -65,8 +65,8 @@ func (_m *UserUseCase) Login(userdata domain.User) (map[string]interface{}, int)
 	}
 
 	var r1 int
-	if rf, ok := ret.Get(1).(func(domain.User) int); ok {
-		r1 = rf(userdata)
+	if rf, ok := ret.Get(1).(func(domain.User, *oauth2.Token) int); ok {
+		r1 = rf(userdata, token)
 	} else {
 		r1 = ret.Get(1).(int)
 	}

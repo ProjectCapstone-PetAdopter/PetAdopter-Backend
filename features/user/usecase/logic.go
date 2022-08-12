@@ -24,17 +24,17 @@ func New(ud domain.UserData, val *validator.Validate) domain.UserUseCase {
 	}
 }
 
-func (ud *userCase) Login(userdata domain.User) (map[string]interface{}, int) {
-	var arrmap = map[string]interface{}{}
-	hashpw := ud.userData.GetPasswordData(userdata.Username)
-
-	err := bcrypt.CompareHashAndPassword([]byte(hashpw), []byte(userdata.Password))
-	if err != nil {
-		log.Println(bcrypt.ErrMismatchedHashAndPassword, err)
-		return nil, 400
+func (ud *userCase) Login(userdata domain.User, authtoken *oauth2.Token) (map[string]interface{}, int) {
+	var resMap = map[string]interface{}{}
+	if authtoken == nil {
+		hashPw := ud.userData.GetPasswordData(userdata.Username)
+		err := bcrypt.CompareHashAndPassword([]byte(hashPw), []byte(userdata.Password))
+		if err != nil {
+			log.Println(bcrypt.ErrMismatchedHashAndPassword, err)
+			return nil, 400
+		}
 	}
-
-	login := ud.userData.Login(userdata)
+	login := ud.userData.Login(userdata, true)
 	if login.ID == 0 {
 		log.Println("Data login not found")
 		return nil, 404
@@ -42,11 +42,11 @@ func (ud *userCase) Login(userdata domain.User) (map[string]interface{}, int) {
 
 	token := common.GenerateToken(login)
 
-	arrmap["token"] = token
-	arrmap["username"] = login.Username
-	arrmap["role"] = login.Role
+	resMap["token"] = token
+	resMap["username"] = login.Username
+	resMap["role"] = login.Role
 
-	return arrmap, 200
+	return resMap, 200
 }
 
 func (ud *userCase) Delete(userId int) int {
@@ -68,10 +68,12 @@ func (ud *userCase) Delete(userId int) int {
 // RegisterUser implements domain.UserUseCase
 func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.Token, dataui domain.UserInfo) int {
 	var user = data.FromModel(newuser)
+
 	if token != nil {
 		user.Email = dataui.Email
 		user.Fullname = dataui.Fullname
 		user.PhotoProfile = dataui.Photoprofile
+		user.Username = dataui.Fullname
 	}
 
 	if token == nil {
@@ -81,7 +83,7 @@ func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.To
 			return 400
 		}
 	}
-
+	log.Println(user.ToModel())
 	duplicate := ud.userData.CheckDuplicate(user.ToModel())
 	if duplicate {
 		log.Println("Duplicate Data")

@@ -76,13 +76,13 @@ func (_m *UserData) GetProfile(userID int) (domain.User, int) {
 	return r0, r1
 }
 
-// Login provides a mock function with given fields: userdata
-func (_m *UserData) Login(userdata domain.User) domain.User {
-	ret := _m.Called(userdata)
+// Login provides a mock function with given fields: userdata, isToken
+func (_m *UserData) Login(userdata domain.User, isToken bool) domain.User {
+	ret := _m.Called(userdata, isToken)
 
 	var r0 domain.User
-	if rf, ok := ret.Get(0).(func(domain.User) domain.User); ok {
-		r0 = rf(userdata)
+	if rf, ok := ret.Get(0).(func(domain.User, bool) domain.User); ok {
+		r0 = rf(userdata, isToken)
 	} else {
 		r0 = ret.Get(0).(domain.User)
 	}

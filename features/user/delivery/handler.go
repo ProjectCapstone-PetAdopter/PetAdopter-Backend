@@ -30,6 +30,7 @@ func New(us domain.UserUseCase, o *oauth2.Config) domain.UserHandler {
 
 func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		us.oauth.RedirectURL = "http://localhost:8000/callback/login"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -38,6 +39,7 @@ func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 
 func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		us.oauth.RedirectURL = "http://localhost:8000/callback/signup"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -45,11 +47,52 @@ func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
 }
 
 // CallbackGoogleLogin implements domain.UserHandler
-func (*userHandler) CallbackGoogleLogin() echo.HandlerFunc {
-	panic("unimplemented")
+func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var dataLogin UserInfoFormat
+
+		dataInfo, err, token := auth.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "There is an error in internal server",
+			})
+		}
+
+		dataLogin = UserInfoFormat(dataInfo)
+
+		res, status := us.userUsecase.Login(dataLogin.ToModelUserInfoFormat(), token)
+
+		if status == 400 {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    http.StatusBadRequest,
+				"message": "Wrong input",
+			})
+		}
+
+		if status == 404 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    http.StatusNotFound,
+				"message": "Data not found",
+			})
+		}
+
+		if status == 500 {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "There is an error in internal server",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data":    res,
+			"code":    http.StatusOK,
+			"message": "Register success",
+		})
+	}
 }
 
-// LoginGoogle implements domain.UserHandler
+// CallbackGoogleSignUp implements domain.UserHandler
 func (us *userHandler) CallbackGoogleSignUp() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var newuser UserFormat
@@ -61,7 +104,6 @@ func (us *userHandler) CallbackGoogleSignUp() echo.HandlerFunc {
 				"message": "There is an error in internal server",
 			})
 		}
-
 		status := us.userUsecase.RegisterUser(newuser.ToModel(), config.COST, token, data)
 
 		if status == http.StatusBadRequest {
@@ -112,7 +154,7 @@ func (us *userHandler) Login() echo.HandlerFunc {
 			})
 		}
 
-		data, status := us.userUsecase.Login(userLogin.ToModelLogin())
+		data, status := us.userUsecase.Login(userLogin.ToModelLogin(), nil)
 		if status == 400 {
 			log.Println("Login failed")
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -126,6 +168,13 @@ func (us *userHandler) Login() echo.HandlerFunc {
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
 				"code":    http.StatusNotFound,
 				"message": "Wrong username or password",
+			})
+		}
+
+		if status == 500 {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "There is an error in internal server",
 			})
 		}
 

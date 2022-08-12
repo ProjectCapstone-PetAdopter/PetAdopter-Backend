@@ -39,7 +39,7 @@ type UserHandler interface {
 }
 
 type UserUseCase interface {
-	Login(userdata User) (map[string]interface{}, int)
+	Login(userdata User, token *oauth2.Token) (map[string]interface{}, int)
 	Delete(userID int) int
 	RegisterUser(newuser User, cost int, token *oauth2.Token, ui UserInfo) int
 	UpdateUser(newuser User, userid, cost int) int
@@ -47,7 +47,7 @@ type UserUseCase interface {
 }
 
 type UserData interface {
-	Login(userdata User) User
+	Login(userdata User, isToken bool) User
 	Delete(userID int) int
 	RegisterData(newuser User) User
 	UpdateUserData(newuser User) User
