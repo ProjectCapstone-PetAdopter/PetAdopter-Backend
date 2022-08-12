@@ -5,6 +5,7 @@ import (
 
 	"petadopter/config"
 	"petadopter/factory"
+	middlewares "petadopter/features/middlewares"
 	"petadopter/utils/database/mysql"
 	auth "petadopter/utils/google"
 
@@ -22,5 +23,6 @@ func main() {
 
 	fmt.Println("==== STARTING PROGRAM ====")
 	address := fmt.Sprintf(":%d", config.SERVERPORT)
+	middlewares.LogMiddlewares(e)
 	e.Logger.Fatal(e.Start(address))
 }

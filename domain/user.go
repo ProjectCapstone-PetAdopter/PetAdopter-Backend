@@ -18,6 +18,7 @@ type User struct {
 	Role         string
 	Pets         []Pets
 	Adoption     []Adoption
+	Meeting      []Meeting
 }
 
 type UserInfo struct {

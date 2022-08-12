@@ -21,7 +21,7 @@ func (ad *adoptionData) Insert(newAdopt domain.Adoption) domain.Adoption {
 	cnv := ToLocal(newAdopt)
 	var ownerid int
 
-	getownerid := ad.db.Model(&Adoption{}).Select("pets.userid").Joins("join pets on adoptions.pets_id = pets.id").
+	getownerid := ad.db.Model(&Adoption{}).Select("pets.user_id").Joins("join pets on adoptions.pets_id = pets.id").
 		Where("adoptions.pets_id = ?", newAdopt.PetsID).Scan(&ownerid)
 
 	if getownerid.Error != nil {

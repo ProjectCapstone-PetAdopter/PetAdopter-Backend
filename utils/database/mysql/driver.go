@@ -5,6 +5,7 @@ import (
 	"log"
 	"petadopter/config"
 	adoptdata "petadopter/features/adoption/data"
+	meetingdata "petadopter/features/meeting/data"
 	petsdata "petadopter/features/pets/data"
 	speciesdata "petadopter/features/species/data"
 	userdata "petadopter/features/user/data"
@@ -27,5 +28,5 @@ func InitDB(cfg *config.Appconfig) *gorm.DB {
 }
 
 func MigrateDB(db *gorm.DB) {
-	db.AutoMigrate(userdata.User{}, speciesdata.Species{}, petsdata.Pets{}, adoptdata.Adoption{})
+	db.AutoMigrate(userdata.User{}, speciesdata.Species{}, petsdata.Pets{}, adoptdata.Adoption{}, meetingdata.Meeting{})
 }

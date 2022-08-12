@@ -2,15 +2,18 @@ package data
 
 import (
 	"petadopter/domain"
+	meetingData "petadopter/features/meeting/data"
 
 	"gorm.io/gorm"
 )
 
 type Adoption struct {
 	gorm.Model
-	UserID int
-	PetsID int    `json:"petid" form:"petid"`
-	Status string `gorm:"default:waiting"`
+	UserID   int
+	PetsID   int                   `json:"petid" form:"petid"`
+	Status   string                `gorm:"default:waiting"`
+	Petphoto string                `json:"petphoto" form:"petphoto"`
+	Meeting  []meetingData.Meeting `gorm:"foreignKey:Adoption_id"`
 }
 
 type AdoptionPet struct {
@@ -26,7 +29,7 @@ type AdoptionPet struct {
 func (a *Adoption) ToDomain() domain.Adoption {
 	return domain.Adoption{
 		ID:        int(a.ID),
-		PetsID:    a.PetsID,
+		PetsID:    int(a.PetsID),
 		UserID:    a.UserID,
 		Status:    a.Status,
 		CreatedAt: a.CreatedAt,

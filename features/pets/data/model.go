@@ -15,7 +15,7 @@ type Pets struct {
 	Color       string `json:"color" form:"color"`
 	Description string `json:"description" form:"description"`
 	Petphoto    string `json:"petphoto" form:"petphoto"`
-	Userid      int
+	UserID      int
 	Speciesid   int
 	Adoption    []data.Adoption `gorm:"foreignKey:PetsID"`
 }
@@ -34,7 +34,8 @@ func (p *Pets) ToDomain() domain.Pets {
 		Color:       p.Color,
 		Petphoto:    p.Petphoto,
 		Description: p.Description,
-		Userid:      p.Userid,
+		Userid:      p.UserID,
+		Speciesid:   p.Speciesid,
 	}
 }
 
@@ -62,6 +63,7 @@ func ToLocal(data domain.Pets) Pets {
 	res.Color = data.Color
 	res.Petphoto = data.Petphoto
 	res.Description = data.Description
-	res.Userid = data.Userid
+	res.UserID = data.Userid
+	res.Speciesid = data.Speciesid
 	return res
 }
