@@ -26,6 +26,7 @@ func New(ud domain.UserData, val *validator.Validate) domain.UserUseCase {
 
 func (ud *userCase) Login(userdata domain.User, authtoken *oauth2.Token) (map[string]interface{}, int) {
 	var resMap = map[string]interface{}{}
+	var isToken bool
 	if authtoken == nil {
 		hashPw := ud.userData.GetPasswordData(userdata.Username)
 		err := bcrypt.CompareHashAndPassword([]byte(hashPw), []byte(userdata.Password))
@@ -33,13 +34,16 @@ func (ud *userCase) Login(userdata domain.User, authtoken *oauth2.Token) (map[st
 			log.Println(bcrypt.ErrMismatchedHashAndPassword, err)
 			return nil, 400
 		}
+		isToken = false
 	}
-	login := ud.userData.Login(userdata, true)
+
+	login := ud.userData.Login(userdata, isToken)
 	if login.ID == 0 {
 		log.Println("Data login not found")
 		return nil, 404
 	}
 
+	isToken = true
 	token := common.GenerateToken(login)
 
 	resMap["token"] = token
