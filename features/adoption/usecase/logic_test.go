@@ -122,3 +122,11 @@ func TestGetmyAdoption(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 }
+
+func TestAddAdoption(t *testing.T) {
+	//add adoption
+}
+
+func TestUpAdoption(t *testing.T) {
+	//update adoption
+}
