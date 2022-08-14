@@ -73,7 +73,7 @@ func (ad *adoptionData) GetAll(userid int) []domain.AdoptionPet {
 	var data []AdoptionPet
 
 	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address, adoptions.status").
-		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").Where("pets.userid = ?", userid).Scan(&data)
+		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.user_id = users.id").Where("pets.userid = ?", userid).Scan(&data)
 
 	if err.Error != nil {
 		log.Println("error on select data", err.Error.Error())
@@ -87,7 +87,7 @@ func (ad *adoptionData) GetAdoptionID(adoptID int) []domain.AdoptionPet {
 	var data []AdoptionPet
 
 	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address, adoptions.status").
-		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").Where("adoptions.id = ?", adoptID).Scan(&data)
+		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.user_id = users.id").Where("adoptions.id = ?", adoptID).Scan(&data)
 
 	if err.Error != nil {
 		log.Println("problem data", err.Error.Error())
@@ -101,7 +101,7 @@ func (ad *adoptionData) GetAdoptionbyuser(userID int) []domain.AdoptionPet {
 	var data []AdoptionPet
 
 	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address, adoptions.status").
-		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").Where("adoptions.user_id = ?", userID).Scan(&data)
+		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.user_id = users.id").Where("adoptions.user_id = ?", userID).Scan(&data)
 
 	if err.Error != nil {
 		log.Println("problem data", err.Error.Error())

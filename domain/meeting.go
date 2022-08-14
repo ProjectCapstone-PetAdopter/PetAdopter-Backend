@@ -11,13 +11,15 @@ type Meeting struct {
 }
 
 type MeetingOwner struct {
-	ID           int
-	Petname      string
-	Petphoto     string
-	Fullname     string
-	PhotoProfile string
-	Address      string
-	Status       string
+	ID           int    `json:"id"`
+	Time         string `json:"time"`
+	Date         string `json:"date"`
+	Petname      string `json:"petname"`
+	Petphoto     string `json:"petphoto"`
+	Seekername   string `json:"seekername"`
+	Fullname     string `json:"fullname"`
+	PhotoProfile string `json:"photoprofile"`
+	Address      string `json:"address"`
 }
 
 type MeetingHandler interface {
@@ -28,15 +30,15 @@ type MeetingHandler interface {
 }
 
 type MeetingUsecase interface {
-	AddMeeting(data Meeting) (row int, err error)
-	UpdateMeeting(UpdateMeeting Meeting, id int) error
+	AddMeeting(data Meeting) (idMeet int, err error)
+	UpdateMeeting(UpdateMeeting Meeting, id int) (idMeet int, err error)
 	DeleteMeeting(id int) error
 	GetMyMeeting(meetingID int) ([]MeetingOwner, error)
 }
 
 type MeetingData interface {
-	Insert(data Meeting) (row int, err error)
-	Update(updatedData Meeting, id int) error
+	Insert(data Meeting) (idMeet int, err error)
+	Update(updatedData Meeting, id int) (idMeet int, err error)
 	Delete(id int) error
 	GetMeetingID(meetingID int) []MeetingOwner
 }

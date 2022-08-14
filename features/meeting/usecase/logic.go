@@ -20,7 +20,7 @@ func New(md domain.MeetingData, v *validator.Validate) domain.MeetingUsecase {
 	}
 }
 
-func (mu *meetingUsecase) AddMeeting(data domain.Meeting) (row int, err error) {
+func (mu *meetingUsecase) AddMeeting(data domain.Meeting) (idMeet int, err error) {
 	if data.Time == "" {
 		return -1, errors.New("invalid time")
 	}
@@ -31,17 +31,16 @@ func (mu *meetingUsecase) AddMeeting(data domain.Meeting) (row int, err error) {
 	return inserted, err
 }
 
-func (mu *meetingUsecase) UpdateMeeting(UpdateMeeting domain.Meeting, id int) error {
+func (mu *meetingUsecase) UpdateMeeting(UpdateMeeting domain.Meeting, id int) (idMeet int, err error) {
 	var tmp delivery.InsertMeeting
-	qry := map[string]interface{}{}
 	if tmp.Time != "" {
-		qry["time"] = &tmp.Time
+		return -1, errors.New("invalid time")
 	}
 	if tmp.Date != "" {
-		qry["date"] = &tmp.Date
+		return -1, errors.New("invalid date")
 	}
-	err := mu.meetingData.Update(UpdateMeeting, id)
-	return err
+	inserted, err := mu.meetingData.Update(UpdateMeeting, id)
+	return inserted, nil
 }
 
 func (mu *meetingUsecase) DeleteMeeting(id int) error {
@@ -50,9 +49,11 @@ func (mu *meetingUsecase) DeleteMeeting(id int) error {
 }
 
 func (mu *meetingUsecase) GetMyMeeting(meetingID int) ([]domain.MeetingOwner, error) {
-	res := mu.meetingData.GetMeetingID(meetingID)
+
+	data := mu.meetingData.GetMeetingID(meetingID)
 	if meetingID == -1 {
-		return nil, errors.New("error get data")
+		return []domain.MeetingOwner{}, errors.New("error get data")
+
 	}
-	return res, nil
+	return data, nil
 }

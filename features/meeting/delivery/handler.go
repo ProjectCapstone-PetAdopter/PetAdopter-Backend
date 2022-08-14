@@ -76,7 +76,7 @@ func (mh *meetingHandler) UpdateDataMeeting() echo.HandlerFunc {
 			})
 		}
 
-		errMeet := mh.meetingUsecase.UpdateMeeting(updatedData.ToModel(), id)
+		_, errMeet := mh.meetingUsecase.UpdateMeeting(updatedData.ToModel(), id)
 		if errMeet != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    500,
