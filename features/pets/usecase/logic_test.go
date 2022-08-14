@@ -85,3 +85,15 @@ func TestGetmyPets(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 }
+
+func TestAddPets(t *testing.T) {
+	//
+}
+
+func TestGetSpecificPets(t *testing.T) {
+	//
+}
+
+func TestUpPets(t *testing.T) {
+	//
+}
