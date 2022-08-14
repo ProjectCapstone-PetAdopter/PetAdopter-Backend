@@ -1,4 +1,4 @@
-setup.env
+copy.env
 local.env
 *.env
 *.env

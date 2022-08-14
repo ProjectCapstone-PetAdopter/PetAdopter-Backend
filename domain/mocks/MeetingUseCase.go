@@ -72,17 +72,25 @@ func (_m *MeetingUsecase) GetMyMeeting(meetingID int) ([]domain.MeetingOwner, er
 }
 
 // UpdateMeeting provides a mock function with given fields: UpdateMeeting, id
-func (_m *MeetingUsecase) UpdateMeeting(UpdateMeeting domain.Meeting, id int) error {
+
+func (_m *MockMeetingUseCase) UpdateMeeting(UpdateMeeting domain.Meeting, id int) (int, error) {
 	ret := _m.Called(UpdateMeeting, id)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(domain.Meeting, int) error); ok {
+	var r0 int
+	if rf, ok := ret.Get(0).(func(domain.Meeting, int) int); ok {
 		r0 = rf(UpdateMeeting, id)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(int)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(domain.Meeting, int) error); ok {
+		r1 = rf(UpdateMeeting, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 type mockConstructorTestingTNewMeetingUsecase interface {

@@ -11,6 +11,7 @@ type Adoption struct {
 	PetsID    int
 	UserID    int
 	Status    string
+	Meeting   []Meeting
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

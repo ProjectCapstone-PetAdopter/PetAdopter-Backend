@@ -9,11 +9,10 @@ import (
 
 type Adoption struct {
 	gorm.Model
-	UserID   int
-	PetsID   int                   `json:"petid" form:"petid"`
-	Status   string                `gorm:"default:waiting"`
-	Petphoto string                `json:"petphoto" form:"petphoto"`
-	Meeting  []meetingData.Meeting `gorm:"foreignKey:Adoption_id"`
+	UserID  int
+	PetsID  int                   `json:"petid" form:"petid"`
+	Status  string                `gorm:"default:waiting"`
+	Meeting []meetingData.Meeting `gorm:"foreignKey:AdoptionID"`
 }
 
 type AdoptionPet struct {
