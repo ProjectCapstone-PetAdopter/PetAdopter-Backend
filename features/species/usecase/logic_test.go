@@ -59,9 +59,33 @@ func TestGetAllSpecies(t *testing.T) {
 }
 
 func TestAddSpecies(t *testing.T) {
-	//
+	repo := new(mocks.SpeciesData)
+	mockData := domain.Species{
+		ID:      1,
+		Species: "Kucing",
+	}
+	returnData := mockData
+	returnData.ID = 1
+
+	t.Run("Success add", func(t *testing.T) {
+		repo.On("InsertSpecies", mock.Anything).Return(200, nil).Once()
+		useCase := New(repo, validator.New())
+		code, err := useCase.AddSpecies(mockData)
+		assert.Nil(t, err)
+		assert.Equal(t, code, 200)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Error insert", func(t *testing.T) {
+		repo.On("InsertSpecies", mock.Anything).Return(500, nil).Once()
+		useCase := New(repo, validator.New())
+		res, err := useCase.AddSpecies(mockData)
+
+		assert.Equal(t, err, nil)
+		assert.Equal(t, res, 500)
+		repo.AssertExpectations(t)
+	})
 }
 
 func TestUpdateSpecies(t *testing.T) {
-	//
+	//todo
 }
