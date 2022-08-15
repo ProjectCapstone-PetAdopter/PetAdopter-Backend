@@ -82,7 +82,8 @@ func TestUpdateMeeting(t *testing.T) {
 	})
 
 	t.Run("Empty Update Time", func(t *testing.T) {
-
+		dummy := insertData
+		dummy.Time = ""
 		useCase := New(repo, validator.New())
 
 		res, err := useCase.UpdateMeeting(dummy, insertData.ID)
@@ -90,6 +91,19 @@ func TestUpdateMeeting(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.Equal(t, -1, res)
 		assert.EqualError(t, err, errors.New("invalid time").Error())
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("Empty Update Date", func(t *testing.T) {
+		dummy := insertData
+		dummy.Date = ""
+		useCase := New(repo, validator.New())
+
+		res, err := useCase.UpdateMeeting(dummy, insertData.ID)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, -1, res)
+		assert.EqualError(t, err, errors.New("invalid date").Error())
 		repo.AssertExpectations(t)
 	})
 }
