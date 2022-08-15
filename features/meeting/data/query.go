@@ -19,7 +19,7 @@ func New(DB *gorm.DB) domain.MeetingData {
 	}
 }
 
-func (md *meetingData) GetMyMeeting(id int) (domain.Meeting, error) {
+func (md *meetingData) GetMyMeetingPets(id int) (domain.Meeting, error) {
 	var myMeeting Meeting
 	err := md.db.Where("id = ?", id).First(&myMeeting).Error
 	if err != nil {

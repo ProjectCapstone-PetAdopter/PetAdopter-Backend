@@ -37,6 +37,7 @@ type MeetingHandler interface {
 	UpdateDataMeeting() echo.HandlerFunc
 	DeleteDataMeeting() echo.HandlerFunc
 	GetAdopt() echo.HandlerFunc
+	GetMeetingByID() echo.HandlerFunc
 }
 
 type MeetingUsecase interface {
@@ -45,6 +46,7 @@ type MeetingUsecase interface {
 	DeleteMeeting(id int) error
 	GetMyMeeting(meetingID int) (getMyData []MeetingOwner, err error)
 	GetEmail(userID, meetingID int) (Ownerdata, Seekerdata)
+	GetPetMeeting(id int) (Meeting, error)
 }
 
 type MeetingData interface {
@@ -53,4 +55,5 @@ type MeetingData interface {
 	Delete(id int) error
 	GetMeetingID(meetingID int) []MeetingOwner
 	GetEmailData(userID, meetingID int) (Ownerdata, Seekerdata, int)
+	GetMyMeetingPets(id int) (Meeting, error)
 }

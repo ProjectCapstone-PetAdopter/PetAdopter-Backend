@@ -196,3 +196,28 @@ func (mh *meetingHandler) GetAdopt() echo.HandlerFunc {
 		})
 	}
 }
+
+func (mh *meetingHandler) GetMeetingByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		param := c.Param("id")
+		id, err := strconv.Atoi(param)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    400,
+				"message": err.Error(),
+			})
+		}
+		data, err := mh.meetingUsecase.GetPetMeeting(id)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": err.Error(),
+			})
+		}
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"code":    200,
+			"message": "success get meeting schedule",
+			"data":    FromModel(data),
+		})
+	}
+}
