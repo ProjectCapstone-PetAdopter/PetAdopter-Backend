@@ -23,7 +23,6 @@ func New(pu domain.AdoptionUseCase) domain.AdoptionHandler {
 func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var tmp AdoptionInsertRequest
-		qry := map[string]interface{}{}
 		token := common.ExtractData(c)
 
 		cnv, err := strconv.Atoi(c.Param("id"))
@@ -52,19 +51,7 @@ func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 			})
 		}
 
-		if tmp.PetsID != 0 {
-			qry["pets_id"] = tmp.PetsID
-		}
-		if tmp.UserID != 0 {
-			qry["user_id"] = tmp.UserID
-		}
-		if tmp.Status != "" {
-			qry["status"] = tmp.Status
-		}
-
-		tmp.UserID = token.ID
-
-		_, errs := ad.adoptionUsecase.UpAdoption(cnv, tmp.ToDomain())
+		_, errs := ad.adoptionUsecase.UpAdoption(cnv, tmp.ToDomain(), token.ID)
 		if errs != nil {
 			log.Println("Cannot update data", err)
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -153,11 +140,17 @@ func (ad *adoptionHandler) DeleteAdoption() echo.HandlerFunc {
 	}
 }
 
-//get owner adoption data
+//get owner applier data
 func (ad *adoptionHandler) GetAllAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var arrmap = []map[string]interface{}{}
 		token := common.ExtractData(c)
+		if token.ID == 0 {
+			log.Println("Cannot get token")
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "internal server error",
+			})
+		}
 
 		data, err := ad.adoptionUsecase.GetAllAP(token.ID)
 		if err != nil {
@@ -176,30 +169,16 @@ func (ad *adoptionHandler) GetAllAdoption() echo.HandlerFunc {
 			})
 		}
 
-		for i := 0; i < len(data); i++ {
-			var res = map[string]interface{}{}
-			res["id"] = data[i].ID
-			res["petname"] = data[i].Petname
-			res["petphoto"] = data[i].Petphoto
-			res["ownername"] = data[i].Fullname
-			res["ownerphoto"] = data[i].PhotoProfile
-			res["owneraddress"] = data[i].Address
-			res["status"] = data[i].Status
-
-			arrmap = append(arrmap, res)
-		}
-
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    http.StatusOK,
 			"message": "success get all Data",
-			"data":    arrmap,
+			"data":    data,
 		})
 	}
 }
 
 func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var res = map[string]interface{}{}
 		idOrder := c.Param("id")
 
 		id, errs := strconv.Atoi(idOrder)
@@ -228,18 +207,10 @@ func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 			})
 		}
 
-		res["id"] = data[0].ID
-		res["petname"] = data[0].Petname
-		res["petphoto"] = data[0].Petphoto
-		res["ownername"] = data[0].Fullname
-		res["ownerphoto"] = data[0].PhotoProfile
-		res["owneraddress"] = data[0].Address
-		res["status"] = data[0].Status
-
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    http.StatusOK,
 			"message": "success get data",
-			"data":    res,
+			"data":    data,
 		})
 	}
 }
@@ -247,7 +218,7 @@ func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 //user history adoption
 func (ad *adoptionHandler) GetMYAdopt() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var arrmap = []map[string]interface{}{}
+
 		token := common.ExtractData(c)
 
 		data, err := ad.adoptionUsecase.GetmyAdoption(token.ID)
@@ -267,23 +238,10 @@ func (ad *adoptionHandler) GetMYAdopt() echo.HandlerFunc {
 			})
 		}
 
-		for i := 0; i < len(data); i++ {
-			var res = map[string]interface{}{}
-			res["id"] = data[i].ID
-			res["petname"] = data[i].Petname
-			res["petphoto"] = data[i].Petphoto
-			res["ownername"] = data[i].Fullname
-			res["ownerphoto"] = data[i].PhotoProfile
-			res["owneraddress"] = data[i].Address
-			res["status"] = data[i].Status
-
-			arrmap = append(arrmap, res)
-		}
-
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    http.StatusOK,
 			"message": "success get my Data",
-			"data":    arrmap,
+			"data":    data,
 		})
 	}
 }

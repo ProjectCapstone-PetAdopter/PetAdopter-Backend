@@ -56,15 +56,15 @@ func (_m *AdoptionUseCase) DelAdoption(IDAdoption int) (bool, error) {
 }
 
 // GetAllAP provides a mock function with given fields: userID
-func (_m *AdoptionUseCase) GetAllAP(userID int) ([]domain.AdoptionPet, error) {
+func (_m *AdoptionUseCase) GetAllAP(userID int) ([]map[string]interface{}, error) {
 	ret := _m.Called(userID)
 
-	var r0 []domain.AdoptionPet
-	if rf, ok := ret.Get(0).(func(int) []domain.AdoptionPet); ok {
+	var r0 []map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) []map[string]interface{}); ok {
 		r0 = rf(userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.AdoptionPet)
+			r0 = ret.Get(0).([]map[string]interface{})
 		}
 	}
 
@@ -79,15 +79,15 @@ func (_m *AdoptionUseCase) GetAllAP(userID int) ([]domain.AdoptionPet, error) {
 }
 
 // GetSpecificAdoption provides a mock function with given fields: AdoptionID
-func (_m *AdoptionUseCase) GetSpecificAdoption(AdoptionID int) ([]domain.AdoptionPet, error) {
+func (_m *AdoptionUseCase) GetSpecificAdoption(AdoptionID int) (map[string]interface{}, error) {
 	ret := _m.Called(AdoptionID)
 
-	var r0 []domain.AdoptionPet
-	if rf, ok := ret.Get(0).(func(int) []domain.AdoptionPet); ok {
+	var r0 map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) map[string]interface{}); ok {
 		r0 = rf(AdoptionID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.AdoptionPet)
+			r0 = ret.Get(0).(map[string]interface{})
 		}
 	}
 
@@ -102,15 +102,15 @@ func (_m *AdoptionUseCase) GetSpecificAdoption(AdoptionID int) ([]domain.Adoptio
 }
 
 // GetmyAdoption provides a mock function with given fields: userID
-func (_m *AdoptionUseCase) GetmyAdoption(userID int) ([]domain.AdoptionPet, error) {
+func (_m *AdoptionUseCase) GetmyAdoption(userID int) ([]map[string]interface{}, error) {
 	ret := _m.Called(userID)
 
-	var r0 []domain.AdoptionPet
-	if rf, ok := ret.Get(0).(func(int) []domain.AdoptionPet); ok {
+	var r0 []map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) []map[string]interface{}); ok {
 		r0 = rf(userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.AdoptionPet)
+			r0 = ret.Get(0).([]map[string]interface{})
 		}
 	}
 

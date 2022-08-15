@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"petadopter/domain"
-	"time"
 )
 
 type AdoptionInsertRequest struct {
@@ -13,10 +12,8 @@ type AdoptionInsertRequest struct {
 
 func (ai *AdoptionInsertRequest) ToDomain() domain.Adoption {
 	return domain.Adoption{
-		PetsID:    ai.PetsID,
-		UserID:    ai.UserID,
-		Status:    ai.Status,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
+		PetsID: ai.PetsID,
+		UserID: ai.UserID,
+		Status: ai.Status,
 	}
 }

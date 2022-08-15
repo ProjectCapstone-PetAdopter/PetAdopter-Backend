@@ -18,17 +18,18 @@ type Pets struct {
 }
 
 type PetUser struct {
+	Species  string
 	Fullname string
 	City     string
 }
 
 type PetsUseCase interface {
-	AddPets(newPets Pets) (Pets, error)
-	GetAllP() ([]Pets, error)
-	UpPets(IDPets int, updateData Pets) (Pets, error)
+	AddPets(newPets Pets, userId int) (Pets, error)
+	GetAllP() ([]map[string]interface{}, error)
+	UpPets(IDPets int, updateData Pets, userID int) (Pets, error)
 	DelPets(IDPets int) (bool, error)
-	GetSpecificPets(PetsID int) ([]Pets, PetUser, error)
-	GetmyPets(userID int) ([]Pets, error)
+	GetSpecificPets(PetsID int) (map[string]interface{}, error)
+	GetmyPets(userID int) ([]map[string]interface{}, error)
 }
 
 type PetsHandler interface {
@@ -47,5 +48,6 @@ type PetsData interface {
 	Delete(IDPets int) bool
 	GetPetsID(PetsID int) []Pets
 	GetPetsbyuser(userID int) []Pets
-	GetPetUser() PetUser
+	GetPetUser(userID int) PetUser
+	GetAllPetUser() []PetUser
 }
