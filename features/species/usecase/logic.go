@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"petadopter/domain"
-	"petadopter/features/species/delivery"
 
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -22,7 +21,7 @@ func New(sd domain.SpeciesData, v *validator.Validate) domain.SpeciesUsecase {
 	}
 }
 
-func (su *speciesUseCase) AddSpecies(newSpecies domain.Species) (row int, err error) {
+func (su *speciesUseCase) AddSpecies(newSpecies domain.Species) (idSpecies int, err error) {
 	if newSpecies.Species == "" {
 		return -1, errors.New("invalid species")
 	}
@@ -42,15 +41,14 @@ func (su *speciesUseCase) GetAllSpecies() ([]domain.Species, error) {
 	return data, err
 }
 
-func (su *speciesUseCase) UpdateSpecies(id int, UpdateSpecies domain.Species) (row int, err error) {
-	var tmp delivery.InserFormat
-	qry := map[string]interface{}{}
-	if tmp.Species != "" {
-		qry["species"] = &tmp.Species
+func (su *speciesUseCase) UpdateSpecies(id int, UpdateSpecies domain.Species) (idSpecies int, err error) {
+
+	if UpdateSpecies.Species == "" {
+		return -1, errors.New("invalid species")
 	}
 
-	data, _ := su.speciesData.Update(id, UpdateSpecies)
-	return data, nil
+	data, err := su.speciesData.Update(id, UpdateSpecies)
+	return data, err
 }
 
 func (su *speciesUseCase) DeleteSpecies(id int) (row int, err error) {

@@ -33,7 +33,7 @@ type MeetingUsecase interface {
 	AddMeeting(data Meeting) (idMeet int, err error)
 	UpdateMeeting(UpdateMeeting Meeting, id int) (idMeet int, err error)
 	DeleteMeeting(id int) error
-	GetMyMeeting(meetingID int) ([]MeetingOwner, error)
+	GetMyMeeting(meetingID int) []MeetingOwner
 }
 
 type MeetingData interface {
