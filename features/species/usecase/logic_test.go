@@ -10,6 +10,26 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+
+func TestAddSpecies(t *testing.T) {
+	repo := new(mocks.SpeciesData)
+	insertData := domain.Species{
+		ID:      1,
+		Species: "Kucing",
+	}
+
+	t.Run("Success Insert", func(t *testing.T) {
+		repo.On("Insert Species", mock.Anything).Return(1, nil).Once()
+
+		useCase := New(repo, validator.New())
+
+		res, err := useCase.AddSpecies(insertData)
+		assert.Nil(t, err)
+		assert.Equal(t, 1, res)
+		repo.AssertExpectations(t)
+	})
+}
+
 func TestDeleteSpecies(t *testing.T) {
 	repo := new(mocks.SpeciesData)
 
@@ -86,6 +106,4 @@ func TestAddSpecies(t *testing.T) {
 	})
 }
 
-func TestUpdateSpecies(t *testing.T) {
-	//todo
-}
+

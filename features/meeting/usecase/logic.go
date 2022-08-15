@@ -3,7 +3,6 @@ package usecase
 import (
 	"errors"
 	"petadopter/domain"
-	"petadopter/features/meeting/delivery"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -32,15 +31,15 @@ func (mu *meetingUsecase) AddMeeting(data domain.Meeting) (idMeet int, err error
 }
 
 func (mu *meetingUsecase) UpdateMeeting(UpdateMeeting domain.Meeting, id int) (idMeet int, err error) {
-	var tmp delivery.InsertMeeting
-	if tmp.Time != "" {
+	// var tmp delivery.InsertMeeting
+	if UpdateMeeting.Time == "" {
 		return -1, errors.New("invalid time")
 	}
-	if tmp.Date != "" {
+	if UpdateMeeting.Date == "" {
 		return -1, errors.New("invalid date")
 	}
 	inserted, err := mu.meetingData.Update(UpdateMeeting, id)
-	return inserted, nil
+	return inserted, err
 }
 
 func (mu *meetingUsecase) DeleteMeeting(id int) error {
