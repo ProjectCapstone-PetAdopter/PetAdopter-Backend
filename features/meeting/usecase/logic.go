@@ -47,12 +47,12 @@ func (mu *meetingUsecase) DeleteMeeting(id int) error {
 	return err
 }
 
-func (mu *meetingUsecase) GetMyMeeting(meetingID int) []domain.MeetingOwner {
+func (mu *meetingUsecase) GetMyMeeting(meetingID int) (getMyData []domain.MeetingOwner, err error) {
 
 	data := mu.meetingData.GetMeetingID(meetingID)
 
 	if meetingID == -1 {
-		return []domain.MeetingOwner{}
+		return []domain.MeetingOwner{}, errors.New("error get data")
 	}
-	return data
+	return data, err
 }

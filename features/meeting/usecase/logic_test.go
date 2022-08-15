@@ -157,7 +157,8 @@ func TestGetMeeting(t *testing.T) {
 
 		useCase := New(repo, validator.New())
 
-		res := useCase.GetMyMeeting(meetingData.ID)
+		res, _ := useCase.GetMyMeeting(meetingData.ID)
+		// assert.Nil(t, err)
 		assert.Equal(t, insertData, res)
 		repo.AssertExpectations(t)
 	})
@@ -167,7 +168,7 @@ func TestGetMeeting(t *testing.T) {
 
 		useCase := New(repo, validator.New())
 
-		res := useCase.GetMyMeeting(meetingData.ID)
+		res, _ := useCase.GetMyMeeting(meetingData.ID)
 		// assert.NotNil(t, err)
 		assert.Equal(t, []domain.MeetingOwner{}, res)
 		// assert.EqualError(t, err, errors.New("error get data").Error())
