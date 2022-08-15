@@ -10,6 +10,25 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestAddSpecies(t *testing.T) {
+	repo := new(mocks.SpeciesData)
+	insertData := domain.Species{
+		ID:      1,
+		Species: "Kucing",
+	}
+
+	t.Run("Success Insert", func(t *testing.T) {
+		repo.On("Insert Species", mock.Anything).Return(1, nil).Once()
+
+		useCase := New(repo, validator.New())
+
+		res, err := useCase.AddSpecies(insertData)
+		assert.Nil(t, err)
+		assert.Equal(t, 1, res)
+		repo.AssertExpectations(t)
+	})
+}
+
 func TestDeleteSpecies(t *testing.T) {
 	repo := new(mocks.SpeciesData)
 
@@ -56,63 +75,4 @@ func TestGetAllSpecies(t *testing.T) {
 		assert.Equal(t, []domain.Species(nil), result)
 		repo.AssertExpectations(t)
 	})
-}
-
-func TestAddSpecies(t *testing.T) {
-	repo := new(mocks.SpeciesData)
-	mockData := domain.Species{
-		ID:      1,
-		Species: "Kucing",
-	}
-	returnData := mockData
-	returnData.ID = 1
-
-	t.Run("Success add", func(t *testing.T) {
-		repo.On("InsertSpecies", mock.Anything).Return(200, nil).Once()
-		useCase := New(repo, validator.New())
-		code, err := useCase.AddSpecies(mockData)
-		assert.Nil(t, err)
-		assert.Equal(t, code, 200)
-		repo.AssertExpectations(t)
-	})
-	t.Run("Error insert", func(t *testing.T) {
-		repo.On("InsertSpecies", mock.Anything).Return(500, nil).Once()
-		useCase := New(repo, validator.New())
-		res, err := useCase.AddSpecies(mockData)
-
-		assert.Equal(t, err, nil)
-		assert.Equal(t, res, 500)
-		repo.AssertExpectations(t)
-	})
-}
-
-func TestUpdateSpecies(t *testing.T) {
-	repo := new(mocks.SpeciesData)
-
-	mockData := domain.Species{Species: "Kelinci"}
-
-	returnData := mockData
-	returnData.ID = 1
-
-	t.Run("Success Update", func(t *testing.T) {
-		repo.On("Update", mock.Anything, mock.Anything).Return(200, returnData).Once()
-		useCase := New(repo, validator.New())
-		res, err := useCase.UpdateSpecies(1, mockData)
-
-		assert.Nil(t, err)
-		assert.NotNil(t, res)
-		// assert.Equal(t, returnData, res)
-		repo.AssertExpectations(t)
-	})
-
-	// t.Run("Error insert", func(t *testing.T) {
-	// 	returnData.ID = 0
-	// 	repo.On("Update", mock.Anything, mock.Anything).Return(returnData).Once()
-	// 	useCase := New(repo, validator.New())
-	// 	res, err := useCase.UpAdoption(1, mockData, 1)
-
-	// 	assert.NotNil(t, err)
-	// 	assert.Equal(t, domain.Adoption{}, res)
-	// 	repo.AssertExpectations(t)
-	// })
 }
