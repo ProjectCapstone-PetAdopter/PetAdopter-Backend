@@ -31,6 +31,7 @@ func (sh *speciesHandler) AddSpecies() echo.HandlerFunc {
 				"message": "unauthorized",
 			})
 		}
+
 		// errGet := sh.speciesUseCase.GetUser(uint(token.ID))
 		// if errGet != nil {
 		// 	return c.JSON(http.StatusUnauthorized, map[string]interface{}{

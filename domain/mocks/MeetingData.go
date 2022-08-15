@@ -66,7 +66,7 @@ func (_m *MeetingData) Insert(data domain.Meeting) (int, error) {
 
 // Update provides a mock function with given fields: updatedData, id
 
-func (_m *MockMeetingData) Update(updatedData domain.Meeting, id int) (int, error) {
+func (_m *MeetingData) Update(updatedData domain.Meeting, id int) (int, error) {
 	ret := _m.Called(updatedData, id)
 
 	var r0 int

@@ -73,7 +73,7 @@ func (_m *MeetingUsecase) GetMyMeeting(meetingID int) ([]domain.MeetingOwner, er
 
 // UpdateMeeting provides a mock function with given fields: UpdateMeeting, id
 
-func (_m *MockMeetingUseCase) UpdateMeeting(UpdateMeeting domain.Meeting, id int) (int, error) {
+func (_m *MeetingUsecase) UpdateMeeting(UpdateMeeting domain.Meeting, id int) (int, error) {
 	ret := _m.Called(UpdateMeeting, id)
 
 	var r0 int

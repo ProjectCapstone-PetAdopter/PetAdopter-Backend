@@ -60,7 +60,7 @@ func (_m *AdoptionData) GetAdoptionbyuser(userID int) []domain.AdoptionPet {
 }
 
 // GetAll provides a mock function with given fields: userID
-func (_m *AdoptionData) GetAll(userID int) []domain.AdoptionPet {
+func (_m *AdoptionData) GetAll(userID int) ([]domain.AdoptionPet, []domain.ApplierPet) {
 	ret := _m.Called(userID)
 
 	var r0 []domain.AdoptionPet
@@ -72,7 +72,16 @@ func (_m *AdoptionData) GetAll(userID int) []domain.AdoptionPet {
 		}
 	}
 
-	return r0
+	var r1 []domain.ApplierPet
+	if rf, ok := ret.Get(1).(func(int) []domain.ApplierPet); ok {
+		r1 = rf(userID)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).([]domain.ApplierPet)
+		}
+	}
+
+	return r0, r1
 }
 
 // Insert provides a mock function with given fields: insertAdoption

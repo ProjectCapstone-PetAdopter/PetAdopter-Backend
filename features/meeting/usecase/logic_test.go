@@ -1,7 +1,6 @@
 package usecase
 
 import (
-
 	"errors"
 	"petadopter/domain"
 	"petadopter/domain/mocks"
@@ -13,7 +12,7 @@ import (
 )
 
 func TestAddMeeting(t *testing.T) {
-	repo := new(mocks.MockMeetingData)
+	repo := new(mocks.MeetingData)
 	insertData := domain.Meeting{
 		ID:         1,
 		Time:       "09:20:10",
@@ -59,7 +58,7 @@ func TestAddMeeting(t *testing.T) {
 }
 
 func TestUpdateMeeting(t *testing.T) {
-	repo := new(mocks.MockMeetingData)
+	repo := new(mocks.MeetingData)
 	insertData := domain.Meeting{
 		ID:         1,
 		Time:       "09:20:10",
@@ -93,7 +92,7 @@ func TestUpdateMeeting(t *testing.T) {
 }
 
 func TestDeleteMeeting(t *testing.T) {
-	repo := new(mocks.MockMeetingData)
+	repo := new(mocks.MeetingData)
 	insertData := domain.Meeting{
 		ID:         1,
 		Time:       "09:20:10",
@@ -113,7 +112,7 @@ func TestDeleteMeeting(t *testing.T) {
 }
 
 func TestGetMeeting(t *testing.T) {
-	repo := new(mocks.MockMeetingData)
+	repo := new(mocks.MeetingData)
 
 	insertData := []domain.MeetingOwner{{
 		ID:           1,

@@ -17,12 +17,27 @@ func New(db *gorm.DB) domain.PetsData {
 	}
 }
 
+// GetAllPetUser implements domain.PetsData
+func (pd *petsData) GetAllPetUser() []domain.PetUser {
+	var petuser []PetUser
+
+	err := pd.db.Model(&Pets{}).Select("users.fullname, users.city, species.species").Joins("join users on pets.userid = users.id").Joins("join species on pets.speciesid = species.id").
+		Scan(&petuser)
+
+	if err.Error != nil {
+		log.Println("cant get petuser data", err.Error.Error())
+		return nil
+	}
+
+	return ParseToArrPetUser(petuser)
+}
+
 // GetPetUser implements domain.PetsData
-func (pd *petsData) GetPetUser() domain.PetUser {
+func (pd *petsData) GetPetUser(userID int) domain.PetUser {
 	var petuser PetUser
 
-	err := pd.db.Model(&Pets{}).Select("users.fullname, users.city").Joins("join users on pets.userid = users.id").
-		Limit(1).Scan(&petuser)
+	err := pd.db.Model(&Pets{}).Select("users.fullname, users.city, species.species").Joins("join users on pets.userid = users.id").Joins("join species on pets.speciesid = species.id").
+		Where("pets.userid = ?", userID).Limit(1).Scan(&petuser)
 	if err.Error != nil {
 		log.Println("cant get petuser data", err.Error.Error())
 		return domain.PetUser{}
@@ -46,9 +61,9 @@ func (pd *petsData) Update(petsID int, updatedProduct domain.Pets) domain.Pets {
 	cnv := ToLocal(updatedProduct)
 
 	log.Println(cnv)
-	err := pd.db.Model(cnv).Where("ID = ? AND userid = ?", petsID, cnv.UserID).Updates(updatedProduct)
+	err := pd.db.Model(cnv).Where("ID = ? AND userid = ?", petsID, cnv.Userid).Updates(cnv)
 	if err.Error != nil {
-		log.Println("Cannot update data", err.Error.Error())
+		log.Println("Cannot update data in db", err.Error.Error())
 		return domain.Pets{}
 	}
 
