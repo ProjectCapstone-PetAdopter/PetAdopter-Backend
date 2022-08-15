@@ -13,20 +13,20 @@ type PetsUseCase struct {
 	mock.Mock
 }
 
-// AddPets provides a mock function with given fields: newPets
-func (_m *PetsUseCase) AddPets(newPets domain.Pets) (domain.Pets, error) {
-	ret := _m.Called(newPets)
+// AddPets provides a mock function with given fields: newPets, userId
+func (_m *PetsUseCase) AddPets(newPets domain.Pets, userId int) (domain.Pets, error) {
+	ret := _m.Called(newPets, userId)
 
 	var r0 domain.Pets
-	if rf, ok := ret.Get(0).(func(domain.Pets) domain.Pets); ok {
-		r0 = rf(newPets)
+	if rf, ok := ret.Get(0).(func(domain.Pets, int) domain.Pets); ok {
+		r0 = rf(newPets, userId)
 	} else {
 		r0 = ret.Get(0).(domain.Pets)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(domain.Pets) error); ok {
-		r1 = rf(newPets)
+	if rf, ok := ret.Get(1).(func(domain.Pets, int) error); ok {
+		r1 = rf(newPets, userId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -56,15 +56,15 @@ func (_m *PetsUseCase) DelPets(IDPets int) (bool, error) {
 }
 
 // GetAllP provides a mock function with given fields:
-func (_m *PetsUseCase) GetAllP() ([]domain.Pets, error) {
+func (_m *PetsUseCase) GetAllP() ([]map[string]interface{}, error) {
 	ret := _m.Called()
 
-	var r0 []domain.Pets
-	if rf, ok := ret.Get(0).(func() []domain.Pets); ok {
+	var r0 []map[string]interface{}
+	if rf, ok := ret.Get(0).(func() []map[string]interface{}); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Pets)
+			r0 = ret.Get(0).([]map[string]interface{})
 		}
 	}
 
@@ -79,45 +79,38 @@ func (_m *PetsUseCase) GetAllP() ([]domain.Pets, error) {
 }
 
 // GetSpecificPets provides a mock function with given fields: PetsID
-func (_m *PetsUseCase) GetSpecificPets(PetsID int) ([]domain.Pets, domain.PetUser, error) {
+func (_m *PetsUseCase) GetSpecificPets(PetsID int) (map[string]interface{}, error) {
 	ret := _m.Called(PetsID)
 
-	var r0 []domain.Pets
-	if rf, ok := ret.Get(0).(func(int) []domain.Pets); ok {
+	var r0 map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) map[string]interface{}); ok {
 		r0 = rf(PetsID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Pets)
+			r0 = ret.Get(0).(map[string]interface{})
 		}
 	}
 
-	var r1 domain.PetUser
-	if rf, ok := ret.Get(1).(func(int) domain.PetUser); ok {
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int) error); ok {
 		r1 = rf(PetsID)
 	} else {
-		r1 = ret.Get(1).(domain.PetUser)
+		r1 = ret.Error(1)
 	}
 
-	var r2 error
-	if rf, ok := ret.Get(2).(func(int) error); ok {
-		r2 = rf(PetsID)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
+	return r0, r1
 }
 
 // GetmyPets provides a mock function with given fields: userID
-func (_m *PetsUseCase) GetmyPets(userID int) ([]domain.Pets, error) {
+func (_m *PetsUseCase) GetmyPets(userID int) ([]map[string]interface{}, error) {
 	ret := _m.Called(userID)
 
-	var r0 []domain.Pets
-	if rf, ok := ret.Get(0).(func(int) []domain.Pets); ok {
+	var r0 []map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) []map[string]interface{}); ok {
 		r0 = rf(userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Pets)
+			r0 = ret.Get(0).([]map[string]interface{})
 		}
 	}
 
@@ -131,20 +124,20 @@ func (_m *PetsUseCase) GetmyPets(userID int) ([]domain.Pets, error) {
 	return r0, r1
 }
 
-// UpPets provides a mock function with given fields: IDPets, updateData
-func (_m *PetsUseCase) UpPets(IDPets int, updateData domain.Pets) (domain.Pets, error) {
-	ret := _m.Called(IDPets, updateData)
+// UpPets provides a mock function with given fields: IDPets, updateData, userID
+func (_m *PetsUseCase) UpPets(IDPets int, updateData domain.Pets, userID int) (domain.Pets, error) {
+	ret := _m.Called(IDPets, updateData, userID)
 
 	var r0 domain.Pets
-	if rf, ok := ret.Get(0).(func(int, domain.Pets) domain.Pets); ok {
-		r0 = rf(IDPets, updateData)
+	if rf, ok := ret.Get(0).(func(int, domain.Pets, int) domain.Pets); ok {
+		r0 = rf(IDPets, updateData, userID)
 	} else {
 		r0 = ret.Get(0).(domain.Pets)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int, domain.Pets) error); ok {
-		r1 = rf(IDPets, updateData)
+	if rf, ok := ret.Get(1).(func(int, domain.Pets, int) error); ok {
+		r1 = rf(IDPets, updateData, userID)
 	} else {
 		r1 = ret.Error(1)
 	}

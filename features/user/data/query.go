@@ -20,6 +20,7 @@ func New(db *gorm.DB) domain.UserData {
 
 // GetUserCartData implements domain.UserData
 func (ud *userData) Login(dataLogin domain.User, isToken bool) domain.User {
+	log.Println(isToken)
 	var user = FromModel(dataLogin)
 	var err error
 	if isToken {

@@ -9,18 +9,19 @@ import (
 
 type Pets struct {
 	gorm.Model
-	Petname     string `json:"petname" form:"petname" validate:"required"`
-	Gender      int    `json:"gender" form:"gender" validate:"required"`
-	Age         int    `json:"age" form:"age" validate:"required"`
-	Color       string `json:"color" form:"color"`
-	Description string `json:"description" form:"description"`
-	Petphoto    string `json:"petphoto" form:"petphoto"`
-	UserID      int
-	Speciesid   int
+	Petname     string          `json:"petname" form:"petname" validate:"required"`
+	Gender      int             `json:"gender" form:"gender" validate:"required"`
+	Age         int             `json:"age" form:"age" validate:"required"`
+	Color       string          `json:"color" form:"color" validate:"required"`
+	Description string          `json:"description" form:"description"`
+	Petphoto    string          `json:"petphoto" form:"petphoto"`
+	Speciesid   int             `json:"speciesid" form:"speciesid" validate:"required"`
 	Adoption    []data.Adoption `gorm:"foreignKey:PetsID"`
+	Userid      int
 }
 
 type PetUser struct {
+	Species  string
 	Fullname string
 	City     string
 }
@@ -34,13 +35,14 @@ func (p *Pets) ToDomain() domain.Pets {
 		Color:       p.Color,
 		Petphoto:    p.Petphoto,
 		Description: p.Description,
-		Userid:      p.UserID,
+		Userid:      p.Userid,
 		Speciesid:   p.Speciesid,
 	}
 }
 
 func (p *PetUser) ToDomainPetUser() domain.PetUser {
 	return domain.PetUser{
+		Species:  p.Species,
 		Fullname: p.Fullname,
 		City:     p.City,
 	}
@@ -55,6 +57,15 @@ func ParseToArr(arr []Pets) []domain.Pets {
 	return res
 }
 
+func ParseToArrPetUser(arr []PetUser) []domain.PetUser {
+	var res []domain.PetUser
+
+	for _, val := range arr {
+		res = append(res, val.ToDomainPetUser())
+	}
+	return res
+}
+
 func ToLocal(data domain.Pets) Pets {
 	var res Pets
 	res.Petname = data.Petname
@@ -63,7 +74,7 @@ func ToLocal(data domain.Pets) Pets {
 	res.Color = data.Color
 	res.Petphoto = data.Petphoto
 	res.Description = data.Description
-	res.UserID = data.Userid
+	res.Userid = data.Userid
 	res.Speciesid = data.Speciesid
 	return res
 }
