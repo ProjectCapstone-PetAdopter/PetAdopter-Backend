@@ -87,5 +87,32 @@ func TestAddSpecies(t *testing.T) {
 }
 
 func TestUpdateSpecies(t *testing.T) {
-	//todo
+	repo := new(mocks.SpeciesData)
+
+	mockData := domain.Species{Species: "Kelinci"}
+
+	returnData := mockData
+	returnData.ID = 1
+
+	t.Run("Success Update", func(t *testing.T) {
+		repo.On("Update", mock.Anything, mock.Anything).Return(200, returnData).Once()
+		useCase := New(repo, validator.New())
+		res, err := useCase.UpdateSpecies(1, mockData)
+
+		assert.Nil(t, err)
+		assert.NotNil(t, res)
+		// assert.Equal(t, returnData, res)
+		repo.AssertExpectations(t)
+	})
+
+	// t.Run("Error insert", func(t *testing.T) {
+	// 	returnData.ID = 0
+	// 	repo.On("Update", mock.Anything, mock.Anything).Return(returnData).Once()
+	// 	useCase := New(repo, validator.New())
+	// 	res, err := useCase.UpAdoption(1, mockData, 1)
+
+	// 	assert.NotNil(t, err)
+	// 	assert.Equal(t, domain.Adoption{}, res)
+	// 	repo.AssertExpectations(t)
+	// })
 }
