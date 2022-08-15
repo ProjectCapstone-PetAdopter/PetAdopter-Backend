@@ -17,10 +17,10 @@ func RouteAdopt(e *echo.Echo, adopt domain.AdoptionHandler) {
 	}))
 	e.Pre(middleware.RemoveTrailingSlash())
 
-	e.POST("/adoptions", adopt.InsertAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
-	e.PUT("/adoptions/:id", adopt.UpdateAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
-	e.DELETE("/adoptions/:id", adopt.DeleteAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
-	e.GET("/adoptions", adopt.GetAllAdoption())
+	e.POST("/appliers", adopt.InsertAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
+	e.PUT("/appliers/:id", adopt.UpdateAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
+	e.DELETE("/appliers/:id", adopt.DeleteAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
+	e.GET("/appliers", adopt.GetAllAdoption())
 	e.GET("/adoptions/:id", adopt.GetAdoptionID())
-	e.GET("/myadoptions", adopt.GetMYAdopt(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
+	e.GET("/adoptions", adopt.GetMYAdopt(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 }

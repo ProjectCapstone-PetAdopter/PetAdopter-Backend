@@ -21,7 +21,7 @@ func (ad *adoptionData) Insert(newAdopt domain.Adoption) domain.Adoption {
 	cnv := ToLocal(newAdopt)
 	var ownerid int
 
-	getownerid := ad.db.Model(&Adoption{}).Select("pets.user_id").Joins("join pets on adoptions.pets_id = pets.id").
+	getownerid := ad.db.Model(&Adoption{}).Select("pets.userid").Joins("join pets on adoptions.pets_id = pets.id").
 		Where("adoptions.pets_id = ?", newAdopt.PetsID).Scan(&ownerid)
 
 	if getownerid.Error != nil {
@@ -69,25 +69,36 @@ func (ad *adoptionData) Delete(adoptID int) bool {
 	return true
 }
 
-func (ad *adoptionData) GetAll(userid int) []domain.AdoptionPet {
+func (ad *adoptionData) GetAll(userid int) ([]domain.AdoptionPet, []domain.ApplierPet) {
 	var data []AdoptionPet
+	var dataSeeker []ApplierPet
 
-	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address, adoptions.status").
-		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.user_id = users.id").Where("pets.userid = ?", userid).Scan(&data)
+	//mengambil data seeker untuk mendapatkan seekername dan seekerphoto
+	getSeeker := ad.db.Model(&Adoption{}).Select("adoptions.user_id, users.fullname, users.photo_profile").
+		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on adoptions.user_id = users.id").Where("pets.userid = ?", userid).Scan(&dataSeeker)
+
+	if getSeeker.Error != nil {
+		log.Println("problem data seeker", getSeeker.Error.Error())
+		return nil, nil
+	}
+	//mengambil data owner dan pet
+	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, users.fullname, adoptions.status").
+		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").Where("pets.userid = ?", userid).Scan(&data)
 
 	if err.Error != nil {
-		log.Println("error on select data", err.Error.Error())
-		return nil
+		log.Println("error on select data owner", err.Error.Error())
+		return nil, nil
 	}
 
-	return ParseToArrAdoptionPet(data)
+	return ParseToArrAdoptionPet(data), ParseToArrApplierPet(dataSeeker)
 }
 
 func (ad *adoptionData) GetAdoptionID(adoptID int) []domain.AdoptionPet {
 	var data []AdoptionPet
 
-	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address, adoptions.status").
-		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.user_id = users.id").Where("adoptions.id = ?", adoptID).Scan(&data)
+	//mengambil data owner dan pet
+	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.city, adoptions.status").
+		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").Where("adoptions.id = ?", adoptID).Scan(&data)
 
 	if err.Error != nil {
 		log.Println("problem data", err.Error.Error())
@@ -100,8 +111,9 @@ func (ad *adoptionData) GetAdoptionID(adoptID int) []domain.AdoptionPet {
 func (ad *adoptionData) GetAdoptionbyuser(userID int) []domain.AdoptionPet {
 	var data []AdoptionPet
 
-	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address, adoptions.status").
-		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.user_id = users.id").Where("adoptions.user_id = ?", userID).Scan(&data)
+	// mengambil data owner dan pet
+	err := ad.db.Model(&Adoption{}).Select("adoptions.id, adoptions.pets_id, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.city, adoptions.status").
+		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").Where("adoptions.user_id = ?", userID).Scan(&data)
 
 	if err.Error != nil {
 		log.Println("problem data", err.Error.Error())

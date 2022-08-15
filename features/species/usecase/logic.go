@@ -31,11 +31,6 @@ func (su *speciesUseCase) AddSpecies(newSpecies domain.Species) (idSpecies int, 
 	return inserted, err
 }
 
-// func (su *speciesUseCase) GetUser(id uint) error {
-// 	err := su.speciesData.GetUser(id)
-// 	return err
-// }
-
 func (su *speciesUseCase) GetAllSpecies() ([]domain.Species, error) {
 	data, err := su.speciesData.GetAll()
 	return data, err
@@ -54,7 +49,6 @@ func (su *speciesUseCase) UpdateSpecies(id int, UpdateSpecies domain.Species) (i
 func (su *speciesUseCase) DeleteSpecies(id int) (row int, err error) {
 	row, err = su.speciesData.Delete(id)
 	if err != nil {
-		// log.Panicln("delete from usecase error", err.Error())
 		if err == gorm.ErrRecordNotFound {
 			return row, errors.New("data not found")
 		} else {

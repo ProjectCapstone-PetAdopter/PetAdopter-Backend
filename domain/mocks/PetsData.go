@@ -43,13 +43,29 @@ func (_m *PetsData) GetAll() []domain.Pets {
 	return r0
 }
 
-// GetPetUser provides a mock function with given fields:
-func (_m *PetsData) GetPetUser() domain.PetUser {
+// GetAllPetUser provides a mock function with given fields:
+func (_m *PetsData) GetAllPetUser() []domain.PetUser {
 	ret := _m.Called()
 
-	var r0 domain.PetUser
-	if rf, ok := ret.Get(0).(func() domain.PetUser); ok {
+	var r0 []domain.PetUser
+	if rf, ok := ret.Get(0).(func() []domain.PetUser); ok {
 		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.PetUser)
+		}
+	}
+
+	return r0
+}
+
+// GetPetUser provides a mock function with given fields: userID
+func (_m *PetsData) GetPetUser(userID int) domain.PetUser {
+	ret := _m.Called(userID)
+
+	var r0 domain.PetUser
+	if rf, ok := ret.Get(0).(func(int) domain.PetUser); ok {
+		r0 = rf(userID)
 	} else {
 		r0 = ret.Get(0).(domain.PetUser)
 	}

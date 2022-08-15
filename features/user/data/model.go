@@ -20,7 +20,7 @@ type User struct {
 	Password     string `json:"password" form:"password" validate:"required"`
 	Phonenumber  string `json:"phonenumber" form:"phonenumber" validate:"required"`
 	Role         string
-	Pets         []data.Pets             `gorm:"foreignKey:UserID"`
+	Pets         []data.Pets             `gorm:"foreignKey:Userid"`
 	Adoption     []adoptiondata.Adoption `gorm:"foreignKey:UserID"`
 	Meeting      []meetingData.Meeting   `gorm:"foreignKey:UserID"`
 }
