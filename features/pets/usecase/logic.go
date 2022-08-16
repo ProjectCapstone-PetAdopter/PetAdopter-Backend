@@ -52,6 +52,7 @@ func (pd *petsUseCase) GetSpecificPets(petsID int) (map[string]interface{}, erro
 	res["age"] = data[0].Age
 	res["color"] = data[0].Color
 	res["description"] = data[0].Description
+	res["ownerid"] = data[0].Userid
 	res["ownername"] = dataPetUser.Fullname
 	res["city"] = dataPetUser.City
 

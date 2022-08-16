@@ -95,7 +95,8 @@ func (pd *petsData) Delete(petsID int) bool {
 func (pd *petsData) GetAll() []domain.Pets {
 	var data []Pets
 
-	err := pd.db.Find(&data)
+	err := pd.db.Model(&Pets{}).Select("*").Joins("left join adoptions on pets.id = adoptions.pets_id").
+		Where("adoptions.status is null or adoptions.status = 'Requested' or adoptions.status = 'Rejected'").Scan(&data)
 	if err.Error != nil {
 		log.Println("error on select data", err.Error.Error())
 		return nil
