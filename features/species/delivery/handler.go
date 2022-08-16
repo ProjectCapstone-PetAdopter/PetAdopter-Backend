@@ -75,8 +75,8 @@ func (sh *speciesHandler) GetSpecies() echo.HandlerFunc {
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    http.StatusOK,
-			"message": "success get all species data",
-			"data":    data,
+			"message": "success get species data",
+			"data":    FromModelToList(data),
 		})
 	}
 }

@@ -51,7 +51,7 @@ func (mu *meetingUsecase) GetMyMeeting(meetingID int) (getMyData []domain.Meetin
 
 	data := mu.meetingData.GetMeetingID(meetingID)
 
-	if meetingID == -1 {
+	if meetingID < 1 {
 		return []domain.MeetingOwner{}, errors.New("error get data")
 	}
 	return data, err
