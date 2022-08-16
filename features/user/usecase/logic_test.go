@@ -137,7 +137,7 @@ func TestLoginUser(t *testing.T) {
 	returnData := domain.User{ID: 1, Role: "user", Username: "batman"}
 	notfound := mockData
 	notfound.ID = 0
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwiUm9sZSI6InVzZXIifQ.Bt_3k60s-9Di2KH2pHE9g2m_NyZkgm0HYncVmddcG0U"
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwiUm9sZSI6InVzZXIifQ.TqvhPckNECPMraeU5gaCJnK27HNnZCs8n6TszCZrrc8"
 
 	t.Run("Succes Login", func(t *testing.T) {
 		repo.On("GetPasswordData", mock.Anything).Return("$2a$10$SrMvwwY/QnQ4nZunBvGOuOm2U1w8wcAENOoAMI7l8xH7C1Vmt5mru")

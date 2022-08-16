@@ -1,6 +1,8 @@
 package factory
 
 import (
+	"petadopter/utils/google"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
@@ -27,17 +29,17 @@ import (
 	mu "petadopter/features/meeting/usecase"
 )
 
-func InitFactory(e *echo.Echo, db *gorm.DB, oauth2 *oauth2.Config) {
+func InitFactory(e *echo.Echo, db *gorm.DB, oauth2 *oauth2.Config, client *google.ClientUploader) {
 	valid := validator.New()
 
 	userData := ud.New(db)
 	userCase := uc.New(userData, valid)
-	userHandler := udeli.New(userCase, oauth2)
+	userHandler := udeli.New(userCase, oauth2, client)
 	udeli.RouteUser(e, userHandler)
 
 	petsData := pd.New(db)
 	petsCase := pu.New(petsData, valid)
-	petsHandler := petsDelivery.New(petsCase)
+	petsHandler := petsDelivery.New(petsCase, client)
 	petsDelivery.RoutePets(e, petsHandler)
 
 	adoptData := ad.New(db)

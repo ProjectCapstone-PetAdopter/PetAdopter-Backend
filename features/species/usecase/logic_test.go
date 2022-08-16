@@ -44,7 +44,6 @@ func TestAddSpecies(t *testing.T) {
 		// repo.AssertExpectations(t)
 	})
 }
-
 func TestDeleteSpecies(t *testing.T) {
 	repo := new(mocks.SpeciesData)
 	insertDate := domain.Species{
