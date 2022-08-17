@@ -20,7 +20,7 @@ func RouteAdopt(e *echo.Echo, adopt domain.AdoptionHandler) {
 	e.POST("/appliers", adopt.InsertAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 	e.PUT("/appliers/:id", adopt.UpdateAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 	e.DELETE("/appliers/:id", adopt.DeleteAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
-	e.GET("/appliers", adopt.GetAllAdoption())
+	e.GET("/appliers", adopt.GetAllAdoption(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 	e.GET("/adoptions/:id", adopt.GetAdoptionID())
 	e.GET("/adoptions", adopt.GetMYAdopt(), middleware.JWTWithConfig(middlewares.UseJWT([]byte(config.SECRET))))
 }

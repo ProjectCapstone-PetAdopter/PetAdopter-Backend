@@ -1,13 +1,15 @@
 package delivery
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"petadopter/config"
 	"petadopter/domain"
 	common "petadopter/features/common"
-	auth "petadopter/utils/google"
+	"petadopter/utils/google"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 )
@@ -19,18 +21,20 @@ var (
 type userHandler struct {
 	userUsecase domain.UserUseCase
 	oauth       *oauth2.Config
+	client      *google.ClientUploader
 }
 
-func New(us domain.UserUseCase, o *oauth2.Config) domain.UserHandler {
+func New(us domain.UserUseCase, o *oauth2.Config, cl *google.ClientUploader) domain.UserHandler {
 	return &userHandler{
 		userUsecase: us,
 		oauth:       o,
+		client:      cl,
 	}
 }
 
 func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "http://localhost:8000/callback/login"
+		us.oauth.RedirectURL = "https://golangprojectku.site/callback/login"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -39,7 +43,7 @@ func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 
 func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "http://localhost:8000/callback/signup"
+		us.oauth.RedirectURL = "https://golangprojectku.site/callback/signup"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -51,7 +55,7 @@ func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var dataLogin UserInfoFormat
 
-		dataInfo, err, token := auth.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
+		dataInfo, err, token := google.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    http.StatusInternalServerError,
@@ -97,7 +101,7 @@ func (us *userHandler) CallbackGoogleSignUp() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var newuser UserFormat
 
-		data, err, token := auth.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
+		data, err, token := google.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    http.StatusInternalServerError,
@@ -276,6 +280,38 @@ func (us *userHandler) Update() echo.HandlerFunc {
 				"message": "There is an error in internal server",
 			})
 		}
+
+		form, err := c.FormFile("photoprofile")
+		if err != nil {
+			log.Println(err, "cant get form")
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "There is an error in internal server",
+			})
+		}
+
+		file, err := form.Open()
+		if err != nil {
+			log.Println(err, "cant open file")
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "There is an error in internal server",
+			})
+		}
+
+		id := uuid.New()
+		filename := fmt.Sprintf("%sPP-%s.jpg", newuser.Username, id.String())
+		config.UPLOADPATH = "profile/"
+
+		link, err := us.client.UploadFile(file, config.UPLOADPATH, filename)
+		if err != nil {
+			log.Println(err, "cant upload file")
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "There is an error in internal server",
+			})
+		}
+		newuser.Photoprofile = link
 
 		status := us.userUsecase.UpdateUser(newuser.ToModelUpdate(), param.ID, config.COST)
 

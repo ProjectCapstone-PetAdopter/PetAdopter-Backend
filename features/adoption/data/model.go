@@ -10,8 +10,8 @@ import (
 type Adoption struct {
 	gorm.Model
 	UserID  int
-	PetsID  int                   `json:"petid" form:"petid"`
-	Status  string                `gorm:"default:Requested"`
+	PetsID  int `json:"petid" form:"petid"`
+	Status  string
 	Meeting []meetingData.Meeting `gorm:"foreignKey:AdoptionID"`
 }
 

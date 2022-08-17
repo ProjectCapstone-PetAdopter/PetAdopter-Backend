@@ -25,6 +25,7 @@ func (au *adoptionUseCase) AddAdoption(IDUser int, newAdoption domain.Adoption) 
 	}
 
 	newAdoption.UserID = IDUser
+	newAdoption.Status = "Requested"
 
 	res := au.adoptionData.Insert(newAdoption)
 	if res.ID == 0 {
