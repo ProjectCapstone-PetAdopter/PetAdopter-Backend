@@ -74,13 +74,10 @@ This project was built using the Clean Architecture Concept with the Golang echo
 
 The following is a list of the technologies we used in this project :
 
-* [![Golang]][Golang-url]
-* [![Echo]][Echo-url]
-* [![Swagger]][Swagger-url]
-* [![Draw.io]][Draw-url]
-* [![OAuth]][OAuth-url]
-* [![Calender]][Calender-url]
-* [![Google Cloud]][cgp-url]
+
+[![Golang]][Golang-url] &nbsp; [![Echo]][Echo-url] &nbsp; [![Swagger]][Swagger-url] &nbsp;[![Draw.io]][Draw-url] &nbsp; [![OAuth]][OAuth-url]
+&nbsp; [![Calender]][Calender-url]
+&nbsp;[![Google Cloud]][cgp-url] &nbsp;[![Docker]][Docker-url] &nbsp;[![Ubuntu]][Ubuntu-url]
 
 
 <!-- GETTING STARTED -->
@@ -171,3 +168,9 @@ The following is a list of contributors to this project
 
 [Google Cloud]: https://img.shields.io/badge/Google%20Cloud-Google-informational
 [cgp-url]: https://google.com
+
+[Docker]: https://img.shields.io/badge/Virtualization-Docker-blue
+[Docker-url]: https://www.docker.com/get-started/
+
+[Ubuntu]: https://img.shields.io/badge/Linux-Ubuntu-critical
+[Ubuntu-url]: https://ubuntu.com/download
