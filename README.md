@@ -161,7 +161,7 @@ The following is a list of contributors to this project
 [Swagger-url]: https://app.swaggerhub.com/apis-docs/Capstone-tim1/PetAdopter-tim1/1.0.0
 
 [Draw.io]: https://img.shields.io/badge/Draw.io-ERD-red
-[Draw-url]: https://github.com/ProjectCapstone-PetAdopter/PetAdopter-Backend/blob/main/readme/erd.jpg
+[Draw-url]: /readme/erd.png
 
 [OAuth]: https://img.shields.io/badge/OAuth-Google-informational
 [OAuth-url]: https://google.com
