@@ -48,6 +48,27 @@ func (_m *MeetingUsecase) DeleteMeeting(id int) error {
 	return r0
 }
 
+// GetEmail provides a mock function with given fields: userID, meetingID
+func (_m *MeetingUsecase) GetEmail(userID int, meetingID int) (domain.Ownerdata, domain.Seekerdata) {
+	ret := _m.Called(userID, meetingID)
+
+	var r0 domain.Ownerdata
+	if rf, ok := ret.Get(0).(func(int, int) domain.Ownerdata); ok {
+		r0 = rf(userID, meetingID)
+	} else {
+		r0 = ret.Get(0).(domain.Ownerdata)
+	}
+
+	var r1 domain.Seekerdata
+	if rf, ok := ret.Get(1).(func(int, int) domain.Seekerdata); ok {
+		r1 = rf(userID, meetingID)
+	} else {
+		r1 = ret.Get(1).(domain.Seekerdata)
+	}
+
+	return r0, r1
+}
+
 // GetMyMeeting provides a mock function with given fields: meetingID
 func (_m *MeetingUsecase) GetMyMeeting(meetingID int) ([]domain.MeetingOwner, error) {
 	ret := _m.Called(meetingID)

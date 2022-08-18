@@ -132,7 +132,7 @@ func TestGetSpecificPets(t *testing.T) {
 
 		assert.Nil(t, error)
 		assert.NotNil(t, res)
-		assert.Equal(t, 9, len(res))
+		assert.Equal(t, 10, len(res))
 		repo.AssertExpectations(t)
 	})
 

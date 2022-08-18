@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"log"
 	"petadopter/domain"
 
 	"github.com/go-playground/validator/v10"
@@ -17,6 +18,23 @@ func New(md domain.MeetingData, v *validator.Validate) domain.MeetingUsecase {
 		meetingData: md,
 		validate:    v,
 	}
+}
+
+// GetEmail implements domain.MeetingUsecase
+func (mh *meetingUsecase) GetEmail(userID, meetingID int) (domain.Ownerdata, domain.Seekerdata) {
+	owner, seeker, status := mh.meetingData.GetEmailData(userID, meetingID)
+
+	if status == 404 {
+		log.Println("data not found")
+		return domain.Ownerdata{}, domain.Seekerdata{}
+	}
+
+	if status == 500 {
+		log.Println("error in query")
+		return domain.Ownerdata{}, domain.Seekerdata{}
+	}
+
+	return owner, seeker
 }
 
 func (mu *meetingUsecase) AddMeeting(data domain.Meeting) (idMeet int, err error) {

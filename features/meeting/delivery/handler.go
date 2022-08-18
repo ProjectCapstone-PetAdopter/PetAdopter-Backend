@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"petadopter/domain"
@@ -8,28 +9,27 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/oauth2"
+	"google.golang.org/api/calendar/v3"
+	"google.golang.org/api/option"
 )
 
 type meetingHandler struct {
 	meetingUsecase domain.MeetingUsecase
+	oauth          *oauth2.Config
 }
 
-func New(mu domain.MeetingUsecase) domain.MeetingHandler {
+func New(mu domain.MeetingUsecase, o *oauth2.Config) domain.MeetingHandler {
 	return &meetingHandler{
 		meetingUsecase: mu,
+		oauth:          o,
 	}
 }
 
 func (mh *meetingHandler) InsertMeeting() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var insertMeeting InsertMeeting
-		err := c.Bind((&insertMeeting))
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    400,
-				"message": "Wrong input data",
-			})
-		}
+
 		token := common.ExtractData(c)
 		insertMeeting.Userid = token.ID
 		if token.ID == 0 {
@@ -39,13 +39,67 @@ func (mh *meetingHandler) InsertMeeting() echo.HandlerFunc {
 			})
 		}
 
-		_, err = mh.meetingUsecase.AddMeeting(insertMeeting.ToModel())
+		err := c.Bind((&insertMeeting))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"code":    400,
+				"message": "Wrong input data",
+			})
+		}
+
+		idMeet, err := mh.meetingUsecase.AddMeeting(insertMeeting.ToModel())
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    500,
 				"message": "Internal Server Error",
 			})
 		}
+
+		if insertMeeting.Token != "" {
+			owner, seeker := mh.meetingUsecase.GetEmail(token.ID, idMeet)
+			if owner.Email == "" {
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"code":    500,
+					"message": "Internal Server Error",
+				})
+			}
+
+			dateTime := fmt.Sprintf("%sT%s+07:00", insertMeeting.Date, insertMeeting.Time)
+			location := fmt.Sprintf("%s,%s", owner.Address, owner.City)
+
+			events := &calendar.Event{
+				Summary:     "Meeting for adoption",
+				Description: "Meeting with owner",
+				Start: &calendar.EventDateTime{
+					DateTime: dateTime,
+					TimeZone: "Asia/Jakarta",
+				},
+				End: &calendar.EventDateTime{
+					DateTime: dateTime,
+					TimeZone: "Asia/Jakarta",
+				},
+				Attendees: []*calendar.EventAttendee{
+					{Email: owner.Email},
+					{Email: seeker.Email},
+				},
+				Location: location,
+			}
+
+			tokenOauth := &oauth2.Token{AccessToken: insertMeeting.Token}
+
+			client := mh.oauth.Client(c.Request().Context(), tokenOauth)
+
+			srv, err := calendar.NewService(c.Request().Context(), option.WithHTTPClient(client))
+			if err != nil {
+				log.Fatalf("Unable to retrieve Calendar client: %v", err)
+			}
+
+			_, err = srv.Events.Insert("primary", events).SendUpdates("all").Do()
+			if err != nil {
+				log.Fatalf("Unable to create event. %v\n", err)
+			}
+		}
+
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    200,
 			"message": "post meeting success",

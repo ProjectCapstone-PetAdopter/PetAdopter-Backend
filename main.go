@@ -18,6 +18,7 @@ func main() {
 	mysql.MigrateDB(db)
 
 	e := echo.New()
+
 	authconn := google.InitOauth()
 	storageconn := google.InitStorage("pet-adopter-358806-9e20643cb88d.json", "be10-petdopter", "pet-adopter-358806")
 	factory.InitFactory(e, db, authconn, storageconn)

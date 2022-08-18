@@ -22,6 +22,16 @@ type MeetingOwner struct {
 	Address      string `json:"address"`
 }
 
+type Ownerdata struct {
+	Email   string
+	Address string
+	City    string
+}
+
+type Seekerdata struct {
+	Email string
+}
+
 type MeetingHandler interface {
 	InsertMeeting() echo.HandlerFunc
 	UpdateDataMeeting() echo.HandlerFunc
@@ -34,6 +44,7 @@ type MeetingUsecase interface {
 	UpdateMeeting(UpdateMeeting Meeting, id int) (idMeet int, err error)
 	DeleteMeeting(id int) error
 	GetMyMeeting(meetingID int) (getMyData []MeetingOwner, err error)
+	GetEmail(userID, meetingID int) (Ownerdata, Seekerdata)
 }
 
 type MeetingData interface {
@@ -41,4 +52,5 @@ type MeetingData interface {
 	Update(updatedData Meeting, id int) (idMeet int, err error)
 	Delete(id int) error
 	GetMeetingID(meetingID int) []MeetingOwner
+	GetEmailData(userID, meetingID int) (Ownerdata, Seekerdata, int)
 }

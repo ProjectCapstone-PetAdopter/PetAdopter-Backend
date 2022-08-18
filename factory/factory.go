@@ -54,7 +54,7 @@ func InitFactory(e *echo.Echo, db *gorm.DB, oauth2 *oauth2.Config, client *googl
 
 	meetingData := md.New(db)
 	meetingCase := mu.New(meetingData, valid)
-	meetingHandler := meetingDelivery.New(meetingCase)
+	meetingHandler := meetingDelivery.New(meetingCase, oauth2)
 	meetingDelivery.RouteMeeting(e, meetingHandler)
 
 }

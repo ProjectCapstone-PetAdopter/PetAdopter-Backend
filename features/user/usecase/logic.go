@@ -26,6 +26,8 @@ func New(ud domain.UserData, val *validator.Validate) domain.UserUseCase {
 
 func (ud *userCase) Login(userdata domain.User, authtoken *oauth2.Token) (map[string]interface{}, int) {
 	var resMap = map[string]interface{}{}
+	var tokenOauth string
+
 	isToken := true
 	if authtoken == nil {
 		hashPw := ud.userData.GetPasswordData(userdata.Username)
@@ -35,6 +37,11 @@ func (ud *userCase) Login(userdata domain.User, authtoken *oauth2.Token) (map[st
 			return nil, 400
 		}
 		isToken = false
+		tokenOauth = ""
+	}
+
+	if authtoken != nil {
+		tokenOauth = authtoken.AccessToken
 	}
 
 	login := ud.userData.Login(userdata, isToken)
@@ -44,7 +51,7 @@ func (ud *userCase) Login(userdata domain.User, authtoken *oauth2.Token) (map[st
 	}
 
 	token := common.GenerateToken(login)
-
+	resMap["tokenoauth"] = tokenOauth
 	resMap["token"] = token
 	resMap["username"] = login.Username
 	resMap["role"] = login.Role
