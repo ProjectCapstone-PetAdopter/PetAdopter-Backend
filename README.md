@@ -14,8 +14,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Pet-Adopt">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/ProjectCapstone-PetAdopter/PetAdopter-Backend">
+    <img src="readme/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Pet-Adopt</h3>
@@ -56,8 +56,6 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 This program allows everyone to find and raise their favorite animals
 
@@ -117,7 +115,7 @@ Make sure your computer has golang installed.
 
 <!-- ROADMAP -->
 ## ERD
-<img src="readme/erd.jpg" alt="erd">
+<img src="readme/erd.png" alt="erd">
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -125,8 +123,6 @@ Make sure your computer has golang installed.
 <img src="readme/swagger.gif" >
 
 [Swagger Open Api link](https://app.swaggerhub.com/apis-docs/Capstone-tim1/PetAdopter-tim1/1.0.0)
-
- 
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -165,7 +161,7 @@ The following is a list of contributors to this project
 [Swagger-url]: https://app.swaggerhub.com/apis-docs/Capstone-tim1/PetAdopter-tim1/1.0.0
 
 [Draw.io]: https://img.shields.io/badge/Draw.io-ERD-red
-[Draw-url]: https://github.com/ProjectCapstone-PetAdopter/PetAdopter-Backend/tree/readme#erd
+[Draw-url]: https://github.com/ProjectCapstone-PetAdopter/PetAdopter-Backend/blob/main/readme/erd.jpg
 
 [OAuth]: https://img.shields.io/badge/OAuth-Google-informational
 [OAuth-url]: https://google.com
