@@ -19,6 +19,40 @@ func New(DB *gorm.DB) domain.MeetingData {
 	}
 }
 
+// GetEmailData implements domain.MeetingData
+func (md *meetingData) GetEmailData(userID, meetingID int) (domain.Ownerdata, domain.Seekerdata, int) {
+	var owner Ownerdata
+	var seeker Seekerdata
+
+	getOwner := md.db.Model(&Meeting{}).Select("users.email, users.address, users.city").Joins("join users on meetings.user_id = users.id").
+		Where("meetings.user_id = ?", userID).Limit(1).Scan(&owner)
+
+	if getOwner.Error != nil {
+		log.Println("query error", getOwner.Error)
+		return domain.Ownerdata{}, domain.Seekerdata{}, 500
+	}
+
+	if getOwner.RowsAffected == 0 {
+		log.Println("data not found in db")
+		return domain.Ownerdata{}, domain.Seekerdata{}, 404
+	}
+
+	getSeeker := md.db.Model(&Meeting{}).Select("users.email").Joins("join adoptions on meetings.adoption_id = adoptions.id").
+		Joins("join users on adoptions.user_id = users.id").Where("meetings.id = ?", meetingID).Scan(&seeker)
+
+	if getSeeker.Error != nil {
+		log.Println("query error", getSeeker.Error)
+		return domain.Ownerdata{}, domain.Seekerdata{}, 500
+	}
+
+	if getSeeker.RowsAffected == 0 {
+		log.Println("data not found in db")
+		return domain.Ownerdata{}, domain.Seekerdata{}, 404
+	}
+
+	return owner.ToModelOwnerdata(), seeker.ToModelSeekerdata(), 200
+}
+
 func (md *meetingData) Insert(data domain.Meeting) (idMeet int, err error) {
 
 	meetingData := FromModel(data)

@@ -27,6 +27,34 @@ func (_m *MeetingData) Delete(id int) error {
 	return r0
 }
 
+// GetEmailData provides a mock function with given fields: userID, meetingID
+func (_m *MeetingData) GetEmailData(userID int, meetingID int) (domain.Ownerdata, domain.Seekerdata, int) {
+	ret := _m.Called(userID, meetingID)
+
+	var r0 domain.Ownerdata
+	if rf, ok := ret.Get(0).(func(int, int) domain.Ownerdata); ok {
+		r0 = rf(userID, meetingID)
+	} else {
+		r0 = ret.Get(0).(domain.Ownerdata)
+	}
+
+	var r1 domain.Seekerdata
+	if rf, ok := ret.Get(1).(func(int, int) domain.Seekerdata); ok {
+		r1 = rf(userID, meetingID)
+	} else {
+		r1 = ret.Get(1).(domain.Seekerdata)
+	}
+
+	var r2 int
+	if rf, ok := ret.Get(2).(func(int, int) int); ok {
+		r2 = rf(userID, meetingID)
+	} else {
+		r2 = ret.Get(2).(int)
+	}
+
+	return r0, r1, r2
+}
+
 // GetMeetingID provides a mock function with given fields: meetingID
 func (_m *MeetingData) GetMeetingID(meetingID int) []domain.MeetingOwner {
 	ret := _m.Called(meetingID)
@@ -65,7 +93,6 @@ func (_m *MeetingData) Insert(data domain.Meeting) (int, error) {
 }
 
 // Update provides a mock function with given fields: updatedData, id
-
 func (_m *MeetingData) Update(updatedData domain.Meeting, id int) (int, error) {
 	ret := _m.Called(updatedData, id)
 

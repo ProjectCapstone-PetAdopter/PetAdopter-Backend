@@ -124,20 +124,20 @@ func (_m *AdoptionUseCase) GetmyAdoption(userID int) ([]map[string]interface{}, 
 	return r0, r1
 }
 
-// UpAdoption provides a mock function with given fields: IDAdoption, updateData
-func (_m *AdoptionUseCase) UpAdoption(IDAdoption int, updateData domain.Adoption) (domain.Adoption, error) {
-	ret := _m.Called(IDAdoption, updateData)
+// UpAdoption provides a mock function with given fields: IDAdoption, updateData, userID
+func (_m *AdoptionUseCase) UpAdoption(IDAdoption int, updateData domain.Adoption, userID int) (domain.Adoption, error) {
+	ret := _m.Called(IDAdoption, updateData, userID)
 
 	var r0 domain.Adoption
-	if rf, ok := ret.Get(0).(func(int, domain.Adoption) domain.Adoption); ok {
-		r0 = rf(IDAdoption, updateData)
+	if rf, ok := ret.Get(0).(func(int, domain.Adoption, int) domain.Adoption); ok {
+		r0 = rf(IDAdoption, updateData, userID)
 	} else {
 		r0 = ret.Get(0).(domain.Adoption)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int, domain.Adoption) error); ok {
-		r1 = rf(IDAdoption, updateData)
+	if rf, ok := ret.Get(1).(func(int, domain.Adoption, int) error); ok {
+		r1 = rf(IDAdoption, updateData, userID)
 	} else {
 		r1 = ret.Error(1)
 	}

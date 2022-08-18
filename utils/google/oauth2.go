@@ -23,8 +23,9 @@ func InitOauth() *oauth2.Config {
 	googleOauthConfig = &oauth2.Config{
 		ClientID:     "1042598066184-em7kqkibstmmn9n0mjrbsj0vm15br88c.apps.googleusercontent.com",
 		ClientSecret: "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",
-		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
-		Endpoint:     google.Endpoint,
+		Scopes: []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile",
+			"https://www.googleapis.com/auth/calendar.events", "https://www.googleapis.com/auth/calendar"},
+		Endpoint: google.Endpoint,
 	}
 
 	return googleOauthConfig
