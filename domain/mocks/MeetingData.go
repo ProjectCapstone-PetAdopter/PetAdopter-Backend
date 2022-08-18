@@ -55,13 +55,29 @@ func (_m *MeetingData) GetEmailData(userID int, meetingID int) (domain.Ownerdata
 	return r0, r1, r2
 }
 
-// GetMeetingID provides a mock function with given fields: meetingID
-func (_m *MeetingData) GetMeetingID(meetingID int) []domain.MeetingOwner {
-	ret := _m.Called(meetingID)
+// GetMeetingID provides a mock function with given fields: userID
+func (_m *MeetingData) GetMeetingID(userID int) []domain.MeetingOwner {
+	ret := _m.Called(userID)
 
 	var r0 []domain.MeetingOwner
 	if rf, ok := ret.Get(0).(func(int) []domain.MeetingOwner); ok {
-		r0 = rf(meetingID)
+		r0 = rf(userID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.MeetingOwner)
+		}
+	}
+
+	return r0
+}
+
+// GetMyMeetingID provides a mock function with given fields: userID
+func (_m *MeetingData) GetMyMeetingID(userID int) []domain.MeetingOwner {
+	ret := _m.Called(userID)
+
+	var r0 []domain.MeetingOwner
+	if rf, ok := ret.Get(0).(func(int) []domain.MeetingOwner); ok {
+		r0 = rf(userID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.MeetingOwner)

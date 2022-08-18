@@ -69,6 +69,7 @@ func (pd *petsUseCase) GetAllP() ([]map[string]interface{}, error) {
 	if len(data) == 0 {
 		return nil, errors.New("no data found")
 	}
+
 	//memasukan map kedalam array sesuai dengan panjang array data yang didapat
 	for i := 0; i < len(data); i++ {
 		var res = map[string]interface{}{}
