@@ -36,7 +36,7 @@ func New(us domain.UserUseCase, o *oauth2.Config, cl *google.ClientUploader) dom
 
 func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "http://localhost:8000/callback/login"
+		us.oauth.RedirectURL = "https://golangprojectku.site/callback/login"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -45,7 +45,7 @@ func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 
 func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "http://localhost:8000/callback/signup"
+		us.oauth.RedirectURL = "https://golangprojectku.site/callback/signup"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
