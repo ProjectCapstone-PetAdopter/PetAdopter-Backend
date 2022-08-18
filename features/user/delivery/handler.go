@@ -1,9 +1,11 @@
 package delivery
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"petadopter/config"
 	"petadopter/domain"
 	common "petadopter/features/common"
@@ -34,7 +36,7 @@ func New(us domain.UserUseCase, o *oauth2.Config, cl *google.ClientUploader) dom
 
 func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "https://golangprojectku.site/callback/login"
+		us.oauth.RedirectURL = "http://localhost:8000/callback/login"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -43,7 +45,7 @@ func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 
 func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "https://golangprojectku.site/callback/signup"
+		us.oauth.RedirectURL = "http://localhost:8000/callback/signup"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -88,11 +90,19 @@ func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 			})
 		}
 
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"data":    res,
-			"code":    http.StatusOK,
-			"message": "Register success",
-		})
+		urlstr := fmt.Sprintf("http://localhost:3000/auth/redirect?token=%s&role=%s&tokenoauth=%s", res["token"], res["role"], res["tokenoauth"])
+
+		var buf bytes.Buffer
+		buf.WriteString(urlstr)
+		v := url.Values{}
+		buf.WriteString(v.Encode())
+
+		return c.Redirect(http.StatusFound, buf.String())
+		// return c.JSON(http.StatusOK, map[string]interface{}{
+		// 	"data":    string(buf.String()),
+		// 	"code":    http.StatusOK,
+		// 	"message": "Register success",
+		// })
 	}
 }
 
@@ -138,10 +148,14 @@ func (us *userHandler) CallbackGoogleSignUp() echo.HandlerFunc {
 			})
 		}
 
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    http.StatusOK,
-			"message": "Register success",
-		})
+		urlstr := "http://localhost:3000/auth/redirect"
+
+		var buf bytes.Buffer
+		buf.WriteString(urlstr)
+		v := url.Values{}
+		buf.WriteString(v.Encode())
+
+		return c.Redirect(http.StatusFound, buf.String())
 	}
 }
 

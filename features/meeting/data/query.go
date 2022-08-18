@@ -86,16 +86,16 @@ func (md *meetingData) GetEmailData(userID, meetingID int) (domain.Ownerdata, do
 func (md *meetingData) Insert(data domain.Meeting) (idMeet int, err error) {
 
 	meetingData := FromModel(data)
-	var seekerid int
+	var seekerID int
 
-	getownerid := md.db.Table("adoptions").Select("adoptions.user_id").Where("id = ?", data.AdoptionID).Scan(&seekerid)
+	getOwnerID := md.db.Table("adoptions").Select("adoptions.user_id").Where("id = ?", data.AdoptionID).Scan(&seekerID)
 
-	if getownerid.Error != nil {
-		log.Println("Cannot get adopt id", getownerid.Error.Error())
+	if getOwnerID.Error != nil {
+		log.Println("Cannot get adopt id", getOwnerID.Error.Error())
 		return 0, errors.New("cannot insert meeting")
 	}
 
-	if data.UserID == seekerid {
+	if data.UserID == seekerID {
 		log.Println("error db")
 		return -1, errors.New("only owner can add meeting")
 	}
@@ -110,7 +110,19 @@ func (md *meetingData) Insert(data domain.Meeting) (idMeet int, err error) {
 		return 0, errors.New("failed insert data")
 	}
 
-	return int(result.RowsAffected), nil
+	getMeetingId := md.db.Last(&Meeting{}, "meetings.user_id = ?", data.UserID).Select("meetings.id").Scan(&idMeet)
+
+	if getMeetingId.Error != nil {
+		log.Println("cant get meeting id", getMeetingId.Error)
+		return -1, errors.New("meeting id query error")
+	}
+
+	if result.RowsAffected == 0 {
+		log.Println("meeting id not foun", getMeetingId.Error)
+		return 0, errors.New("failed get meeting id")
+	}
+
+	return idMeet, nil
 }
 
 func (md *meetingData) Update(updatedData domain.Meeting, id int) (idMeet int, err error) {

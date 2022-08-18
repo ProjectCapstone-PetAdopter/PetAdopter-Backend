@@ -10,7 +10,7 @@ type Meeting struct {
 	gorm.Model
 	Time       string `json:"time" form:"time"`
 	Date       string `json:"date" form:"date"`
-	AdoptionID int
+	AdoptionID int    `json:"adoptionid" form:"adoptionid"`
 	UserID     int
 }
 
