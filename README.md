@@ -8,7 +8,7 @@
 -->
 [![Forks][forks-shield]][Forks-url]
 [![Stars][Stars-shield]][Stars-url]
-![TestCoverage](https://img.shields.io/badge/Test_Coverage-100%25-yellow)
+![TestCoverage](https://img.shields.io/badge/Test_Coverage-100%25-green)
 
 
 <!-- PROJECT LOGO -->
@@ -81,7 +81,7 @@ The following is a list of the technologies we used in this project :
 * [![Swagger]][Swagger-url]
 * [![Draw.io]][Draw-url]
 * [![OAuth]][OAuth-url]
-* [![Kalender]][kalender-url]
+* [![Calender]][Calender-url]
 * [![Google Cloud]][cgp-url]
 
 
@@ -122,7 +122,11 @@ Make sure your computer has golang installed.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Open Api
+<img src="readme/swagger.gif" >
+
 [Swagger Open Api link](https://app.swaggerhub.com/apis-docs/Capstone-tim1/PetAdopter-tim1/1.0.0)
+
+ 
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -133,9 +137,7 @@ Make sure your computer has golang installed.
 
 The following is a list of contributors to this project
 
-[lukmanhafidz](https://github.com/lukmanhafidz)
-[rizunadiva](https://github.com/rizunadiva)
-[AhmadReski](https://github.com/reski-id)
+[Lukman Hafidz](https://github.com/lukmanhafidz) - [Rizuna diva](https://github.com/rizunadiva) - [Ahmad Reski](https://github.com/reski-id)
 
 
 
@@ -160,16 +162,16 @@ The following is a list of contributors to this project
 [Echo-url]: https://echo.labstack.com/
 
 [Swagger]: https://img.shields.io/badge/SwaggerHub-OpenApi-success
-[Swagger-url]: https://app.swaggerhub.com/home
+[Swagger-url]: https://app.swaggerhub.com/apis-docs/Capstone-tim1/PetAdopter-tim1/1.0.0
 
 [Draw.io]: https://img.shields.io/badge/Draw.io-ERD-red
-[Draw-url]: https://app.diagrams.net/
+[Draw-url]: https://github.com/ProjectCapstone-PetAdopter/PetAdopter-Backend/tree/readme#erd
 
 [OAuth]: https://img.shields.io/badge/OAuth-Google-informational
 [OAuth-url]: https://google.com
 
-[Kalender]: https://img.shields.io/badge/Kalender-Google-informational
-[Kalender-url]: https://google.com
+[Calender]: https://img.shields.io/badge/Calender-Google-blue
+[Calender-url]: https://google.com
 
 [Google Cloud]: https://img.shields.io/badge/Google%20Cloud-Google-informational
 [cgp-url]: https://google.com
