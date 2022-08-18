@@ -32,6 +32,7 @@ func (mh *meetingHandler) InsertMeeting() echo.HandlerFunc {
 
 		token := common.ExtractData(c)
 		insertMeeting.Userid = token.ID
+
 		if token.ID == 0 {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    500,
@@ -91,12 +92,12 @@ func (mh *meetingHandler) InsertMeeting() echo.HandlerFunc {
 
 			srv, err := calendar.NewService(c.Request().Context(), option.WithHTTPClient(client))
 			if err != nil {
-				log.Fatalf("Unable to retrieve Calendar client: %v", err)
+				log.Printf("Unable to retrieve Calendar client: %v", err)
 			}
 
 			_, err = srv.Events.Insert("primary", events).SendUpdates("all").Do()
 			if err != nil {
-				log.Fatalf("Unable to create event. %v\n", err)
+				log.Printf("Unable to create event. %v\n", err)
 			}
 		}
 
@@ -172,16 +173,18 @@ func (mh *meetingHandler) DeleteDataMeeting() echo.HandlerFunc {
 	}
 }
 
-func (mh *meetingHandler) GetAdopt() echo.HandlerFunc {
+func (mh *meetingHandler) GetMeeting() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var meetingid int
-		data, err := mh.meetingUsecase.GetMyMeeting(meetingid)
+		token := common.ExtractData(c)
+
+		data, err := mh.meetingUsecase.GetOwnerMeeting(token.ID)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    500,
 				"message": err.Error(),
 			})
 		}
+
 		if data == nil {
 			log.Println("data not found")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
@@ -189,6 +192,36 @@ func (mh *meetingHandler) GetAdopt() echo.HandlerFunc {
 				"message": "data not found",
 			})
 		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"code":    200,
+			"message": "success get meeting",
+			"data":    data,
+		})
+	}
+}
+
+// GetMyMeeting implements domain.MeetingHandler
+func (mh *meetingHandler) GetMyMeeting() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		token := common.ExtractData(c)
+
+		data, err := mh.meetingUsecase.GetSeekMeeting(token.ID)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    500,
+				"message": err.Error(),
+			})
+		}
+
+		if data == nil {
+			log.Println("data not found")
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    404,
+				"message": "data not found",
+			})
+		}
+
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    200,
 			"message": "success get meeting",

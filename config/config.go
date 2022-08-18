@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"sync"
+
+	"github.com/joho/godotenv"
 )
 
 type Appconfig struct {
@@ -37,7 +39,12 @@ func Getconfig() *Appconfig {
 func initConfig() *Appconfig {
 	var defaultconfig Appconfig
 
-	
+	err := godotenv.Load("local.env")
+	if err != nil {
+		log.Println("cant load env file")
+		return nil
+	}
+
 	defaultconfig.Username = os.Getenv("Username")
 	defaultconfig.Password = os.Getenv("Password")
 	defaultconfig.Address = os.Getenv("Address")

@@ -34,7 +34,7 @@ func New(us domain.UserUseCase, o *oauth2.Config, cl *google.ClientUploader) dom
 
 func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "https://golangprojectku.site/callback/login"
+		us.oauth.RedirectURL = "http://localhost:8000/callback/login"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -43,7 +43,7 @@ func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 
 func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "https://golangprojectku.site/callback/signup"
+		us.oauth.RedirectURL = "http://localhost:8000/callback/signup"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -280,39 +280,39 @@ func (us *userHandler) Update() echo.HandlerFunc {
 				"message": "There is an error in internal server",
 			})
 		}
+		if newuser.Photoprofile != "" {
+			form, err := c.FormFile("photoprofile")
+			if err != nil {
+				log.Println(err, "cant get form")
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"code":    http.StatusInternalServerError,
+					"message": "There is an error in internal server",
+				})
+			}
 
-		form, err := c.FormFile("photoprofile")
-		if err != nil {
-			log.Println(err, "cant get form")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
+			file, err := form.Open()
+			if err != nil {
+				log.Println(err, "cant open file")
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"code":    http.StatusInternalServerError,
+					"message": "There is an error in internal server",
+				})
+			}
+
+			id := uuid.New()
+			filename := fmt.Sprintf("%sPP-%s.jpg", newuser.Username, id.String())
+			config.UPLOADPATH = "profile/"
+
+			link, err := us.client.UploadFile(file, config.UPLOADPATH, filename)
+			if err != nil {
+				log.Println(err, "cant upload file")
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"code":    http.StatusInternalServerError,
+					"message": "There is an error in internal server",
+				})
+			}
+			newuser.Photoprofile = link
 		}
-
-		file, err := form.Open()
-		if err != nil {
-			log.Println(err, "cant open file")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
-		}
-
-		id := uuid.New()
-		filename := fmt.Sprintf("%sPP-%s.jpg", newuser.Username, id.String())
-		config.UPLOADPATH = "profile/"
-
-		link, err := us.client.UploadFile(file, config.UPLOADPATH, filename)
-		if err != nil {
-			log.Println(err, "cant upload file")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
-		}
-		newuser.Photoprofile = link
-
 		status := us.userUsecase.UpdateUser(newuser.ToModelUpdate(), param.ID, config.COST)
 
 		if status == http.StatusBadRequest {

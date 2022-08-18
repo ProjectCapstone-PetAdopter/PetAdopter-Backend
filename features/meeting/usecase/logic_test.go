@@ -157,9 +157,9 @@ func TestGetMeeting(t *testing.T) {
 
 		useCase := New(repo, validator.New())
 
-		res, _ := useCase.GetMyMeeting(meetingData.ID)
+		res, _ := useCase.GetOwnerMeeting(meetingData.ID)
 		// assert.Nil(t, err)
-		assert.Equal(t, insertData, res)
+		assert.GreaterOrEqual(t, 1, len(res))
 		repo.AssertExpectations(t)
 	})
 
@@ -168,9 +168,59 @@ func TestGetMeeting(t *testing.T) {
 
 		useCase := New(repo, validator.New())
 
-		res, err := useCase.GetMyMeeting(-1)
+		res, err := useCase.GetOwnerMeeting(-1)
 		// assert.NotNil(t, err)
-		assert.Equal(t, []domain.MeetingOwner{}, res)
+		assert.Nil(t, res)
+		assert.EqualError(t, err, errors.New("error get data").Error())
+	})
+}
+
+func TestGetMyMeeting(t *testing.T) {
+	repo := new(mocks.MeetingData)
+
+	insertData := []domain.MeetingOwner{{
+		ID:           1,
+		Time:         "09:00:00",
+		Date:         "21/08/2022",
+		Petname:      "nunu",
+		Petphoto:     "nunu.jpg",
+		Seekername:   "difa",
+		Fullname:     "eunwoo",
+		PhotoProfile: "eunwoo.jpg",
+		Address:      "surabaya",
+	}}
+
+	meetingData := domain.MeetingOwner{
+		ID:           1,
+		Time:         "09:00:00",
+		Date:         "21/08/2022",
+		Petname:      "nunu",
+		Petphoto:     "nunu.jpg",
+		Seekername:   "difa",
+		Fullname:     "eunwoo",
+		PhotoProfile: "eunwoo.jpg",
+		Address:      "surabaya",
+	}
+
+	t.Run("Get MyMeeting Success", func(t *testing.T) {
+		repo.On("GetMyMeetingID", mock.Anything).Return(insertData, nil).Once()
+
+		useCase := New(repo, validator.New())
+
+		res, _ := useCase.GetSeekMeeting(meetingData.ID)
+		// assert.Nil(t, err)
+		assert.GreaterOrEqual(t, 1, len(res))
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("Failed Get Meeting", func(t *testing.T) {
+		repo.On("GetMyMeetingID", mock.Anything).Return([]domain.MeetingOwner{}, errors.New("error get data")).Once()
+
+		useCase := New(repo, validator.New())
+
+		res, err := useCase.GetSeekMeeting(-1)
+		// assert.NotNil(t, err)
+		assert.Nil(t, res)
 		assert.EqualError(t, err, errors.New("error get data").Error())
 	})
 }

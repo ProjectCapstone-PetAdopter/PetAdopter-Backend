@@ -69,22 +69,45 @@ func (_m *MeetingUsecase) GetEmail(userID int, meetingID int) (domain.Ownerdata,
 	return r0, r1
 }
 
-// GetMyMeeting provides a mock function with given fields: meetingID
-func (_m *MeetingUsecase) GetMyMeeting(meetingID int) ([]domain.MeetingOwner, error) {
-	ret := _m.Called(meetingID)
+// GetOwnerMeeting provides a mock function with given fields: userID
+func (_m *MeetingUsecase) GetOwnerMeeting(userID int) ([]map[string]interface{}, error) {
+	ret := _m.Called(userID)
 
-	var r0 []domain.MeetingOwner
-	if rf, ok := ret.Get(0).(func(int) []domain.MeetingOwner); ok {
-		r0 = rf(meetingID)
+	var r0 []map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) []map[string]interface{}); ok {
+		r0 = rf(userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.MeetingOwner)
+			r0 = ret.Get(0).([]map[string]interface{})
 		}
 	}
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(meetingID)
+		r1 = rf(userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetSeekMeeting provides a mock function with given fields: userID
+func (_m *MeetingUsecase) GetSeekMeeting(userID int) ([]map[string]interface{}, error) {
+	ret := _m.Called(userID)
+
+	var r0 []map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) []map[string]interface{}); ok {
+		r0 = rf(userID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]map[string]interface{})
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(userID)
 	} else {
 		r1 = ret.Error(1)
 	}
