@@ -46,14 +46,14 @@ func (su *speciesUseCase) UpdateSpecies(id int, UpdateSpecies domain.Species) (i
 	return data, err
 }
 
-func (su *speciesUseCase) DeleteSpecies(id int) (row int, err error) {
-	row, err = su.speciesData.Delete(id)
+func (su *speciesUseCase) DeleteSpecies(id int) (idSpecies int, err error) {
+	idSpecies, err = su.speciesData.Delete(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return row, errors.New("data not found")
+			return idSpecies, errors.New("data not found")
 		} else {
-			return row, errors.New("failed to delete species")
+			return idSpecies, errors.New("failed to delete species")
 		}
 	}
-	return row, nil
+	return idSpecies, nil
 }

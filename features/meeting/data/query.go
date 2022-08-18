@@ -19,6 +19,15 @@ func New(DB *gorm.DB) domain.MeetingData {
 	}
 }
 
+func (md *meetingData) GetMyMeeting(id int) (domain.Meeting, error) {
+	var myMeeting Meeting
+	err := md.db.Where("id = ?", id).First(&myMeeting).Error
+	if err != nil {
+		return domain.Meeting{}, err
+	}
+	return myMeeting.ToModel(), nil
+}
+
 // GetEmailData implements domain.MeetingData
 func (md *meetingData) GetEmailData(userID, meetingID int) (domain.Ownerdata, domain.Seekerdata, int) {
 	var owner Ownerdata

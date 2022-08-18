@@ -19,7 +19,7 @@ func New(DB *gorm.DB) domain.SpeciesData {
 	}
 }
 
-func (sd *speciesData) InsertSpecies(newSpecies domain.Species) (row int, err error) {
+func (sd *speciesData) InsertSpecies(newSpecies domain.Species) (idSpecies int, err error) {
 	cnv := FromModel(newSpecies)
 	// fmt.Println(cnv)
 	result := sd.db.Table("species").Create(&cnv)
@@ -55,7 +55,7 @@ func (sd *speciesData) GetAll() ([]domain.Species, error) {
 	return convert, nil
 }
 
-func (sd *speciesData) Update(id int, updatedData domain.Species) (row int, err error) {
+func (sd *speciesData) Update(id int, updatedData domain.Species) (idSpecies int, err error) {
 	var cnv = FromModel(updatedData)
 	cnv.ID = uint(id)
 	result := sd.db.Model(&Species{}).Where("ID = ?", id).Updates(cnv)
@@ -70,7 +70,7 @@ func (sd *speciesData) Update(id int, updatedData domain.Species) (row int, err 
 	return int(result.RowsAffected), nil
 }
 
-func (sd *speciesData) Delete(id int) (row int, err error) {
+func (sd *speciesData) Delete(id int) (idSpecies int, err error) {
 	res := sd.db.Delete(&Species{}, id)
 	if res.Error != nil {
 		log.Println("cannot delete data", res.Error.Error())
