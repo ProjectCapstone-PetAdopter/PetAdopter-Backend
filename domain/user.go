@@ -37,6 +37,7 @@ type UserHandler interface {
 	Register() echo.HandlerFunc
 	Update() echo.HandlerFunc
 	GetProfile() echo.HandlerFunc
+	GetbyID() echo.HandlerFunc
 	CallbackGoogleSignUp() echo.HandlerFunc
 	CallbackGoogleLogin() echo.HandlerFunc
 	SignUpGoogle() echo.HandlerFunc
@@ -49,6 +50,7 @@ type UserUseCase interface {
 	RegisterUser(newuser User, cost int, token *oauth2.Token, ui UserInfo) int
 	UpdateUser(newuser User, userid, cost int) int
 	GetProfile(id int) (map[string]interface{}, int)
+	GetProfileID(userid int) (map[string]interface{}, int)
 }
 
 type UserData interface {
@@ -59,4 +61,5 @@ type UserData interface {
 	CheckDuplicate(newuser User) bool
 	GetPasswordData(name string) string
 	GetProfile(userID int) (User, int)
+	GetProfileIDData(Userid int) (User, int)
 }

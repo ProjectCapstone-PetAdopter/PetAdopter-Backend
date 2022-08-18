@@ -10,6 +10,7 @@ import (
 	"petadopter/domain"
 	common "petadopter/features/common"
 	"petadopter/utils/google"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -31,6 +32,37 @@ func New(us domain.UserUseCase, o *oauth2.Config, cl *google.ClientUploader) dom
 		userUsecase: us,
 		oauth:       o,
 		client:      cl,
+	}
+}
+
+// GetbyID implements domain.UserHandler
+func (us *userHandler) GetbyID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		usr := c.Param("id")
+
+		cnv, err := strconv.Atoi(usr)
+		if err != nil {
+			log.Println("cant convert to int")
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "There is an error in internal server",
+			})
+		}
+
+		arrmap, status := us.userUsecase.GetProfile(cnv)
+
+		if status == 404 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    http.StatusNotFound,
+				"message": "Data not found",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data":    arrmap,
+			"code":    http.StatusOK,
+			"message": "get data success",
+		})
 	}
 }
 
@@ -364,11 +396,11 @@ func (us *userHandler) Update() echo.HandlerFunc {
 	}
 }
 
-func (uh *userHandler) GetProfile() echo.HandlerFunc {
+func (us *userHandler) GetProfile() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		usr := common.ExtractData(c)
 
-		arrmap, status := uh.userUsecase.GetProfile(usr.ID)
+		arrmap, status := us.userUsecase.GetProfile(usr.ID)
 
 		if status == 404 {
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
