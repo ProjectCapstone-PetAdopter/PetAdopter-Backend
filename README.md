@@ -46,6 +46,7 @@
         <li><a href="#prerequisites">Prerequisites</a></li>
       </ul>
     </li>
+    <li><a href="#fitur">Fitur</a></li>
     <li><a href="#erd">ERD</a></li>
     <li><a href="#open-api">Open Api</a></li>
     <li><a href="#contributor">Contributor</a></li>
@@ -98,7 +99,7 @@ Make sure your computer has golang installed.
    go get
    ```
 
-3. set environment, database connection
+3. Set environment, database connection
    ```sh
    .env
    ```
@@ -110,14 +111,31 @@ Make sure your computer has golang installed.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-<!-- ROADMAP -->
+## Fitur
+**1. As User**
+- Register, Login and Logout using OAuth
+- Find all available pets
+- Submit an Adoption request
+- Request/approve meeting
+
+**2. As Pet Owner**
+- Register, Login and Logout using OAuth
+- Add new pets to sistem
+- Request/approve meeting
+- Approve an Adoption request
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## ERD
 <img src="readme/erd.png" alt="erd">
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Open Api
+<p align="center">
 <img src="readme/swagger.gif" >
+</p>
 
 [Swagger Open Api link](https://app.swaggerhub.com/apis-docs/Capstone-tim1/PetAdopter-tim1/1.0.0)
 
@@ -130,7 +148,7 @@ Make sure your computer has golang installed.
 
 The following is a list of contributors to this project
 
-[Lukman Hafidz](https://github.com/lukmanhafidz) - [Rizuna diva](https://github.com/rizunadiva) - [Ahmad Reski](https://github.com/reski-id)
+[Lukman Hafidz](https://github.com/lukmanhafidz) - [Rizuna Diva](https://github.com/rizunadiva) - [Ahmad Reski](https://github.com/reski-id)
 
 
 
