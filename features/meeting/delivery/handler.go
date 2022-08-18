@@ -67,7 +67,7 @@ func (mh *meetingHandler) InsertMeeting() echo.HandlerFunc {
 
 			dateTime := fmt.Sprintf("%sT%s+07:00", insertMeeting.Date, insertMeeting.Time)
 			location := fmt.Sprintf("%s,%s", owner.Address, owner.City)
-
+			log.Println(seeker.Email)
 			events := &calendar.Event{
 				Summary:     "Meeting for adoption",
 				Description: "Meeting with owner",
