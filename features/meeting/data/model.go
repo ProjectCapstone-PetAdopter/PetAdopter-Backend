@@ -27,6 +27,30 @@ type MeetingOwner struct {
 	Status       string
 }
 
+type Ownerdata struct {
+	Email   string
+	Address string
+	City    string
+}
+
+type Seekerdata struct {
+	Email string
+}
+
+func (m *Ownerdata) ToModelOwnerdata() domain.Ownerdata {
+	return domain.Ownerdata{
+		Email:   m.Email,
+		City:    m.City,
+		Address: m.Address,
+	}
+}
+
+func (m *Seekerdata) ToModelSeekerdata() domain.Seekerdata {
+	return domain.Seekerdata{
+		Email: m.Email,
+	}
+}
+
 func (m *Meeting) ToModel() domain.Meeting {
 	return domain.Meeting{
 		ID:         int(m.ID),

@@ -133,11 +133,15 @@ func TestUpdateUser(t *testing.T) {
 
 func TestLoginUser(t *testing.T) {
 	repo := new(mocks.UserData)
+
 	mockData := domain.User{Username: "batman", Password: "polar"}
 	returnData := domain.User{ID: 1, Role: "user", Username: "batman"}
+
 	notfound := mockData
 	notfound.ID = 0
+
 	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwiUm9sZSI6InVzZXIifQ.TqvhPckNECPMraeU5gaCJnK27HNnZCs8n6TszCZrrc8"
+	tokenOauth := &oauth2.Token{AccessToken: "ya29.A0AVA9y1ttWAYT0Tds5ZdHbbHPXbUYiqk6iIaurHdhX4nTqiKnsGHzGELhMc-qvNrs-6QdNIclmGWQOwr3W6-yQC1CU5Iac84RX3yLLlYW0pzh2kLzzlKw3OCp8U2sMe_bt74gWr6WAn6JKaS4x1Y44ao9Og4QaCgYKATASATASFQE65dr8Fa5G31CE05hroyH3HpB6qg0163"}
 
 	t.Run("Succes Login", func(t *testing.T) {
 		repo.On("GetPasswordData", mock.Anything).Return("$2a$10$SrMvwwY/QnQ4nZunBvGOuOm2U1w8wcAENOoAMI7l8xH7C1Vmt5mru")
@@ -148,6 +152,21 @@ func TestLoginUser(t *testing.T) {
 		assert.Equal(t, "batman", res["username"])
 		assert.Equal(t, token, res["token"])
 		assert.Equal(t, "user", res["role"])
+		assert.Equal(t, "", res["tokenoauth"])
+		assert.Equal(t, 200, status)
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("Succes Login with google", func(t *testing.T) {
+		repo.On("GetPasswordData", mock.Anything).Return("$2a$10$SrMvwwY/QnQ4nZunBvGOuOm2U1w8wcAENOoAMI7l8xH7C1Vmt5mru")
+		repo.On("Login", mock.Anything, mock.Anything).Return(returnData).Once()
+		userUseCase := New(repo, validator.New())
+		res, status := userUseCase.Login(mockData, tokenOauth)
+
+		assert.Equal(t, "batman", res["username"])
+		assert.Equal(t, token, res["token"])
+		assert.Equal(t, "user", res["role"])
+		assert.Equal(t, tokenOauth.AccessToken, res["tokenoauth"])
 		assert.Equal(t, 200, status)
 		repo.AssertExpectations(t)
 	})

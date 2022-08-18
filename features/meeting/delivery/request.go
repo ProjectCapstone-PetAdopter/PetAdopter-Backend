@@ -5,6 +5,7 @@ import "petadopter/domain"
 type InsertMeeting struct {
 	Time       string `json:"time" form:"time"`
 	Date       string `json:"date" form:"date"`
+	Token      string `json:"token" form:"token"`
 	Userid     int
 	AdoptionID uint
 }

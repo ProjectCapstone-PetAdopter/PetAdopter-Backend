@@ -174,3 +174,40 @@ func TestGetMeeting(t *testing.T) {
 		assert.EqualError(t, err, errors.New("error get data").Error())
 	})
 }
+
+func TestGetEmail(t *testing.T) {
+	repo := new(mocks.MeetingData)
+
+	returnDataOwner := domain.Ownerdata{Email: "lukman@gmail.com", Address: "jln.cijantung", City: "Jakarta"}
+	returnDataSeeker := domain.Seekerdata{Email: "jacob@gmail.com"}
+
+	t.Run("success get email", func(t *testing.T) {
+		repo.On("GetEmailData", mock.Anything, mock.Anything).Return(returnDataOwner, returnDataSeeker, 200).Once()
+		useCase := New(repo, validator.New())
+		resOwner, resSeeker := useCase.GetEmail(2, 1)
+
+		assert.Equal(t, returnDataOwner, resOwner)
+		assert.Equal(t, returnDataSeeker, resSeeker)
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("Data not found", func(t *testing.T) {
+		repo.On("GetEmailData", mock.Anything, mock.Anything).Return(domain.Ownerdata{}, domain.Seekerdata{}, 404).Once()
+		useCase := New(repo, validator.New())
+		resOwner, resSeeker := useCase.GetEmail(2, 1)
+
+		assert.Equal(t, domain.Ownerdata{}, resOwner)
+		assert.Equal(t, domain.Seekerdata{}, resSeeker)
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("Internal server error", func(t *testing.T) {
+		repo.On("GetEmailData", mock.Anything, mock.Anything).Return(domain.Ownerdata{}, domain.Seekerdata{}, 500).Once()
+		useCase := New(repo, validator.New())
+		resOwner, resSeeker := useCase.GetEmail(2, 1)
+
+		assert.Equal(t, domain.Ownerdata{}, resOwner)
+		assert.Equal(t, domain.Seekerdata{}, resSeeker)
+		repo.AssertExpectations(t)
+	})
+}
