@@ -10,7 +10,7 @@ type PetsInsertRequest struct {
 	Age         int    `json:"age" form:"age" validate:"required"`
 	Color       string `json:"color" form:"color"`
 	Description string `json:"description" form:"description"`
-	Petphoto    string `json:"petphoto"`
+	Petphoto    string `json:"petphoto" form:"petphoto"`
 	Speciesid   int    `json:"speciesid" form:"speciesid" validate:"required"`
 	Userid      int
 }
