@@ -91,12 +91,12 @@ func (mh *meetingHandler) InsertMeeting() echo.HandlerFunc {
 
 			srv, err := calendar.NewService(c.Request().Context(), option.WithHTTPClient(client))
 			if err != nil {
-				log.Fatalf("Unable to retrieve Calendar client: %v", err)
+				log.Printf("Unable to retrieve Calendar client: %v", err)
 			}
 
 			_, err = srv.Events.Insert("primary", events).SendUpdates("all").Do()
 			if err != nil {
-				log.Fatalf("Unable to create event. %v\n", err)
+				log.Printf("Unable to create event. %v\n", err)
 			}
 		}
 
