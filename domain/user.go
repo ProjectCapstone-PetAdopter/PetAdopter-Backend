@@ -27,6 +27,10 @@ type UserInfo struct {
 	Photoprofile string
 }
 
+type Link struct {
+	Url string `json:"url"`
+}
+
 type UserHandler interface {
 	Login() echo.HandlerFunc
 	DeleteUser() echo.HandlerFunc
