@@ -6,12 +6,8 @@
 <!--
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![Forks][forks-shield]][Forks-url]
+[![Stars][Stars-shield]][Stars-url]
 
 
 
@@ -25,16 +21,10 @@
   <h3 align="center">Pet-Adopt</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    A place where you can find your favorite pets!
     <br />
-    <a href="https://github.com/othneildrew/Pet-Adopt"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/ProjectCapstone-PetAdopter/PetAdopter-Backend"><strong>Link Projects »</strong></a>
     <br />
-    <br />
-    <a href="https://github.com/othneildrew/Pet-Adopt">View Demo</a>
-    ·
-    <a href="https://github.com/othneildrew/Pet-Adopt/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Pet-Adopt/issues">Request Feature</a>
   </p>
 </div>
 
@@ -73,11 +63,11 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+This program allows everyone to find and raise their favorite animals
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
+this is how:
+* Users can register, then search for available animals for adoption
+* The previous pet owner will approve the adoption request, and make an appointment in person
 * You should implement DRY principles to the rest of your life :smile:
 
 Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
@@ -92,16 +82,13 @@ Use the `BLANK_README.md` to get started.
 
 This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
-* [![Echo][Echo]][Echo-url]
-* [![Golang][Golang.js]][Golang-url]
-* [![Swagger][Swagger.js]][Swagger-url]
-* [![Draw.io][Draw.io]][Draw-url]
-* [![OAuth][OAuth]][OAuth-url]
-* [![Kalender-Api][kalender]][kalender-url]
-* [![Google Cloud][cgp.com]][cgp-url]
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
+* [![Golang]][Golang-url]
+* [![Echo]][Echo-url]
+* [![Swagger]][Swagger-url]
+* [![Draw.io]][Draw-url]
+* [![OAuth]][OAuth-url]
+* [![Kalender]][kalender-url]
+* [![Google Cloud]][cgp-url]
 
 
 <!-- GETTING STARTED -->
@@ -112,7 +99,7 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+make sure your computer has golang installed.
 * golang
   ```sh
   npm install npm@latest -g
@@ -215,24 +202,35 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Pet-Adopt.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Pet-Adopt/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Pet-Adopt.svg?style=for-the-badge
-[forks-url]: https://img.shields.io/github/stars/ProjectCapstone-PetAdopter/PetAdopter-Backend
-[stars-url]: https://img.shields.io/github/stars/ProjectCapstone-PetAdopter/PetAdopter-Backend
-[issues-shield]: https://img.shields.io/github/issues/ProjectCapstone-PetAdopter/PetAdopter-Backend
+
+[forks-shield]: 	https://img.shields.io/github/forks/ProjectCapstone-PetAdopter/PetAdopter-Backend
+
+[Forks-url]: https://google.com
+[Stars-url]: https://google.com
+
+[Stars-shield]: 	https://img.shields.io/github/stars/ProjectCapstone-PetAdopter/PetAdopter-Backend
 
 [product-screenshot]: images/screenshot.png
+
+
+
+[Golang]: https://img.shields.io/badge/Golang-Golang-9cf
+[Golang-url]: https://go.dev/
+
 [Echo]: https://img.shields.io/badge/Golang-Echo-9cf
 [Echo-url]: https://echo.labstack.com/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
 
-* [![Echo][Echo]][Echo-url]
-* [![Golang][Golang.js]][Golang-url]
-* [![Swagger][Swagger.js]][Swagger-url]
-* [![Draw.io][Draw.io]][Draw-url]
-* [![OAuth][OAuth]][OAuth-url]
-* [![Kalender-Api][kalender]][kalender-url]
-* [![Google Cloud][cgp.com]][cgp-url]
+[Swagger]: https://img.shields.io/badge/SwaggerHub-OpenApi-success
+[Swagger-url]: https://app.swaggerhub.com/home
+
+[Draw.io]: https://img.shields.io/badge/Draw.io-ERD-red
+[Draw-url]: https://app.diagrams.net/
+
+[OAuth]: https://img.shields.io/badge/OAuth-Google-informational
+[OAuth-url]: https://google.com
+
+[Kalender]: https://img.shields.io/badge/Kalender-Google-informational
+[Kalender-url]: https://google.com
+
+[Google Cloud]: https://img.shields.io/badge/Google%20Cloud-Google-informational
+[cgp-url]: https://google.com
