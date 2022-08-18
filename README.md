@@ -68,11 +68,7 @@ This program allows everyone to find and raise their favorite animals
 this is how:
 * Users can register, then search for available animals for adoption
 * The previous pet owner will approve the adoption request, and make an appointment in person
-* You should implement DRY principles to the rest of your life :smile:
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
+* After meeting the previous animal owner, now the user can adopt their favorite animal :smile:
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
