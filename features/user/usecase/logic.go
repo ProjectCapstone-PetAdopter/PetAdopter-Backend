@@ -24,6 +24,32 @@ func New(ud domain.UserData, val *validator.Validate) domain.UserUseCase {
 	}
 }
 
+// GetProfileID implements domain.UserUseCase
+func (ud *userCase) GetProfileID(userid int) (map[string]interface{}, int) {
+	var res = map[string]interface{}{}
+	data, status := ud.userData.GetProfileIDData(userid)
+
+	if status == 404 {
+		log.Println("No data from query")
+		return nil, 404
+	}
+
+	if status == 500 {
+		log.Println("Cant get from query")
+		return nil, 500
+	}
+
+	res["username"] = data.Username
+	res["fullname"] = data.Fullname
+	res["phonenumber"] = data.Phonenumber
+	res["email"] = data.Email
+	res["address"] = data.Address
+	res["photoprofile"] = data.PhotoProfile
+	res["city"] = data.City
+
+	return res, 200
+}
+
 func (ud *userCase) Login(userdata domain.User, authtoken *oauth2.Token) (map[string]interface{}, int) {
 	var resMap = map[string]interface{}{}
 	var tokenOauth string

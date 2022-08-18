@@ -135,7 +135,39 @@ func (ph *petsHandler) UpdatePets() echo.HandlerFunc {
 				"message": "Please enter data correctly",
 			})
 		}
+		if tmp.Petphoto != "" {
+			form, err := c.FormFile("petphoto")
+			if err != nil {
+				log.Println(err, "cant get form")
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"code":    http.StatusInternalServerError,
+					"message": "There is an error in internal server",
+				})
+			}
 
+			file, err := form.Open()
+			if err != nil {
+				log.Println(err, "cant open file")
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"code":    http.StatusInternalServerError,
+					"message": "There is an error in internal server",
+				})
+			}
+
+			id := uuid.New()
+			filename := fmt.Sprintf("%dPost-%s.jpg", tmp.Userid, id.String())
+			config.UPLOADPATH = "post/"
+
+			link, err := ph.client.UploadFile(file, config.UPLOADPATH, filename)
+			if err != nil {
+				log.Println(err, "cant upload file")
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"code":    http.StatusInternalServerError,
+					"message": "There is an error in internal server",
+				})
+			}
+			tmp.Petphoto = link
+		}
 		data, errs := ph.petsUsecase.UpPets(cnv, tmp.ToDomain(), token.ID)
 		if errs != nil {
 			log.Println("Cannot update data", errs)
