@@ -16,6 +16,7 @@ type AdoptionPet struct {
 	PetsID       int
 	Petname      string
 	Petphoto     string
+	Userid       int
 	Fullname     string
 	PhotoProfile string
 	City         string

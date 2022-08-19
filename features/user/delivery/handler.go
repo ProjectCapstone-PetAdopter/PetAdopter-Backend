@@ -12,7 +12,6 @@ import (
 	"petadopter/utils/google"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 )
@@ -24,14 +23,12 @@ var (
 type userHandler struct {
 	userUsecase domain.UserUseCase
 	oauth       *oauth2.Config
-	client      *google.ClientUploader
 }
 
-func New(us domain.UserUseCase, o *oauth2.Config, cl *google.ClientUploader) domain.UserHandler {
+func New(us domain.UserUseCase, o *oauth2.Config) domain.UserHandler {
 	return &userHandler{
 		userUsecase: us,
 		oauth:       o,
-		client:      cl,
 	}
 }
 
@@ -101,6 +98,13 @@ func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 
 		res, status := us.userUsecase.Login(dataLogin.ToModelUserInfoFormat(), token)
 
+		urlstr := fmt.Sprintf("http://localhost:3000/auth/redirect?token=%s&role=%s&tokenoauth=%s&message=success", res["token"], res["role"], res["tokenoauth"])
+
+		var buf bytes.Buffer
+		buf.WriteString(urlstr)
+		v := url.Values{}
+		buf.WriteString(v.Encode())
+
 		if status == 400 {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"code":    http.StatusBadRequest,
@@ -121,13 +125,6 @@ func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 				"message": "There is an error in internal server",
 			})
 		}
-
-		urlstr := fmt.Sprintf("http://localhost:3000/auth/redirect?token=%s&role=%s&tokenoauth=%s", res["token"], res["role"], res["tokenoauth"])
-
-		var buf bytes.Buffer
-		buf.WriteString(urlstr)
-		v := url.Values{}
-		buf.WriteString(v.Encode())
 
 		return c.Redirect(http.StatusFound, buf.String())
 		// return c.JSON(http.StatusOK, map[string]interface{}{
@@ -326,40 +323,12 @@ func (us *userHandler) Update() echo.HandlerFunc {
 				"message": "There is an error in internal server",
 			})
 		}
-		if newuser.Photoprofile != "" {
-			form, err := c.FormFile("photoprofile")
-			if err != nil {
-				log.Println(err, "cant get form")
-				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-					"code":    http.StatusInternalServerError,
-					"message": "There is an error in internal server",
-				})
-			}
 
-			file, err := form.Open()
-			if err != nil {
-				log.Println(err, "cant open file")
-				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-					"code":    http.StatusInternalServerError,
-					"message": "There is an error in internal server",
-				})
-			}
-
-			id := uuid.New()
-			filename := fmt.Sprintf("%sPP-%s.jpg", newuser.Username, id.String())
-			config.UPLOADPATH = "profile/"
-
-			link, err := us.client.UploadFile(file, config.UPLOADPATH, filename)
-			if err != nil {
-				log.Println(err, "cant upload file")
-				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-					"code":    http.StatusInternalServerError,
-					"message": "There is an error in internal server",
-				})
-			}
-			newuser.Photoprofile = link
+		form, err := c.FormFile("photoprofile")
+		if err != nil {
+			log.Println("no photo found")
 		}
-		status := us.userUsecase.UpdateUser(newuser.ToModelUpdate(), param.ID, config.COST)
+		status := us.userUsecase.UpdateUser(newuser.ToModelUpdate(), param.ID, config.COST, form)
 
 		if status == http.StatusBadRequest {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{

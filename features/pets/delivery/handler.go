@@ -1,28 +1,22 @@
 package delivery
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"petadopter/config"
 	"petadopter/domain"
 	"petadopter/features/common"
-	"petadopter/utils/google"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type petsHandler struct {
 	petsUsecase domain.PetsUseCase
-	client      *google.ClientUploader
 }
 
-func New(cu domain.PetsUseCase, cl *google.ClientUploader) domain.PetsHandler {
+func New(cu domain.PetsUseCase) domain.PetsHandler {
 	return &petsHandler{
 		petsUsecase: cu,
-		client:      cl,
 	}
 }
 
@@ -50,37 +44,9 @@ func (ph *petsHandler) InsertPets() echo.HandlerFunc {
 
 		form, err := c.FormFile("petphoto")
 		if err != nil {
-			log.Println(err, "cant get form")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
+			log.Println("no photo found")
 		}
-
-		file, err := form.Open()
-		if err != nil {
-			log.Println(err, "cant open file")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
-		}
-
-		id := uuid.New()
-		filename := fmt.Sprintf("%dPost-%s.jpg", tmp.Userid, id.String())
-		config.UPLOADPATH = "post/"
-
-		link, err := ph.client.UploadFile(file, config.UPLOADPATH, filename)
-		if err != nil {
-			log.Println(err, "cant upload file")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
-		}
-		tmp.Petphoto = link
-
-		_, errs := ph.petsUsecase.AddPets(tmp.ToDomain(), token.ID)
+		_, errs := ph.petsUsecase.AddPets(tmp.ToDomain(), int(token.ID), form)
 		if errs != nil {
 			log.Println("Cannot proces data", err)
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
@@ -135,40 +101,12 @@ func (ph *petsHandler) UpdatePets() echo.HandlerFunc {
 				"message": "Please enter data correctly",
 			})
 		}
-		if tmp.Petphoto != "" {
-			form, err := c.FormFile("petphoto")
-			if err != nil {
-				log.Println(err, "cant get form")
-				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-					"code":    http.StatusInternalServerError,
-					"message": "There is an error in internal server",
-				})
-			}
 
-			file, err := form.Open()
-			if err != nil {
-				log.Println(err, "cant open file")
-				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-					"code":    http.StatusInternalServerError,
-					"message": "There is an error in internal server",
-				})
-			}
-
-			id := uuid.New()
-			filename := fmt.Sprintf("%dPost-%s.jpg", tmp.Userid, id.String())
-			config.UPLOADPATH = "post/"
-
-			link, err := ph.client.UploadFile(file, config.UPLOADPATH, filename)
-			if err != nil {
-				log.Println(err, "cant upload file")
-				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-					"code":    http.StatusInternalServerError,
-					"message": "There is an error in internal server",
-				})
-			}
-			tmp.Petphoto = link
+		form, err := c.FormFile("petphoto")
+		if err != nil {
+			log.Println("no photo found")
 		}
-		data, errs := ph.petsUsecase.UpPets(cnv, tmp.ToDomain(), token.ID)
+		data, errs := ph.petsUsecase.UpPets(cnv, tmp.ToDomain(), int(token.ID), form)
 		if errs != nil {
 			log.Println("Cannot update data", errs)
 			return c.JSON(http.StatusNotFound, map[string]interface{}{

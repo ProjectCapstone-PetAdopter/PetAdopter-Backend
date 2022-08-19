@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"mime/multipart"
+
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 )
@@ -48,7 +50,7 @@ type UserUseCase interface {
 	Login(userdata User, token *oauth2.Token) (map[string]interface{}, int)
 	Delete(userID int) int
 	RegisterUser(newuser User, cost int, token *oauth2.Token, ui UserInfo) int
-	UpdateUser(newuser User, userid, cost int) int
+	UpdateUser(newuser User, userid, cost int, form *multipart.FileHeader) int
 	GetProfile(id int) (map[string]interface{}, int)
 	GetProfileID(userid int) (map[string]interface{}, int)
 }

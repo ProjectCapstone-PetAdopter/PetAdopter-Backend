@@ -20,6 +20,7 @@ type AdoptionPet struct {
 	PetsID       int
 	Petname      string
 	Petphoto     string
+	Userid       int
 	Fullname     string
 	PhotoProfile string
 	City         string
@@ -51,6 +52,7 @@ func (a *AdoptionPet) ToDomainAdoptionPet() domain.AdoptionPet {
 		PetsID:       a.PetsID,
 		Petname:      a.Petname,
 		Petphoto:     a.Petphoto,
+		Userid:       a.Userid,
 		Fullname:     a.Fullname,
 		PhotoProfile: a.PhotoProfile,
 		City:         a.City,

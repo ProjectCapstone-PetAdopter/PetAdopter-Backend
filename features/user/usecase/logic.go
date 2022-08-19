@@ -1,13 +1,18 @@
 package usecase
 
 import (
+	"fmt"
 	"log"
+	"mime/multipart"
 
+	"petadopter/config"
 	"petadopter/domain"
 	"petadopter/features/common"
 	"petadopter/features/user/data"
+	"petadopter/utils/google"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
 )
@@ -15,12 +20,14 @@ import (
 type userCase struct {
 	userData domain.UserData
 	valid    *validator.Validate
+	client   *google.ClientUploader
 }
 
-func New(ud domain.UserData, val *validator.Validate) domain.UserUseCase {
+func New(ud domain.UserData, val *validator.Validate, cl *google.ClientUploader) domain.UserUseCase {
 	return &userCase{
 		userData: ud,
 		valid:    val,
+		client:   cl,
 	}
 }
 
@@ -145,7 +152,7 @@ func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.To
 }
 
 // UpdateUser implements domain.UserUseCase
-func (ud *userCase) UpdateUser(newuser domain.User, userid int, cost int) int {
+func (ud *userCase) UpdateUser(newuser domain.User, userid, cost int, form *multipart.FileHeader) int {
 	var user = data.FromModel(newuser)
 
 	if userid == 0 {
@@ -165,6 +172,26 @@ func (ud *userCase) UpdateUser(newuser domain.User, userid int, cost int) int {
 	if err != nil {
 		log.Println("Error encrypt password", err)
 		return 500
+	}
+
+	if form != nil {
+		file, err := form.Open()
+		if err != nil {
+			log.Println(err, "cant open file")
+			return 500
+		}
+
+		defer file.Close()
+		id := uuid.New()
+		filename := fmt.Sprintf("%sPP-%s.jpg", newuser.Username, id.String())
+		config.UPLOADPATH = "profile/"
+
+		link, err := ud.client.UploadFile(file, config.UPLOADPATH, filename)
+		if err != nil {
+			log.Println(err, "cant upload file")
+			return 500
+		}
+		user.PhotoProfile = link
 	}
 
 	user.ID = uint(userid)
