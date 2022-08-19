@@ -6,8 +6,8 @@ type InsertMeeting struct {
 	Time       string `json:"time" form:"time"`
 	Date       string `json:"date" form:"date"`
 	Token      string `json:"token" form:"token"`
+	AdoptionID int    `json:"adoptionid" form:"adoptionid"`
 	Userid     int
-	AdoptionID uint
 }
 
 func (i InsertMeeting) ToModel() domain.Meeting {
@@ -15,6 +15,6 @@ func (i InsertMeeting) ToModel() domain.Meeting {
 		Time:       i.Time,
 		Date:       i.Date,
 		UserID:     i.Userid,
-		AdoptionID: int(i.AdoptionID),
+		AdoptionID: i.AdoptionID,
 	}
 }

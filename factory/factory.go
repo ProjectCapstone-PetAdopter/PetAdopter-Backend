@@ -33,13 +33,13 @@ func InitFactory(e *echo.Echo, db *gorm.DB, oauth2 *oauth2.Config, client *googl
 	valid := validator.New()
 
 	userData := ud.New(db)
-	userCase := uc.New(userData, valid)
-	userHandler := udeli.New(userCase, oauth2, client)
+	userCase := uc.New(userData, valid, client)
+	userHandler := udeli.New(userCase, oauth2)
 	udeli.RouteUser(e, userHandler)
 
 	petsData := pd.New(db)
-	petsCase := pu.New(petsData, valid)
-	petsHandler := petsDelivery.New(petsCase, client)
+	petsCase := pu.New(petsData, valid, client)
+	petsHandler := petsDelivery.New(petsCase)
 	petsDelivery.RoutePets(e, petsHandler)
 
 	adoptData := ad.New(db)

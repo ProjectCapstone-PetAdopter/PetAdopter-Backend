@@ -1,15 +1,17 @@
 package delivery
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"petadopter/config"
 	"petadopter/domain"
 	common "petadopter/features/common"
 	"petadopter/utils/google"
+	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 )
@@ -21,14 +23,43 @@ var (
 type userHandler struct {
 	userUsecase domain.UserUseCase
 	oauth       *oauth2.Config
-	client      *google.ClientUploader
 }
 
-func New(us domain.UserUseCase, o *oauth2.Config, cl *google.ClientUploader) domain.UserHandler {
+func New(us domain.UserUseCase, o *oauth2.Config) domain.UserHandler {
 	return &userHandler{
 		userUsecase: us,
 		oauth:       o,
-		client:      cl,
+	}
+}
+
+// GetbyID implements domain.UserHandler
+func (us *userHandler) GetbyID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		usr := c.Param("id")
+
+		cnv, err := strconv.Atoi(usr)
+		if err != nil {
+			log.Println("cant convert to int")
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"code":    http.StatusInternalServerError,
+				"message": "There is an error in internal server",
+			})
+		}
+
+		arrmap, status := us.userUsecase.GetProfile(cnv)
+
+		if status == 404 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"code":    http.StatusNotFound,
+				"message": "Data not found",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data":    arrmap,
+			"code":    http.StatusOK,
+			"message": "get data success",
+		})
 	}
 }
 
@@ -67,6 +98,13 @@ func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 
 		res, status := us.userUsecase.Login(dataLogin.ToModelUserInfoFormat(), token)
 
+		urlstr := fmt.Sprintf("http://localhost:3000/auth/redirect?token=%s&role=%s&tokenoauth=%s&message=success", res["token"], res["role"], res["tokenoauth"])
+
+		var buf bytes.Buffer
+		buf.WriteString(urlstr)
+		v := url.Values{}
+		buf.WriteString(v.Encode())
+
 		if status == 400 {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"code":    http.StatusBadRequest,
@@ -88,11 +126,12 @@ func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 			})
 		}
 
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"data":    res,
-			"code":    http.StatusOK,
-			"message": "Register success",
-		})
+		return c.Redirect(http.StatusFound, buf.String())
+		// return c.JSON(http.StatusOK, map[string]interface{}{
+		// 	"data":    string(buf.String()),
+		// 	"code":    http.StatusOK,
+		// 	"message": "Register success",
+		// })
 	}
 }
 
@@ -138,10 +177,14 @@ func (us *userHandler) CallbackGoogleSignUp() echo.HandlerFunc {
 			})
 		}
 
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"code":    http.StatusOK,
-			"message": "Register success",
-		})
+		urlstr := "http://localhost:3000/auth/redirect"
+
+		var buf bytes.Buffer
+		buf.WriteString(urlstr)
+		v := url.Values{}
+		buf.WriteString(v.Encode())
+
+		return c.Redirect(http.StatusFound, buf.String())
 	}
 }
 
@@ -283,37 +326,9 @@ func (us *userHandler) Update() echo.HandlerFunc {
 
 		form, err := c.FormFile("photoprofile")
 		if err != nil {
-			log.Println(err, "cant get form")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
+			log.Println("no photo found")
 		}
-
-		file, err := form.Open()
-		if err != nil {
-			log.Println(err, "cant open file")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
-		}
-
-		id := uuid.New()
-		filename := fmt.Sprintf("%sPP-%s.jpg", newuser.Username, id.String())
-		config.UPLOADPATH = "profile/"
-
-		link, err := us.client.UploadFile(file, config.UPLOADPATH, filename)
-		if err != nil {
-			log.Println(err, "cant upload file")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
-		}
-		newuser.Photoprofile = link
-
-		status := us.userUsecase.UpdateUser(newuser.ToModelUpdate(), param.ID, config.COST)
+		status := us.userUsecase.UpdateUser(newuser.ToModelUpdate(), param.ID, config.COST, form)
 
 		if status == http.StatusBadRequest {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -350,11 +365,11 @@ func (us *userHandler) Update() echo.HandlerFunc {
 	}
 }
 
-func (uh *userHandler) GetProfile() echo.HandlerFunc {
+func (us *userHandler) GetProfile() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		usr := common.ExtractData(c)
 
-		arrmap, status := uh.userUsecase.GetProfile(usr.ID)
+		arrmap, status := us.userUsecase.GetProfile(usr.ID)
 
 		if status == 404 {
 			return c.JSON(http.StatusNotFound, map[string]interface{}{

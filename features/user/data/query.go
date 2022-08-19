@@ -18,6 +18,24 @@ func New(db *gorm.DB) domain.UserData {
 	}
 }
 
+// GetProfileIDData implements domain.UserData
+func (ud *userData) GetProfileIDData(userID int) (domain.User, int) {
+	var tmp User
+
+	err := ud.db.Where("ID = ?", userID).First(&tmp)
+	if err.Error != nil {
+		log.Println("Cant get data", err.Error)
+		return domain.User{}, 500
+	}
+
+	if err.RowsAffected == 0 {
+		log.Println("Rows affcted = 0", err.Error)
+		return domain.User{}, 404
+	}
+
+	return tmp.ToModel(), 200
+}
+
 // GetUserCartData implements domain.UserData
 func (ud *userData) Login(dataLogin domain.User, isToken bool) domain.User {
 	log.Println(isToken)

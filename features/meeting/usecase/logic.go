@@ -35,6 +35,33 @@ func (mh *meetingUsecase) GetPetMeeting(id int) (domain.Meeting, error) {
 	return data, nil
 }
 
+// GetSeekMeeting implements domain.MeetingUsecase
+func (mu *meetingUsecase) GetSeekMeeting(id int) (arrmap []map[string]interface{}, err error) {
+	data := mu.meetingData.GetMyMeetingID(id)
+
+	if id < 1 {
+		return nil, errors.New("error get data")
+	}
+
+	for i := 0; i < len(data); i++ {
+		var res = map[string]interface{}{}
+		res["meetingid"] = data[i].ID
+		res["adoptionid"] = data[i].AdoptionID
+		res["time"] = data[i].Time
+		res["date"] = data[i].Date
+		res["petname"] = data[i].Petname
+		res["petphoto"] = data[i].Petphoto
+		res["seekerid"] = data[i].Seekerid
+		res["seekername"] = data[i].Seekername
+		res["ownerid"] = data[i].UserID
+		res["ownername"] = data[i].Fullname
+		res["ownerphoto"] = data[i].PhotoProfile
+		res["owneraddress"] = data[i].Address
+		arrmap = append(arrmap, res)
+	}
+	return arrmap, nil
+}
+
 // GetEmail implements domain.MeetingUsecase
 func (mh *meetingUsecase) GetEmail(userID, meetingID int) (domain.Ownerdata, domain.Seekerdata) {
 	owner, seeker, status := mh.meetingData.GetEmailData(userID, meetingID)
@@ -80,12 +107,29 @@ func (mu *meetingUsecase) DeleteMeeting(id int) error {
 	return err
 }
 
-func (mu *meetingUsecase) GetMyMeeting(meetingID int) (getMyData []domain.MeetingOwner, err error) {
+func (mu *meetingUsecase) GetOwnerMeeting(id int) (arrmap []map[string]interface{}, err error) {
+	data := mu.meetingData.GetMeetingID(id)
 
-	data := mu.meetingData.GetMeetingID(meetingID)
-
-	if meetingID < 1 {
-		return []domain.MeetingOwner{}, errors.New("error get data")
+	if id < 1 {
+		return nil, errors.New("error get data")
 	}
-	return data, err
+
+	for i := 0; i < len(data); i++ {
+		var res = map[string]interface{}{}
+		res["meetingid"] = data[i].ID
+		res["adoptionid"] = data[i].AdoptionID
+		res["time"] = data[i].Time
+		res["date"] = data[i].Date
+		res["petname"] = data[i].Petname
+		res["petphoto"] = data[i].Petphoto
+		res["seekerid"] = data[i].Seekerid
+		res["seekername"] = data[i].Seekername
+		res["ownerid"] = data[i].UserID
+		res["ownername"] = data[i].Fullname
+		res["ownerphoto"] = data[i].PhotoProfile
+		res["owneraddress"] = data[i].Address
+		arrmap = append(arrmap, res)
+	}
+
+	return arrmap, err
 }

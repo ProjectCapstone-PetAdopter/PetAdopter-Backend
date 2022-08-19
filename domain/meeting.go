@@ -11,15 +11,18 @@ type Meeting struct {
 }
 
 type MeetingOwner struct {
-	ID           int    `json:"id"`
-	Time         string `json:"time"`
-	Date         string `json:"date"`
-	Petname      string `json:"petname"`
-	Petphoto     string `json:"petphoto"`
-	Seekername   string `json:"seekername"`
-	Fullname     string `json:"fullname"`
-	PhotoProfile string `json:"photoprofile"`
-	Address      string `json:"address"`
+	ID           int
+	AdoptionID   int
+	UserID       int
+	Time         string
+	Date         string
+	Petname      string
+	Petphoto     string
+	Seekerid     int
+	Seekername   string
+	Fullname     string
+	PhotoProfile string
+	Address      string
 }
 
 type Ownerdata struct {
@@ -29,22 +32,26 @@ type Ownerdata struct {
 }
 
 type Seekerdata struct {
-	Email string
+	UserID   int
+	Fullname string
+	Email    string
 }
 
 type MeetingHandler interface {
 	InsertMeeting() echo.HandlerFunc
 	UpdateDataMeeting() echo.HandlerFunc
 	DeleteDataMeeting() echo.HandlerFunc
-	GetAdopt() echo.HandlerFunc
 	GetMeetingByID() echo.HandlerFunc
+	GetMeeting() echo.HandlerFunc
+	GetMyMeeting() echo.HandlerFunc
 }
 
 type MeetingUsecase interface {
 	AddMeeting(data Meeting) (idMeet int, err error)
 	UpdateMeeting(UpdateMeeting Meeting, id int) (idMeet int, err error)
 	DeleteMeeting(id int) error
-	GetMyMeeting(meetingID int) (getMyData []MeetingOwner, err error)
+	GetOwnerMeeting(userID int) (arrmap []map[string]interface{}, err error)
+	GetSeekMeeting(userID int) (arrmap []map[string]interface{}, err error)
 	GetEmail(userID, meetingID int) (Ownerdata, Seekerdata)
 	GetPetMeeting(id int) (Meeting, error)
 }
@@ -53,7 +60,8 @@ type MeetingData interface {
 	Insert(data Meeting) (idMeet int, err error)
 	Update(updatedData Meeting, id int) (idMeet int, err error)
 	Delete(id int) error
-	GetMeetingID(meetingID int) []MeetingOwner
+	GetMeetingID(userID int) []MeetingOwner
+	GetMyMeetingID(userID int) []MeetingOwner
 	GetEmailData(userID, meetingID int) (Ownerdata, Seekerdata, int)
 	GetMyMeetingPets(id int) (Meeting, error)
 }

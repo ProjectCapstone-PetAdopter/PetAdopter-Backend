@@ -10,16 +10,19 @@ type Meeting struct {
 	gorm.Model
 	Time       string `json:"time" form:"time"`
 	Date       string `json:"date" form:"date"`
-	AdoptionID int
+	AdoptionID int    `json:"adoptionid" form:"adoptionid"`
 	UserID     int
 }
 
 type MeetingOwner struct {
 	ID           int
+	AdoptionID   int
+	UserID       int
 	Time         string
 	Date         string
 	Petname      string
 	Petphoto     string
+	Seekerid     int
 	Seekername   string
 	Fullname     string
 	PhotoProfile string
@@ -34,7 +37,9 @@ type Ownerdata struct {
 }
 
 type Seekerdata struct {
-	Email string
+	UserID   int
+	Fullname string
+	Email    string
 }
 
 func (m *Ownerdata) ToModelOwnerdata() domain.Ownerdata {
@@ -47,7 +52,9 @@ func (m *Ownerdata) ToModelOwnerdata() domain.Ownerdata {
 
 func (m *Seekerdata) ToModelSeekerdata() domain.Seekerdata {
 	return domain.Seekerdata{
-		Email: m.Email,
+		UserID:   m.UserID,
+		Fullname: m.Fullname,
+		Email:    m.Email,
 	}
 }
 
@@ -64,10 +71,13 @@ func (m *Meeting) ToModel() domain.Meeting {
 func (m *MeetingOwner) ToModelMeeting() domain.MeetingOwner {
 	return domain.MeetingOwner{
 		ID:           m.ID,
+		AdoptionID:   m.AdoptionID,
+		UserID:       m.UserID,
 		Time:         m.Time,
 		Date:         m.Date,
 		Petname:      m.Petname,
 		Petphoto:     m.Petphoto,
+		Seekerid:     m.Seekerid,
 		Seekername:   m.Seekername,
 		Fullname:     m.Fullname,
 		PhotoProfile: m.PhotoProfile,

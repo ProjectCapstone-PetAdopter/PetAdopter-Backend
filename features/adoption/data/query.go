@@ -82,7 +82,7 @@ func (ad *adoptionData) GetAll(userid int) ([]domain.AdoptionPet, []domain.Appli
 		return nil, nil
 	}
 	//mengambil data owner dan pet
-	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, users.fullname, adoptions.status").
+	err := ad.db.Model(&Adoption{}).Select("adoptions.id, pets.petname, pets.userid, users.fullname, adoptions.status").
 		Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").Where("pets.userid = ?", userid).Scan(&data)
 
 	if err.Error != nil {

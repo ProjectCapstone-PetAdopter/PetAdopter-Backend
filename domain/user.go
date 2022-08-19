@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"mime/multipart"
+
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 )
@@ -27,12 +29,17 @@ type UserInfo struct {
 	Photoprofile string
 }
 
+type Link struct {
+	Url string `json:"url"`
+}
+
 type UserHandler interface {
 	Login() echo.HandlerFunc
 	DeleteUser() echo.HandlerFunc
 	Register() echo.HandlerFunc
 	Update() echo.HandlerFunc
 	GetProfile() echo.HandlerFunc
+	GetbyID() echo.HandlerFunc
 	CallbackGoogleSignUp() echo.HandlerFunc
 	CallbackGoogleLogin() echo.HandlerFunc
 	SignUpGoogle() echo.HandlerFunc
@@ -43,8 +50,9 @@ type UserUseCase interface {
 	Login(userdata User, token *oauth2.Token) (map[string]interface{}, int)
 	Delete(userID int) int
 	RegisterUser(newuser User, cost int, token *oauth2.Token, ui UserInfo) int
-	UpdateUser(newuser User, userid, cost int) int
+	UpdateUser(newuser User, userid, cost int, form *multipart.FileHeader) int
 	GetProfile(id int) (map[string]interface{}, int)
+	GetProfileID(userid int) (map[string]interface{}, int)
 }
 
 type UserData interface {
@@ -55,4 +63,5 @@ type UserData interface {
 	CheckDuplicate(newuser User) bool
 	GetPasswordData(name string) string
 	GetProfile(userID int) (User, int)
+	GetProfileIDData(Userid int) (User, int)
 }
