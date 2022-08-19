@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"gorm.io/gorm"
 )
 
 func TestAddMeeting(t *testing.T) {
@@ -259,5 +260,49 @@ func TestGetEmail(t *testing.T) {
 		assert.Equal(t, domain.Ownerdata{}, resOwner)
 		assert.Equal(t, domain.Seekerdata{}, resSeeker)
 		repo.AssertExpectations(t)
+	})
+}
+
+func TestGetPetMeeting(t *testing.T) {
+	repo := new(mocks.MeetingData)
+
+	insertData := domain.Meeting{
+		ID:   1,
+		Time: "09:00:00",
+		Date: "21/08/2022",
+	}
+	outputData := domain.Meeting{
+		ID:   1,
+		Time: "09:00:00",
+		Date: "21/08/2022",
+	}
+	t.Run("Get Pet Meeting Success", func(t *testing.T) {
+		repo.On("GetMyMeetingPets", mock.Anything).Return(insertData, nil).Once()
+
+		useCase := New(repo, validator.New())
+
+		res, err := useCase.GetPetMeeting(insertData.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, outputData, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Get Pet Meeting Failed", func(t *testing.T) {
+		repo.On("GetMyMeetingPets", mock.Anything).Return(domain.Meeting{}, gorm.ErrRecordNotFound).Once()
+
+		useCase := New(repo, validator.New())
+
+		res, err := useCase.GetPetMeeting(insertData.ID)
+		assert.NotNil(t, err)
+		assert.Equal(t, domain.Meeting{}, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Server Error", func(t *testing.T) {
+		repo.On("GetMyMeetingPets", mock.Anything).Return(domain.Meeting{}, errors.New("server error")).Once()
+
+		useCase := New(repo, validator.New())
+
+		_, err := useCase.GetPetMeeting(insertData.ID)
+		assert.NotNil(t, err)
+		assert.EqualError(t, err, errors.New("server error").Error())
 	})
 }
