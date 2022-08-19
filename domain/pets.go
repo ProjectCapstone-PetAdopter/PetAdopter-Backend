@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"mime/multipart"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,9 +26,9 @@ type PetUser struct {
 }
 
 type PetsUseCase interface {
-	AddPets(newPets Pets, userId int) (Pets, error)
+	AddPets(newPets Pets, userId int, form *multipart.FileHeader) (Pets, error)
 	GetAllP() ([]map[string]interface{}, error)
-	UpPets(IDPets int, updateData Pets, userID int) (Pets, error)
+	UpPets(IDPets int, updateData Pets, userID int, form *multipart.FileHeader) (Pets, error)
 	DelPets(IDPets int) (bool, error)
 	GetSpecificPets(PetsID int) (map[string]interface{}, error)
 	GetmyPets(userID int) ([]map[string]interface{}, error)

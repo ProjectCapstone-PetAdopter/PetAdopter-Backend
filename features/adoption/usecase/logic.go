@@ -66,6 +66,7 @@ func (au *adoptionUseCase) GetAllAP(userid int) ([]map[string]interface{}, error
 		var res = map[string]interface{}{}
 		res["adoptionid"] = data[i].ID
 		res["petname"] = data[i].Petname
+		res["ownerid"] = data[i].Userid
 		res["ownername"] = data[i].Fullname
 		res["seekerid"] = dataSeeker[i].UserID
 		res["seekername"] = dataSeeker[i].Fullname

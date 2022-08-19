@@ -2,25 +2,54 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
+	"log"
+	"mime/multipart"
+	"petadopter/config"
 	"petadopter/domain"
+	"petadopter/utils/google"
 
 	validator "github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type petsUseCase struct {
 	petsData domain.PetsData
 	validate *validator.Validate
+	client   *google.ClientUploader
 }
 
-func New(ud domain.PetsData, v *validator.Validate) domain.PetsUseCase {
+func New(ud domain.PetsData, v *validator.Validate, cl *google.ClientUploader) domain.PetsUseCase {
 	return &petsUseCase{
 		petsData: ud,
 		validate: v,
+		client:   cl,
 	}
 }
 
-func (pd *petsUseCase) AddPets(newPets domain.Pets, userId int) (domain.Pets, error) {
+func (pd *petsUseCase) AddPets(newPets domain.Pets, userId int, form *multipart.FileHeader) (domain.Pets, error) {
 	newPets.Userid = userId
+
+	if form != nil {
+		file, err := form.Open()
+		if err != nil {
+			log.Println(err, "cant open file")
+			return domain.Pets{}, errors.New("cant open file")
+		}
+
+		defer file.Close()
+		id := uuid.New()
+		filename := fmt.Sprintf("%dPost-%s.jpg", newPets.Userid, id.String())
+		config.UPLOADPATH = "profile/"
+
+		link, err := pd.client.UploadFile(file, config.UPLOADPATH, filename)
+		if err != nil {
+			log.Println(err, "cant upload file")
+			return domain.Pets{}, errors.New("cant upload file")
+		}
+		newPets.Petphoto = link
+	}
+
 	res := pd.petsData.Insert(newPets)
 
 	if res.ID == 0 {
@@ -89,8 +118,29 @@ func (pd *petsUseCase) GetAllP() ([]map[string]interface{}, error) {
 	return arrmap, nil
 }
 
-func (pd *petsUseCase) UpPets(IDPets int, updateData domain.Pets, userID int) (domain.Pets, error) {
+func (pd *petsUseCase) UpPets(IDPets int, updateData domain.Pets, userID int, form *multipart.FileHeader) (domain.Pets, error) {
 	updateData.Userid = userID
+
+	if form != nil {
+		file, err := form.Open()
+		if err != nil {
+			log.Println(err, "cant open file")
+			return domain.Pets{}, errors.New("cant open file")
+		}
+
+		defer file.Close()
+		id := uuid.New()
+		filename := fmt.Sprintf("%dPost-%s.jpg", updateData.Userid, id.String())
+		config.UPLOADPATH = "profile/"
+
+		link, err := pd.client.UploadFile(file, config.UPLOADPATH, filename)
+		if err != nil {
+			log.Println(err, "cant upload file")
+			return domain.Pets{}, errors.New("cant upload file")
+		}
+		updateData.Petphoto = link
+	}
+
 	result := pd.petsData.Update(IDPets, updateData)
 	if result.ID == 0 {
 		return domain.Pets{}, errors.New("error update data")
