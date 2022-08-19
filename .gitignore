@@ -3,3 +3,5 @@ local.env
 *.env
 *.env
 *.out
+*.json
+*.png

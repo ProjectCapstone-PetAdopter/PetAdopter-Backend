@@ -3,6 +3,7 @@
 package mocks
 
 import (
+	multipart "mime/multipart"
 	domain "petadopter/domain"
 
 	mock "github.com/stretchr/testify/mock"
@@ -13,20 +14,20 @@ type PetsUseCase struct {
 	mock.Mock
 }
 
-// AddPets provides a mock function with given fields: newPets, userId
-func (_m *PetsUseCase) AddPets(newPets domain.Pets, userId int) (domain.Pets, error) {
-	ret := _m.Called(newPets, userId)
+// AddPets provides a mock function with given fields: newPets, userId, form
+func (_m *PetsUseCase) AddPets(newPets domain.Pets, userId int, form *multipart.FileHeader) (domain.Pets, error) {
+	ret := _m.Called(newPets, userId, form)
 
 	var r0 domain.Pets
-	if rf, ok := ret.Get(0).(func(domain.Pets, int) domain.Pets); ok {
-		r0 = rf(newPets, userId)
+	if rf, ok := ret.Get(0).(func(domain.Pets, int, *multipart.FileHeader) domain.Pets); ok {
+		r0 = rf(newPets, userId, form)
 	} else {
 		r0 = ret.Get(0).(domain.Pets)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(domain.Pets, int) error); ok {
-		r1 = rf(newPets, userId)
+	if rf, ok := ret.Get(1).(func(domain.Pets, int, *multipart.FileHeader) error); ok {
+		r1 = rf(newPets, userId, form)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -124,20 +125,20 @@ func (_m *PetsUseCase) GetmyPets(userID int) ([]map[string]interface{}, error) {
 	return r0, r1
 }
 
-// UpPets provides a mock function with given fields: IDPets, updateData, userID
-func (_m *PetsUseCase) UpPets(IDPets int, updateData domain.Pets, userID int) (domain.Pets, error) {
-	ret := _m.Called(IDPets, updateData, userID)
+// UpPets provides a mock function with given fields: IDPets, updateData, userID, form
+func (_m *PetsUseCase) UpPets(IDPets int, updateData domain.Pets, userID int, form *multipart.FileHeader) (domain.Pets, error) {
+	ret := _m.Called(IDPets, updateData, userID, form)
 
 	var r0 domain.Pets
-	if rf, ok := ret.Get(0).(func(int, domain.Pets, int) domain.Pets); ok {
-		r0 = rf(IDPets, updateData, userID)
+	if rf, ok := ret.Get(0).(func(int, domain.Pets, int, *multipart.FileHeader) domain.Pets); ok {
+		r0 = rf(IDPets, updateData, userID, form)
 	} else {
 		r0 = ret.Get(0).(domain.Pets)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int, domain.Pets, int) error); ok {
-		r1 = rf(IDPets, updateData, userID)
+	if rf, ok := ret.Get(1).(func(int, domain.Pets, int, *multipart.FileHeader) error); ok {
+		r1 = rf(IDPets, updateData, userID, form)
 	} else {
 		r1 = ret.Error(1)
 	}

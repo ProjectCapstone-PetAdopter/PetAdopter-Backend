@@ -166,7 +166,7 @@ func (ud *userCase) UpdateUser(newuser domain.User, userid, cost int, form *mult
 		log.Println("Duplicate Data")
 		return 409
 	}
-
+	log.Println(form)
 	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), cost)
 
 	if err != nil {

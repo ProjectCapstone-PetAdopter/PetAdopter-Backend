@@ -32,7 +32,7 @@ type ApplierPet struct {
 type AdoptionUseCase interface {
 	AddAdoption(IDUser int, newAdops Adoption) (Adoption, error)
 	GetAllAP(userID int) ([]map[string]interface{}, error)
-	UpAdoption(IDAdoption int, updateData Adoption, userID int) (Adoption, error)
+	UpAdoption(IDAdoption int, updateData Adoption) (Adoption, error)
 	DelAdoption(IDAdoption int) (bool, error)
 	GetSpecificAdoption(AdoptionID int) (map[string]interface{}, error)
 	GetmyAdoption(userID int) ([]map[string]interface{}, error)
