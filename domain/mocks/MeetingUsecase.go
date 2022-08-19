@@ -92,6 +92,27 @@ func (_m *MeetingUsecase) GetOwnerMeeting(userID int) ([]map[string]interface{},
 	return r0, r1
 }
 
+// GetPetMeeting provides a mock function with given fields: id
+func (_m *MeetingUsecase) GetPetMeeting(id int) (domain.Meeting, error) {
+	ret := _m.Called(id)
+
+	var r0 domain.Meeting
+	if rf, ok := ret.Get(0).(func(int) domain.Meeting); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(domain.Meeting)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetSeekMeeting provides a mock function with given fields: userID
 func (_m *MeetingUsecase) GetSeekMeeting(userID int) ([]map[string]interface{}, error) {
 	ret := _m.Called(userID)

@@ -87,6 +87,27 @@ func (_m *MeetingData) GetMyMeetingID(userID int) []domain.MeetingOwner {
 	return r0
 }
 
+// GetMyMeetingPets provides a mock function with given fields: id
+func (_m *MeetingData) GetMyMeetingPets(id int) (domain.Meeting, error) {
+	ret := _m.Called(id)
+
+	var r0 domain.Meeting
+	if rf, ok := ret.Get(0).(func(int) domain.Meeting); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(domain.Meeting)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Insert provides a mock function with given fields: data
 func (_m *MeetingData) Insert(data domain.Meeting) (int, error) {
 	ret := _m.Called(data)
