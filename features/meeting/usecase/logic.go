@@ -6,6 +6,7 @@ import (
 	"petadopter/domain"
 
 	"github.com/go-playground/validator/v10"
+	"gorm.io/gorm"
 )
 
 type meetingUsecase struct {
@@ -18,6 +19,20 @@ func New(md domain.MeetingData, v *validator.Validate) domain.MeetingUsecase {
 		meetingData: md,
 		validate:    v,
 	}
+}
+
+func (mh *meetingUsecase) GetPetMeeting(id int) (domain.Meeting, error) {
+	data, err := mh.meetingData.GetMyMeetingPets(id)
+
+	if err != nil {
+		log.Println("use case", err.Error())
+		if err == gorm.ErrRecordNotFound {
+			return domain.Meeting{}, errors.New("data not found")
+		} else {
+			return domain.Meeting{}, errors.New("server error")
+		}
+	}
+	return data, nil
 }
 
 // GetSeekMeeting implements domain.MeetingUsecase

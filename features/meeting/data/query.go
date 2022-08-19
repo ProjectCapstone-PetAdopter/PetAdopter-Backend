@@ -19,6 +19,15 @@ func New(DB *gorm.DB) domain.MeetingData {
 	}
 }
 
+func (md *meetingData) GetMyMeetingPets(id int) (domain.Meeting, error) {
+	var myMeeting Meeting
+	err := md.db.Where("id = ?", id).First(&myMeeting).Error
+	if err != nil {
+		return domain.Meeting{}, err
+	}
+	return myMeeting.ToModel(), nil
+}
+
 // GetMyMeetingID implements domain.MeetingData
 func (md *meetingData) GetMyMeetingID(id int) []domain.MeetingOwner {
 	var data []MeetingOwner
@@ -81,6 +90,51 @@ func (md *meetingData) GetEmailData(userID, meetingID int) (domain.Ownerdata, do
 	}
 
 	return owner.ToModelOwnerdata(), seeker.ToModelSeekerdata(), 200
+}
+
+func (md *meetingData) GetMeetingID(id int) []domain.MeetingOwner {
+	var data []MeetingOwner
+	var seeker []Seekerdata
+	var getData domain.Meeting
+	var getMeeting []domain.MeetingOwner
+	var seekerid int
+
+	getownerid := md.db.Table("adoptions").Select("adoptions.user_id").Where("id = ?", getData.AdoptionID).Scan(&seekerid)
+
+	if getownerid.Error != nil {
+		log.Println("Cannot get adopt id", getownerid.Error.Error())
+		return getMeeting
+	}
+
+	var userMeeting int
+	if userMeeting != getData.UserID || userMeeting != seekerid {
+		log.Println("error db")
+		return getMeeting
+	}
+
+	err := md.db.Model(&Meeting{}).Select("users.fullname, adoptions.user_id").
+		Joins("join adoptions on meetings.adoption_id = adoptions.id").Joins("join users on adoptions.user_id = users.id").
+		Where("meetings.user_id = ?", id).Scan(&seeker)
+	if err.Error != nil {
+		log.Println("problem data", err.Error.Error())
+		return nil
+	}
+
+	err = md.db.Model(&Meeting{}).Select("meetings.id, meetings.adoption_id, meetings.user_id, meetings.time, meetings.date, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address").
+		Joins("join adoptions on meetings.adoption_id = adoptions.id").Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").
+		Where("meetings.user_id = ?", id).Scan(&data)
+
+	if err.Error != nil {
+		log.Println("problem data", err.Error.Error())
+		return nil
+	}
+
+	for i := 0; i < len(seeker); i++ {
+		data[i].Seekername = seeker[i].Fullname
+		data[i].Seekerid = seeker[i].UserID
+	}
+
+	return ParseToArrMeeting(data)
 }
 
 func (md *meetingData) Insert(data domain.Meeting) (idMeet int, err error) {
@@ -168,49 +222,4 @@ func (md *meetingData) Delete(id int) error {
 		return fmt.Errorf("failed to delete species")
 	}
 	return nil
-}
-
-func (md *meetingData) GetMeetingID(id int) []domain.MeetingOwner {
-	var data []MeetingOwner
-	var seeker []Seekerdata
-	var getData domain.Meeting
-	var getMeeting []domain.MeetingOwner
-	var seekerid int
-
-	getownerid := md.db.Table("adoptions").Select("adoptions.user_id").Where("id = ?", getData.AdoptionID).Scan(&seekerid)
-
-	if getownerid.Error != nil {
-		log.Println("Cannot get adopt id", getownerid.Error.Error())
-		return getMeeting
-	}
-
-	var userMeeting int
-	if userMeeting != getData.UserID || userMeeting != seekerid {
-		log.Println("error db")
-		return getMeeting
-	}
-
-	err := md.db.Model(&Meeting{}).Select("users.fullname, adoptions.user_id").
-		Joins("join adoptions on meetings.adoption_id = adoptions.id").Joins("join users on adoptions.user_id = users.id").
-		Where("meetings.user_id = ?", id).Scan(&seeker)
-	if err.Error != nil {
-		log.Println("problem data", err.Error.Error())
-		return nil
-	}
-
-	err = md.db.Model(&Meeting{}).Select("meetings.id, meetings.adoption_id, meetings.user_id, meetings.time, meetings.date, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address").
-		Joins("join adoptions on meetings.adoption_id = adoptions.id").Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").
-		Where("meetings.user_id = ?", id).Scan(&data)
-
-	if err.Error != nil {
-		log.Println("problem data", err.Error.Error())
-		return nil
-	}
-
-	for i := 0; i < len(seeker); i++ {
-		data[i].Seekername = seeker[i].Fullname
-		data[i].Seekerid = seeker[i].UserID
-	}
-
-	return ParseToArrMeeting(data)
 }
