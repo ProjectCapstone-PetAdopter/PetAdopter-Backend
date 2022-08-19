@@ -1,9 +1,13 @@
 package usecase
 
 import (
+	"mime/multipart"
+	"net/textproto"
+	"os"
 	"petadopter/config"
 	"petadopter/domain"
 	"petadopter/domain/mocks"
+	"petadopter/utils/google"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
@@ -31,7 +35,7 @@ func TestRegisterUser(t *testing.T) {
 	t.Run("Success register without google", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		repo.On("RegisterData", mock.Anything).Return(returnData).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
 
 		assert.Equal(t, 200, status)
@@ -41,7 +45,7 @@ func TestRegisterUser(t *testing.T) {
 	t.Run("Success register with google", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		repo.On("RegisterData", mock.Anything).Return(returnData).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := useCase.RegisterUser(mockData, config.COST, &token, userInfo)
 
 		assert.Equal(t, 200, status)
@@ -49,7 +53,7 @@ func TestRegisterUser(t *testing.T) {
 	})
 
 	t.Run("Validation error", func(t *testing.T) {
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := useCase.RegisterUser(invalidData, config.COST, nil, domain.UserInfo{})
 
 		assert.Equal(t, 400, status)
@@ -58,7 +62,7 @@ func TestRegisterUser(t *testing.T) {
 
 	t.Run("Duplicated data", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(true).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
 
 		assert.Equal(t, 409, status)
@@ -67,7 +71,7 @@ func TestRegisterUser(t *testing.T) {
 
 	t.Run("Generate bcrypt error", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := useCase.RegisterUser(mockData, 40, nil, domain.UserInfo{})
 
 		assert.Equal(t, 500, status)
@@ -78,7 +82,7 @@ func TestRegisterUser(t *testing.T) {
 		returnData.ID = 0
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		repo.On("RegisterData", mock.Anything).Return(returnData).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
 
 		assert.Equal(t, 404, status)
@@ -94,19 +98,25 @@ func TestUpdateUser(t *testing.T) {
 	returnData := mockData
 	returnData.ID = 1
 
+	form := &multipart.FileHeader{
+		Filename: "b.JPG",
+		Header:   textproto.MIMEHeader{"Content-Disposition": {"form-data", "name=photoprofile", "filename=b.JPG"}, "Content-Type": {"image/jpeg"}},
+		Size:     1,
+	}
+
 	t.Run("Success Update", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		repo.On("UpdateUserData", mock.Anything).Return(returnData).Once()
-		useCase := New(repo, validator.New())
-		res := useCase.UpdateUser(mockData, 1, config.COST)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res := useCase.UpdateUser(mockData, 1, config.COST, form)
 
 		assert.Equal(t, 200, res)
 		repo.AssertExpectations(t)
 	})
 
 	t.Run("Data Not Found", func(t *testing.T) {
-		useCase := New(repo, validator.New())
-		res := useCase.UpdateUser(mockData, 0, config.COST)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res := useCase.UpdateUser(mockData, 0, config.COST, form)
 
 		assert.Equal(t, 404, res)
 		repo.AssertExpectations(t)
@@ -114,8 +124,8 @@ func TestUpdateUser(t *testing.T) {
 
 	t.Run("Generate Hash Error", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
-		useCase := New(repo, validator.New())
-		res := useCase.UpdateUser(mockData, 1, 40)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res := useCase.UpdateUser(mockData, 1, 40, form)
 
 		assert.Equal(t, 500, res)
 		repo.AssertExpectations(t)
@@ -123,8 +133,8 @@ func TestUpdateUser(t *testing.T) {
 
 	t.Run("Duplicate Data", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(true).Once()
-		useCase := New(repo, validator.New())
-		res := useCase.UpdateUser(mockData, 1, config.COST)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res := useCase.UpdateUser(mockData, 1, config.COST, form)
 
 		assert.Equal(t, 409, res)
 		repo.AssertExpectations(t)
@@ -146,7 +156,7 @@ func TestLoginUser(t *testing.T) {
 	t.Run("Succes Login", func(t *testing.T) {
 		repo.On("GetPasswordData", mock.Anything).Return("$2a$10$SrMvwwY/QnQ4nZunBvGOuOm2U1w8wcAENOoAMI7l8xH7C1Vmt5mru")
 		repo.On("Login", mock.Anything, mock.Anything).Return(returnData).Once()
-		userUseCase := New(repo, validator.New())
+		userUseCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, status := userUseCase.Login(mockData, nil)
 
 		assert.Equal(t, "batman", res["username"])
@@ -160,7 +170,7 @@ func TestLoginUser(t *testing.T) {
 	t.Run("Succes Login with google", func(t *testing.T) {
 		repo.On("GetPasswordData", mock.Anything).Return("$2a$10$SrMvwwY/QnQ4nZunBvGOuOm2U1w8wcAENOoAMI7l8xH7C1Vmt5mru")
 		repo.On("Login", mock.Anything, mock.Anything).Return(returnData).Once()
-		userUseCase := New(repo, validator.New())
+		userUseCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, status := userUseCase.Login(mockData, tokenOauth)
 
 		assert.Equal(t, "batman", res["username"])
@@ -174,7 +184,7 @@ func TestLoginUser(t *testing.T) {
 	t.Run("Data not found", func(t *testing.T) {
 		repo.On("GetPasswordData", mock.Anything).Return("$2a$10$SrMvwwY/QnQ4nZunBvGOuOm2U1w8wcAENOoAMI7l8xH7C1Vmt5mru")
 		repo.On("Login", mock.Anything, mock.Anything).Return(domain.User{}).Once()
-		userUseCase := New(repo, validator.New())
+		userUseCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, status := userUseCase.Login(mockData, nil)
 
 		assert.Nil(t, res)
@@ -185,7 +195,7 @@ func TestLoginUser(t *testing.T) {
 	t.Run("Wrong input", func(t *testing.T) {
 		mockData.Password = ""
 		repo.On("GetPasswordData", mock.Anything).Return("$2a$10$SrMvwwY/QnQ4nZunBvGOuOm2U1w8w")
-		userUseCase := New(repo, validator.New())
+		userUseCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, status := userUseCase.Login(mockData, nil)
 
 		assert.Nil(t, res)
@@ -200,7 +210,7 @@ func TestDeleteUser(t *testing.T) {
 
 	t.Run("Succes delete", func(t *testing.T) {
 		repo.On("Delete", mock.Anything).Return(200).Once()
-		usecase := New(repo, validator.New())
+		usecase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := usecase.Delete(1)
 
 		assert.Equal(t, 200, status)
@@ -209,7 +219,7 @@ func TestDeleteUser(t *testing.T) {
 
 	t.Run("Data not found", func(t *testing.T) {
 		repo.On("Delete", mock.Anything).Return(404).Once()
-		usecase := New(repo, validator.New())
+		usecase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := usecase.Delete(0)
 
 		assert.Equal(t, 404, status)
@@ -218,7 +228,7 @@ func TestDeleteUser(t *testing.T) {
 
 	t.Run("Internal server error", func(t *testing.T) {
 		repo.On("Delete", mock.Anything).Return(500).Once()
-		usecase := New(repo, validator.New())
+		usecase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		status := usecase.Delete(0)
 
 		assert.Equal(t, 500, status)
@@ -230,7 +240,7 @@ func TestGetUser(t *testing.T) {
 	mockData := domain.User{ID: 1, Username: "batman", Email: "brucewayne@gmail.com", Address: "jakarta", Password: "polar", PhotoProfile: "wayne.jpg"}
 	t.Run("success get data", func(t *testing.T) {
 		repo.On("GetProfile", mock.Anything).Return(mockData, 200).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, status := useCase.GetProfile(1)
 
 		assert.Equal(t, 200, status)
@@ -240,7 +250,7 @@ func TestGetUser(t *testing.T) {
 
 	t.Run("Data not found", func(t *testing.T) {
 		repo.On("GetProfile", mock.Anything).Return(domain.User{}, 404).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, status := useCase.GetProfile(0)
 
 		assert.Equal(t, 404, status)
@@ -250,8 +260,45 @@ func TestGetUser(t *testing.T) {
 
 	t.Run("Internal server error", func(t *testing.T) {
 		repo.On("GetProfile", mock.Anything).Return(domain.User{}, 500).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, status := useCase.GetProfile(0)
+
+		assert.Equal(t, 500, status)
+		assert.Nil(t, res)
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestGetProfileID(t *testing.T) {
+	repo := new(mocks.UserData)
+
+	returnData := domain.User{ID: 1, Username: "test", Fullname: "test", Email: "test@gmail.com", Address: "test", City: "test",
+		PhotoProfile: "test.jpg", Phonenumber: "08"}
+
+	t.Run("success get data", func(t *testing.T) {
+		repo.On("GetProfileIDData", mock.Anything).Return(returnData, 200).Once()
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res, status := useCase.GetProfileID(1)
+
+		assert.Equal(t, 200, status)
+		assert.NotNil(t, res)
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("Data not found", func(t *testing.T) {
+		repo.On("GetProfileIDData", mock.Anything).Return(domain.User{}, 404).Once()
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res, status := useCase.GetProfileID(0)
+
+		assert.Equal(t, 404, status)
+		assert.Nil(t, res)
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("Internal server error", func(t *testing.T) {
+		repo.On("GetProfileIDData", mock.Anything).Return(domain.User{}, 500).Once()
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res, status := useCase.GetProfileID(0)
 
 		assert.Equal(t, 500, status)
 		assert.Nil(t, res)

@@ -23,7 +23,6 @@ func New(pu domain.AdoptionUseCase) domain.AdoptionHandler {
 func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var tmp AdoptionInsertRequest
-		token := common.ExtractData(c)
 
 		cnv, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
@@ -51,7 +50,7 @@ func (ad *adoptionHandler) UpdateAdoption() echo.HandlerFunc {
 			})
 		}
 
-		_, errs := ad.adoptionUsecase.UpAdoption(cnv, tmp.ToDomain(), token.ID)
+		_, errs := ad.adoptionUsecase.UpAdoption(cnv, tmp.ToDomain())
 		if errs != nil {
 			log.Println("Cannot update data", err)
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{

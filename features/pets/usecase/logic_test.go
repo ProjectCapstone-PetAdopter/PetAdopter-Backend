@@ -1,8 +1,12 @@
 package usecase
 
 import (
+	"mime/multipart"
+	"net/textproto"
+	"os"
 	"petadopter/domain"
 	"petadopter/domain/mocks"
+	"petadopter/utils/google"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
@@ -15,7 +19,7 @@ func TestDeletePets(t *testing.T) {
 
 	t.Run("Succes delete", func(t *testing.T) {
 		repo.On("Delete", mock.Anything).Return(true).Once()
-		usecase := New(repo, validator.New())
+		usecase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		delete, err := usecase.DelPets(1)
 
 		assert.Nil(t, err)
@@ -25,7 +29,7 @@ func TestDeletePets(t *testing.T) {
 
 	t.Run("Failed delete", func(t *testing.T) {
 		repo.On("Delete", mock.Anything).Return(false).Once()
-		usecase := New(repo, validator.New())
+		usecase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		delete, err := usecase.DelPets(1)
 
 		assert.NotNil(t, err)
@@ -42,7 +46,7 @@ func TestGetAllPets(t *testing.T) {
 	t.Run("Success Get All Pets", func(t *testing.T) {
 		repo.On("GetAll").Return(returnData).Once()
 		repo.On("GetAllPetUser").Return(returnDataPetUser).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, error := useCase.GetAllP()
 
 		assert.Nil(t, error)
@@ -54,7 +58,7 @@ func TestGetAllPets(t *testing.T) {
 	t.Run("Data Not Found", func(t *testing.T) {
 		repo.On("GetAll").Return([]domain.Pets{}).Once()
 		repo.On("GetAllPetUser").Return([]domain.PetUser{}).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, err := useCase.GetAllP()
 
 		assert.NotNil(t, err)
@@ -72,7 +76,7 @@ func TestGetmyPets(t *testing.T) {
 	t.Run("Success Get my Pets", func(t *testing.T) {
 		repo.On("GetPetsbyuser", mock.Anything).Return(returnData).Once()
 		repo.On("GetPetUser", mock.Anything).Return(returnDataPetUser).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, error := useCase.GetmyPets(1)
 
 		assert.Nil(t, error)
@@ -84,7 +88,7 @@ func TestGetmyPets(t *testing.T) {
 	t.Run("Data Not Found", func(t *testing.T) {
 		repo.On("GetPetsbyuser", mock.Anything).Return([]domain.Pets{}).Once()
 		repo.On("GetPetUser", mock.Anything).Return(domain.PetUser{}).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, error := useCase.GetmyPets(0)
 
 		assert.NotNil(t, error)
@@ -99,10 +103,16 @@ func TestAddPets(t *testing.T) {
 	returnData := mockData
 	returnData.ID = 1
 
+	form := &multipart.FileHeader{
+		Filename: "b.JPG",
+		Header:   textproto.MIMEHeader{"Content-Disposition": {"form-data", "name=photoprofile", "filename=b.JPG"}, "Content-Type": {"image/jpeg"}},
+		Size:     1,
+	}
+
 	t.Run("Success add", func(t *testing.T) {
 		repo.On("Insert", mock.Anything).Return(returnData).Once()
-		useCase := New(repo, validator.New())
-		res, err := useCase.AddPets(mockData, 1)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res, err := useCase.AddPets(mockData, 1, form)
 
 		assert.Nil(t, err)
 		assert.Equal(t, returnData.ID, res.ID)
@@ -110,8 +120,8 @@ func TestAddPets(t *testing.T) {
 	})
 	t.Run("Error insert", func(t *testing.T) {
 		repo.On("Insert", mock.Anything).Return(domain.Pets{}).Once()
-		useCase := New(repo, validator.New())
-		res, err := useCase.AddPets(mockData, 0)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res, err := useCase.AddPets(mockData, 0, form)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, 0, res.ID)
@@ -127,7 +137,7 @@ func TestGetSpecificPets(t *testing.T) {
 	t.Run("Success Get Pet by Id", func(t *testing.T) {
 		repo.On("GetPetsID", mock.Anything).Return(returnData).Once()
 		repo.On("GetPetUser", mock.Anything).Return(returnDataPetUser).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, error := useCase.GetSpecificPets(1)
 
 		assert.Nil(t, error)
@@ -138,7 +148,7 @@ func TestGetSpecificPets(t *testing.T) {
 
 	t.Run("Data Pets Not Found", func(t *testing.T) {
 		repo.On("GetPetsID", mock.Anything).Return([]domain.Pets(nil)).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, error := useCase.GetSpecificPets(0)
 
 		assert.NotNil(t, error)
@@ -149,7 +159,7 @@ func TestGetSpecificPets(t *testing.T) {
 	t.Run("Data PetUser Not Found", func(t *testing.T) {
 		repo.On("GetPetsID", mock.Anything).Return(returnData).Once()
 		repo.On("GetPetUser", mock.Anything).Return(domain.PetUser{}).Once()
-		useCase := New(repo, validator.New())
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res, error := useCase.GetSpecificPets(0)
 
 		assert.NotNil(t, error)
@@ -164,10 +174,16 @@ func TestUpPets(t *testing.T) {
 	returnData := mockData
 	returnData.ID = 1
 
+	form := &multipart.FileHeader{
+		Filename: "b.JPG",
+		Header:   textproto.MIMEHeader{"Content-Disposition": {"form-data", "name=photoprofile", "filename=b.JPG"}, "Content-Type": {"image/jpeg"}},
+		Size:     0,
+	}
+
 	t.Run("Success Update", func(t *testing.T) {
 		repo.On("Update", mock.Anything, mock.Anything).Return(returnData).Once()
-		useCase := New(repo, validator.New())
-		res, err := useCase.UpPets(1, mockData, 1)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res, err := useCase.UpPets(1, mockData, 1, form)
 
 		assert.Nil(t, err)
 		assert.Equal(t, returnData.ID, res.ID)
@@ -175,8 +191,8 @@ func TestUpPets(t *testing.T) {
 	})
 	t.Run("Error Update", func(t *testing.T) {
 		repo.On("Update", mock.Anything, mock.Anything).Return(domain.Pets{}).Once()
-		useCase := New(repo, validator.New())
-		res, err := useCase.UpPets(0, mockData, 0)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		res, err := useCase.UpPets(0, mockData, 0, form)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, 0, res.ID)

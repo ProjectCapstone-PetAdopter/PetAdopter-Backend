@@ -76,6 +76,27 @@ func (_m *UserData) GetProfile(userID int) (domain.User, int) {
 	return r0, r1
 }
 
+// GetProfileIDData provides a mock function with given fields: Userid
+func (_m *UserData) GetProfileIDData(Userid int) (domain.User, int) {
+	ret := _m.Called(Userid)
+
+	var r0 domain.User
+	if rf, ok := ret.Get(0).(func(int) domain.User); ok {
+		r0 = rf(Userid)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	var r1 int
+	if rf, ok := ret.Get(1).(func(int) int); ok {
+		r1 = rf(Userid)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+
+	return r0, r1
+}
+
 // Login provides a mock function with given fields: userdata, isToken
 func (_m *UserData) Login(userdata domain.User, isToken bool) domain.User {
 	ret := _m.Called(userdata, isToken)

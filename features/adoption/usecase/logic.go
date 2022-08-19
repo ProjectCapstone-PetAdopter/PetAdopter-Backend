@@ -79,12 +79,12 @@ func (au *adoptionUseCase) GetAllAP(userid int) ([]map[string]interface{}, error
 	return arrmap, nil
 }
 
-func (au *adoptionUseCase) UpAdoption(IDAdoption int, updateData domain.Adoption, userID int) (domain.Adoption, error) {
+func (au *adoptionUseCase) UpAdoption(IDAdoption int, updateData domain.Adoption) (domain.Adoption, error) {
 
 	if IDAdoption < 1 {
 		return domain.Adoption{}, errors.New("invalid data")
 	}
-	updateData.UserID = userID
+
 	result := au.adoptionData.Update(IDAdoption, updateData)
 
 	if result.ID == 0 {

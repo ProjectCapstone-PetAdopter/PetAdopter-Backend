@@ -3,9 +3,11 @@
 package mocks
 
 import (
+	multipart "mime/multipart"
 	domain "petadopter/domain"
 
 	mock "github.com/stretchr/testify/mock"
+
 	oauth2 "golang.org/x/oauth2"
 )
 
@@ -51,6 +53,29 @@ func (_m *UserUseCase) GetProfile(id int) (map[string]interface{}, int) {
 	return r0, r1
 }
 
+// GetProfileID provides a mock function with given fields: userid
+func (_m *UserUseCase) GetProfileID(userid int) (map[string]interface{}, int) {
+	ret := _m.Called(userid)
+
+	var r0 map[string]interface{}
+	if rf, ok := ret.Get(0).(func(int) map[string]interface{}); ok {
+		r0 = rf(userid)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]interface{})
+		}
+	}
+
+	var r1 int
+	if rf, ok := ret.Get(1).(func(int) int); ok {
+		r1 = rf(userid)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+
+	return r0, r1
+}
+
 // Login provides a mock function with given fields: userdata, token
 func (_m *UserUseCase) Login(userdata domain.User, token *oauth2.Token) (map[string]interface{}, int) {
 	ret := _m.Called(userdata, token)
@@ -88,13 +113,13 @@ func (_m *UserUseCase) RegisterUser(newuser domain.User, cost int, token *oauth2
 	return r0
 }
 
-// UpdateUser provides a mock function with given fields: newuser, userid, cost
-func (_m *UserUseCase) UpdateUser(newuser domain.User, userid int, cost int) int {
-	ret := _m.Called(newuser, userid, cost)
+// UpdateUser provides a mock function with given fields: newuser, userid, cost, form
+func (_m *UserUseCase) UpdateUser(newuser domain.User, userid int, cost int, form *multipart.FileHeader) int {
+	ret := _m.Called(newuser, userid, cost, form)
 
 	var r0 int
-	if rf, ok := ret.Get(0).(func(domain.User, int, int) int); ok {
-		r0 = rf(newuser, userid, cost)
+	if rf, ok := ret.Get(0).(func(domain.User, int, int, *multipart.FileHeader) int); ok {
+		r0 = rf(newuser, userid, cost, form)
 	} else {
 		r0 = ret.Get(0).(int)
 	}
