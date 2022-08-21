@@ -98,6 +98,15 @@ func TestUpdateUser(t *testing.T) {
 	returnData := mockData
 	returnData.ID = 1
 
+	// data, _ := os.Open("aki.png")
+	// defer data.Close()
+	// // user := &domain.User{
+	// // 	PhotoProfile: "data",
+	// // }
+	// req, _ := http.NewRequest(http.MethodPut, "http://localhost:8000/users/aki.png", data)
+	// _, form, _ := req.FormFile("photoprofile")
+	// //get, _ := http.Post("http://localhost:8000/users", "photoprofile", data)
+	// _, form, _ := get.Request.FormFile("photoprofile")
 	form := &multipart.FileHeader{
 		Filename: "b.JPG",
 		Header:   textproto.MIMEHeader{"Content-Disposition": {"form-data", "name=photoprofile", "filename=b.JPG"}, "Content-Type": {"image/jpeg"}},
@@ -110,13 +119,13 @@ func TestUpdateUser(t *testing.T) {
 		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
 		res := useCase.UpdateUser(mockData, 1, config.COST, form)
 
-		assert.Equal(t, 200, res)
+		assert.Equal(t, form, res)
 		repo.AssertExpectations(t)
 	})
 
 	t.Run("Data Not Found", func(t *testing.T) {
 		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
-		res := useCase.UpdateUser(mockData, 0, config.COST, form)
+		res := useCase.UpdateUser(mockData, 0, config.COST, nil)
 
 		assert.Equal(t, 404, res)
 		repo.AssertExpectations(t)

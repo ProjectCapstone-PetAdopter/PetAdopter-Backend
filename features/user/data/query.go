@@ -108,13 +108,28 @@ func (ud *userData) UpdateUserData(newuser domain.User) domain.User {
 // CheckDuplicate implements domain.UserData
 func (ud *userData) CheckDuplicate(newuser domain.User) bool {
 	var user = FromModel(newuser)
-	err := ud.db.Find(&user, "username = ? OR email = ?", user.Username, user.Email)
-	log.Println(user)
-	if err.RowsAffected == 1 {
-		log.Println("Duplicated data", err.Error)
-		return true
-	}
+	var check User
+	log.Println(user.ID)
+	if user.ID > 0 {
+		err := ud.db.Where("username = ? AND ID != ?", user.Username, user.ID).Find(&check)
+		if err.RowsAffected == 1 {
+			log.Println("Duplicated data", err.Error)
+			return true
+		}
 
+		err = ud.db.Where("email = ? AND ID != ?", user.Email, user.ID).Find(&check)
+		if err.RowsAffected == 1 {
+			log.Println("Duplicated data", err.Error)
+			return true
+		}
+
+	} else {
+		err := ud.db.Find(&user, "username = ? OR email = ?", user.Username, user.Email)
+		if err.RowsAffected == 1 {
+			log.Println("Duplicated data", err.Error)
+			return true
+		}
+	}
 	return false
 }
 

@@ -60,7 +60,6 @@ func TestGetAllAdoption(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 	t.Run("Data Not Found", func(t *testing.T) {
-		repo.On("GetAll", mock.Anything).Return(nil, nil).Once()
 		useCase := New(repo, validator.New())
 		result, error := useCase.GetAllAP(0)
 		assert.NotNil(t, error)
@@ -127,7 +126,6 @@ func TestGetmyAdoption(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 	t.Run("Data Not Found", func(t *testing.T) {
-		repo.On("GetAdoptionbyuser", mock.Anything).Return(nil).Once()
 		useCase := New(repo, validator.New())
 		result, error := useCase.GetmyAdoption(0)
 
@@ -191,7 +189,7 @@ func TestUpAdoption(t *testing.T) {
 	t.Run("Success Update", func(t *testing.T) {
 		repo.On("Update", mock.Anything, mock.Anything).Return(returnData).Once()
 		useCase := New(repo, validator.New())
-		res, err := useCase.UpAdoption(1, mockData, 1)
+		res, err := useCase.UpAdoption(1, mockData)
 
 		assert.Nil(t, err)
 		assert.Equal(t, returnData, res)
@@ -200,7 +198,7 @@ func TestUpAdoption(t *testing.T) {
 
 	t.Run("Invalid user", func(t *testing.T) {
 		useCase := New(repo, validator.New())
-		res, err := useCase.UpAdoption(0, mockData, 1)
+		res, err := useCase.UpAdoption(0, mockData)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, domain.Adoption{}, res)
@@ -211,7 +209,7 @@ func TestUpAdoption(t *testing.T) {
 		returnData.ID = 0
 		repo.On("Update", mock.Anything, mock.Anything).Return(returnData).Once()
 		useCase := New(repo, validator.New())
-		res, err := useCase.UpAdoption(1, mockData, 1)
+		res, err := useCase.UpAdoption(1, mockData)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, domain.Adoption{}, res)

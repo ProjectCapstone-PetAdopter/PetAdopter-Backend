@@ -181,7 +181,7 @@ func (mh *meetingHandler) GetMeeting() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"code":    500,
-				"message": err.Error(),
+				"message": "Internal Server Error",
 			})
 		}
 
