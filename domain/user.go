@@ -49,7 +49,7 @@ type UserHandler interface {
 type UserUseCase interface {
 	Login(userdata User, token *oauth2.Token) (map[string]interface{}, int)
 	Delete(userID int) int
-	RegisterUser(newuser User, cost int, token *oauth2.Token, ui UserInfo) int
+	RegisterUser(newuser User, cost int, token *oauth2.Token, ui UserInfo) (map[string]interface{}, int)
 	UpdateUser(newuser User, userid, cost int, form *multipart.FileHeader) int
 	GetProfile(id int) (map[string]interface{}, int)
 	GetProfileID(userid int) (map[string]interface{}, int)

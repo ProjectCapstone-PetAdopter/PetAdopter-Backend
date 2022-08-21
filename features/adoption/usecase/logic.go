@@ -56,11 +56,11 @@ func (au *adoptionUseCase) GetSpecificAdoption(adoptionID int) (map[string]inter
 
 func (au *adoptionUseCase) GetAllAP(userid int) ([]map[string]interface{}, error) {
 	var arrmap = []map[string]interface{}{}
-	data, dataSeeker := au.adoptionData.GetAll(userid)
-
-	if data == nil {
-		return nil, errors.New("no data found")
+	if userid < 1 {
+		return nil, errors.New("error get data")
 	}
+
+	data, dataSeeker := au.adoptionData.GetAll(userid)
 
 	for i := 0; i < len(data); i++ {
 		var res = map[string]interface{}{}
@@ -105,11 +105,11 @@ func (au *adoptionUseCase) DelAdoption(IDAdoption int) (bool, error) {
 
 func (au *adoptionUseCase) GetmyAdoption(userID int) ([]map[string]interface{}, error) {
 	var arrmap = []map[string]interface{}{}
-	data := au.adoptionData.GetAdoptionbyuser(userID)
-
 	if userID < 1 {
 		return nil, errors.New("error get data")
 	}
+
+	data := au.adoptionData.GetAdoptionbyuser(userID)
 
 	for i := 0; i < len(data); i++ {
 		var res = map[string]interface{}{}

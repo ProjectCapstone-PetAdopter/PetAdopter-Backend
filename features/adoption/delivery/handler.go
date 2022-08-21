@@ -143,13 +143,6 @@ func (ad *adoptionHandler) DeleteAdoption() echo.HandlerFunc {
 func (ad *adoptionHandler) GetAllAdoption() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		token := common.ExtractData(c)
-		if token.ID == 0 {
-			log.Println("Cannot get token")
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "internal server error",
-			})
-		}
 
 		data, err := ad.adoptionUsecase.GetAllAP(token.ID)
 		if err != nil {
@@ -191,14 +184,6 @@ func (ad *adoptionHandler) GetAdoptionID() echo.HandlerFunc {
 
 		data, err := ad.adoptionUsecase.GetSpecificAdoption(id)
 		if err != nil {
-			log.Println("Data not found")
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    http.StatusNotFound,
-				"message": "Data not found",
-			})
-		}
-
-		if data == nil {
 			log.Println("Data not found")
 			return c.JSON(http.StatusNotFound, map[string]interface{}{
 				"code":    http.StatusNotFound,

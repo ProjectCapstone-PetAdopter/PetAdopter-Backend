@@ -65,7 +65,7 @@ func (us *userHandler) GetbyID() echo.HandlerFunc {
 
 func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "https://golangprojectku.site/callback/login"
+		us.oauth.RedirectURL = "http://localhost:8000/callback/login"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -74,7 +74,7 @@ func (us *userHandler) LoginGoogle() echo.HandlerFunc {
 
 func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		us.oauth.RedirectURL = "https://golangprojectku.site/callback/signup"
+		us.oauth.RedirectURL = "http://localhost:8000/callback/signup"
 		url := us.oauth.AuthCodeURL(oauthStateString)
 
 		return c.Redirect(http.StatusFound, url)
@@ -85,48 +85,42 @@ func (us *userHandler) SignUpGoogle() echo.HandlerFunc {
 func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var dataLogin UserInfoFormat
+		var buf bytes.Buffer
+
+		urlred := "http://localhost:3000/auth/redirect"
 
 		dataInfo, err, token := google.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
+
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
+			log.Println("Cant get user info")
+			return c.Redirect(http.StatusFound, urlred)
 		}
 
 		dataLogin = UserInfoFormat(dataInfo)
 
 		res, status := us.userUsecase.Login(dataLogin.ToModelUserInfoFormat(), token)
 
-		urlstr := fmt.Sprintf("http://localhost:3000/auth/redirect?token=%s&role=%s&tokenoauth=%s&message=success", res["token"], res["role"], res["tokenoauth"])
+		if status == http.StatusBadRequest {
+			log.Println(http.StatusBadRequest)
+			return c.Redirect(http.StatusFound, urlred)
+		}
 
-		var buf bytes.Buffer
+		if status == http.StatusNotFound {
+			log.Println(http.StatusNotFound)
+			return c.Redirect(http.StatusFound, urlred)
+		}
+
+		if status == http.StatusInternalServerError {
+			log.Println(http.StatusInternalServerError)
+			return c.Redirect(http.StatusFound, urlred)
+		}
+
+		urlstr := fmt.Sprintf("%s?token=%s&role=%s&tokenoauth=%s&message=success", urlred, res["token"], res["role"], res["tokenoauth"])
 		buf.WriteString(urlstr)
 		v := url.Values{}
 		buf.WriteString(v.Encode())
 
-		if status == 400 {
-			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    http.StatusBadRequest,
-				"message": "Wrong input",
-			})
-		}
-
-		if status == 404 {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    http.StatusNotFound,
-				"message": "Data not found",
-			})
-		}
-
-		if status == 500 {
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
-		}
-
-		return c.Redirect(http.StatusFound, buf.String())
+		return c.Redirect(http.StatusFound, urlstr)
 		// return c.JSON(http.StatusOK, map[string]interface{}{
 		// 	"data":    string(buf.String()),
 		// 	"code":    http.StatusOK,
@@ -139,47 +133,40 @@ func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 func (us *userHandler) CallbackGoogleSignUp() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var newuser UserFormat
+		var buf bytes.Buffer
+
+		urlred := "http://localhost:3000/auth/redirect"
 
 		data, err, token := google.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
+
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
+			log.Println("Cant get user info")
+			return c.Redirect(http.StatusFound, urlred)
 		}
-		status := us.userUsecase.RegisterUser(newuser.ToModel(), config.COST, token, data)
+
+		res, status := us.userUsecase.RegisterUser(newuser.ToModel(), config.COST, token, data)
 
 		if status == http.StatusBadRequest {
-			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"code":    http.StatusBadRequest,
-				"message": "Wrong input",
-			})
+			log.Println(http.StatusBadRequest)
+			return c.Redirect(http.StatusFound, urlred)
 		}
 
 		if status == http.StatusNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"code":    http.StatusNotFound,
-				"message": "Data not found",
-			})
+			log.Println(http.StatusNotFound)
+			return c.Redirect(http.StatusFound, urlred)
 		}
 
 		if status == http.StatusConflict {
-			return c.JSON(http.StatusConflict, map[string]interface{}{
-				"code":    http.StatusConflict,
-				"message": "Cant input existing data",
-			})
+			log.Println(http.StatusConflict)
+			return c.Redirect(http.StatusFound, urlred)
 		}
 
 		if status == http.StatusInternalServerError {
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"code":    http.StatusInternalServerError,
-				"message": "There is an error in internal server",
-			})
+			log.Println(http.StatusInternalServerError)
+			return c.Redirect(http.StatusFound, urlred)
 		}
 
-		urlstr := "http://localhost:3000/auth/redirect"
-
-		var buf bytes.Buffer
+		urlstr := fmt.Sprintf("%s?token=%s&role=%s&tokenoauth=%s&message=success", urlred, res["token"], res["role"], res["tokenoauth"])
 		buf.WriteString(urlstr)
 		v := url.Values{}
 		buf.WriteString(v.Encode())
@@ -272,7 +259,7 @@ func (us *userHandler) Register() echo.HandlerFunc {
 			})
 		}
 
-		status := us.userUsecase.RegisterUser(newuser.ToModel(), config.COST, nil, domain.UserInfo{})
+		_, status := us.userUsecase.RegisterUser(newuser.ToModel(), config.COST, nil, domain.UserInfo{})
 
 		if status == http.StatusBadRequest {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -323,7 +310,7 @@ func (us *userHandler) Update() echo.HandlerFunc {
 				"message": "There is an error in internal server",
 			})
 		}
-
+		log.Println(newuser.Photoprofile)
 		form, err := c.FormFile("photoprofile")
 		if err != nil {
 			log.Println("no photo found")

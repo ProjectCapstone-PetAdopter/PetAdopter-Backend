@@ -11,9 +11,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Username     string `json:"username" form:"username" validate:"required" gorm:"unique"`
+	Username     string `json:"username" form:"username" validate:"required"`
 	Fullname     string `json:"fullname" form:"fullname" validate:"required"`
-	Email        string `json:"email" form:"email" validate:"required" gorm:"unique"`
+	Email        string `json:"email" form:"email" validate:"required"`
 	Address      string `json:"address" form:"address" validate:"required"`
 	City         string `json:"city" form:"city" validate:"required"`
 	PhotoProfile string `json:"photoprofile" form:"photoprofile"`

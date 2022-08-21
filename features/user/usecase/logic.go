@@ -83,9 +83,9 @@ func (ud *userCase) Login(userdata domain.User, authtoken *oauth2.Token) (map[st
 		return nil, 404
 	}
 
-	token := common.GenerateToken(login)
+	tokenjwt := common.GenerateToken(login)
 	resMap["tokenoauth"] = tokenOauth
-	resMap["token"] = token
+	resMap["token"] = tokenjwt
 	resMap["username"] = login.Username
 	resMap["role"] = login.Role
 
@@ -109,7 +109,8 @@ func (ud *userCase) Delete(userId int) int {
 }
 
 // RegisterUser implements domain.UserUseCase
-func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.Token, dataui domain.UserInfo) int {
+func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.Token, dataui domain.UserInfo) (map[string]interface{}, int) {
+	var resMap = map[string]interface{}{}
 	var user = data.FromModel(newuser)
 
 	if token != nil {
@@ -123,20 +124,20 @@ func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.To
 		validError := ud.valid.Struct(user)
 		if validError != nil {
 			log.Println("Validation errror : ", validError)
-			return 400
+			return nil, 400
 		}
 	}
-	log.Println(user.ToModel())
+
 	duplicate := ud.userData.CheckDuplicate(user.ToModel())
 	if duplicate {
 		log.Println("Duplicate Data")
-		return 409
+		return nil, 409
 	}
 
 	hashed, hasherr := bcrypt.GenerateFromPassword([]byte(user.Password), cost)
 	if hasherr != nil {
 		log.Println("Cant encrypt: ", hasherr)
-		return 500
+		return nil, 500
 	}
 
 	user.Password = string(hashed)
@@ -145,15 +146,23 @@ func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.To
 
 	if insert.ID == 0 {
 		log.Println("Empty data")
-		return 404
+		return nil, 404
 	}
 
-	return 200
+	tokenOauth := token.AccessToken
+	tokenjwt := common.GenerateToken(insert)
+
+	resMap["tokenoauth"] = tokenOauth
+	resMap["token"] = tokenjwt
+	resMap["role"] = insert.Role
+
+	return resMap, 200
 }
 
 // UpdateUser implements domain.UserUseCase
 func (ud *userCase) UpdateUser(newuser domain.User, userid, cost int, form *multipart.FileHeader) int {
 	var user = data.FromModel(newuser)
+	user.ID = uint(userid)
 
 	if userid == 0 {
 		log.Println("Data not found")
@@ -161,14 +170,12 @@ func (ud *userCase) UpdateUser(newuser domain.User, userid, cost int, form *mult
 	}
 
 	duplicate := ud.userData.CheckDuplicate(user.ToModel())
-
 	if duplicate {
 		log.Println("Duplicate Data")
 		return 409
 	}
-	log.Println(form)
-	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), cost)
 
+	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), cost)
 	if err != nil {
 		log.Println("Error encrypt password", err)
 		return 500
@@ -194,7 +201,6 @@ func (ud *userCase) UpdateUser(newuser domain.User, userid, cost int, form *mult
 		user.PhotoProfile = link
 	}
 
-	user.ID = uint(userid)
 	user.Password = string(hashed)
 
 	ud.userData.UpdateUserData(user.ToModel())

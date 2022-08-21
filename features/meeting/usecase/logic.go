@@ -36,12 +36,13 @@ func (mh *meetingUsecase) GetPetMeeting(id int) (domain.Meeting, error) {
 }
 
 // GetSeekMeeting implements domain.MeetingUsecase
-func (mu *meetingUsecase) GetSeekMeeting(id int) (arrmap []map[string]interface{}, err error) {
-	data := mu.meetingData.GetMyMeetingID(id)
-
+func (mu *meetingUsecase) GetSeekMeeting(id int) ([]map[string]interface{}, error) {
+	var arrmap = []map[string]interface{}{}
 	if id < 1 {
 		return nil, errors.New("error get data")
 	}
+
+	data := mu.meetingData.GetMyMeetingID(id)
 
 	for i := 0; i < len(data); i++ {
 		var res = map[string]interface{}{}
@@ -107,12 +108,13 @@ func (mu *meetingUsecase) DeleteMeeting(id int) error {
 	return err
 }
 
-func (mu *meetingUsecase) GetOwnerMeeting(id int) (arrmap []map[string]interface{}, err error) {
-	data := mu.meetingData.GetMeetingID(id)
-
+func (mu *meetingUsecase) GetOwnerMeeting(id int) ([]map[string]interface{}, error) {
+	var arrmap = []map[string]interface{}{}
 	if id < 1 {
 		return nil, errors.New("error get data")
 	}
+
+	data := mu.meetingData.GetMeetingID(id)
 
 	for i := 0; i < len(data); i++ {
 		var res = map[string]interface{}{}
@@ -131,5 +133,5 @@ func (mu *meetingUsecase) GetOwnerMeeting(id int) (arrmap []map[string]interface
 		arrmap = append(arrmap, res)
 	}
 
-	return arrmap, err
+	return arrmap, nil
 }
