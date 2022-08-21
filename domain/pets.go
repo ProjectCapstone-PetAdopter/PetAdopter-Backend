@@ -23,6 +23,7 @@ type PetUser struct {
 	Species  string
 	Fullname string
 	City     string
+	Status   string
 }
 
 type PetsUseCase interface {

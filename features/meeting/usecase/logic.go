@@ -130,6 +130,7 @@ func (mu *meetingUsecase) GetOwnerMeeting(id int) ([]map[string]interface{}, err
 		res["ownername"] = data[i].Fullname
 		res["ownerphoto"] = data[i].PhotoProfile
 		res["owneraddress"] = data[i].Address
+		res["status"] = data[i].Status
 		arrmap = append(arrmap, res)
 	}
 

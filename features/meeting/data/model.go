@@ -82,6 +82,7 @@ func (m *MeetingOwner) ToModelMeeting() domain.MeetingOwner {
 		Fullname:     m.Fullname,
 		PhotoProfile: m.PhotoProfile,
 		Address:      m.Address,
+		Status:       m.Status,
 	}
 }
 

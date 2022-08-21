@@ -110,8 +110,9 @@ func (mh *meetingHandler) InsertMeeting() echo.HandlerFunc {
 
 func (mh *meetingHandler) UpdateDataMeeting() echo.HandlerFunc {
 	return func(c echo.Context) error {
-
+		token := common.ExtractData(c)
 		param := c.Param("id")
+
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			log.Println(err.Error())
@@ -130,6 +131,8 @@ func (mh *meetingHandler) UpdateDataMeeting() echo.HandlerFunc {
 				"message": err.Error(),
 			})
 		}
+
+		updatedData.Userid = token.ID
 
 		_, errMeet := mh.meetingUsecase.UpdateMeeting(updatedData.ToModel(), id)
 		if errMeet != nil {

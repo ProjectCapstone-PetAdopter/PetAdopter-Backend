@@ -24,6 +24,7 @@ type PetUser struct {
 	Species  string
 	Fullname string
 	City     string
+	Status   string
 }
 
 func (p *Pets) ToDomain() domain.Pets {
@@ -45,6 +46,7 @@ func (p *PetUser) ToDomainPetUser() domain.PetUser {
 		Species:  p.Species,
 		Fullname: p.Fullname,
 		City:     p.City,
+		Status:   p.Status,
 	}
 }
 

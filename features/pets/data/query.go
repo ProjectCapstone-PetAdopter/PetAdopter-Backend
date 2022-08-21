@@ -37,8 +37,8 @@ func (pd *petsData) GetPetUser(userID, petID int) domain.PetUser {
 	var petuser PetUser
 
 	if petID != 0 {
-		err := pd.db.Model(&Pets{}).Select("users.fullname, users.city, species.species").Joins("join users on pets.userid = users.id").Joins("join species on pets.speciesid = species.id").
-			Where("pets.userid = ? and pets.id = ?", userID, petID).Limit(1).Scan(&petuser)
+		err := pd.db.Model(&Pets{}).Select("users.fullname, users.city, species.species, adoptions.status").Joins("join users on pets.userid = users.id").Joins("join species on pets.speciesid = species.id").
+			Joins("join adoptions on pets.id = adoptions.pets_id").Where("pets.userid = ? and pets.id = ?", userID, petID).Scan(&petuser)
 
 		if err.Error != nil {
 			log.Println("cant get petuser data", err.Error.Error())
@@ -46,7 +46,7 @@ func (pd *petsData) GetPetUser(userID, petID int) domain.PetUser {
 		}
 	} else {
 		err := pd.db.Model(&Pets{}).Select("users.fullname, users.city, species.species").Joins("join users on pets.userid = users.id").Joins("join species on pets.speciesid = species.id").
-			Where("pets.userid = ?", userID).Limit(1).Scan(&petuser)
+			Where("pets.userid = ?", userID).Limit(1).Scan(&petuser) // di limit karena field value dari record yang diambil sama semua(redundant) dan agar lebih efesien memori
 
 		if err.Error != nil {
 			log.Println("cant get petuser data", err.Error.Error())
