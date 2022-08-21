@@ -118,6 +118,8 @@ func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.To
 		user.Fullname = dataui.Fullname
 		user.PhotoProfile = dataui.Photoprofile
 		user.Username = dataui.Fullname
+		tokenOauth := token.AccessToken
+		resMap["tokenoauth"] = tokenOauth
 	}
 
 	if token == nil {
@@ -149,10 +151,8 @@ func (ud *userCase) RegisterUser(newuser domain.User, cost int, token *oauth2.To
 		return nil, 404
 	}
 
-	tokenOauth := token.AccessToken
 	tokenjwt := common.GenerateToken(insert)
 
-	resMap["tokenoauth"] = tokenOauth
 	resMap["token"] = tokenjwt
 	resMap["role"] = insert.Role
 

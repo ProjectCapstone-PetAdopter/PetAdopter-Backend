@@ -58,6 +58,7 @@ func (mu *meetingUsecase) GetSeekMeeting(id int) ([]map[string]interface{}, erro
 		res["ownername"] = data[i].Fullname
 		res["ownerphoto"] = data[i].PhotoProfile
 		res["owneraddress"] = data[i].Address
+		res["status"] = data[i].Status
 		arrmap = append(arrmap, res)
 	}
 	return arrmap, nil
