@@ -23,6 +23,7 @@ type MeetingOwner struct {
 	Fullname     string
 	PhotoProfile string
 	Address      string
+	Status       string
 }
 
 type Ownerdata struct {

@@ -134,31 +134,32 @@ func (md *meetingData) Insert(data domain.Meeting) (idMeet int, err error) {
 	return idMeet, nil
 }
 
-func (md *meetingData) Update(updatedData domain.Meeting, id int) (idMeet int, err error) {
+func (md *meetingData) Update(updatedData domain.Meeting, meetingID int) (idMeet int, err error) {
 	var cnv = FromModel(updatedData)
-	var seekerid int
+	var ownerid int
 
-	getownerid := md.db.Table("adoptions").Select("adoptions.user_id").Where("id = ?", updatedData.AdoptionID).Scan(&seekerid)
+	getownerid := md.db.Table("meetings").Select("user_id").Where("id = ?", meetingID).Scan(&ownerid)
 
 	if getownerid.Error != nil {
 		log.Println("Cannot get adopt id", getownerid.Error.Error())
 		return 0, errors.New("cannot update meeting")
 	}
-
-	if updatedData.UserID == seekerid {
+	log.Println(ownerid, cnv.UserID)
+	if ownerid != cnv.UserID {
 		log.Println("error db")
 		return -1, errors.New("only owner can update meeting")
 	}
 
-	cnv.ID = uint(id)
+	cnv.ID = uint(meetingID)
 	fmt.Println(cnv.ID)
-	result := md.db.Model(&Meeting{}).Where("ID = ?", id).Updates(cnv)
+	result := md.db.Model(&Meeting{}).Where("ID = ?", meetingID).Updates(cnv)
 	if result.Error != nil {
 		log.Println("Cannot create object", errors.New("error from db"))
 		return -1, errors.New("cannot update meeting")
 	}
 
 	if result.RowsAffected == 0 {
+		log.Println("Data not found")
 		return 0, errors.New("failed update data")
 	}
 
@@ -207,7 +208,7 @@ func (md *meetingData) GetMeetingID(id int) []domain.MeetingOwner {
 		return nil
 	}
 
-	err = md.db.Model(&Meeting{}).Select("meetings.id, meetings.adoption_id, meetings.user_id, meetings.time, meetings.date, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address").
+	err = md.db.Model(&Meeting{}).Select("meetings.id, meetings.adoption_id, meetings.user_id, meetings.time, meetings.date, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address, adoptions.status").
 		Joins("join adoptions on meetings.adoption_id = adoptions.id").Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").
 		Where("meetings.user_id = ?", id).Scan(&data)
 

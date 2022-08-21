@@ -84,6 +84,7 @@ func (pd *petsUseCase) GetSpecificPets(petsID int) (map[string]interface{}, erro
 	res["ownerid"] = data[0].Userid
 	res["ownername"] = dataPetUser.Fullname
 	res["city"] = dataPetUser.City
+	res["status"] = dataPetUser.Status
 
 	//res akan ditampilkan
 	return res, nil
