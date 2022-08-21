@@ -41,7 +41,7 @@ func (md *meetingData) GetMyMeetingID(id int) []domain.MeetingOwner {
 		return nil
 	}
 
-	err = md.db.Model(&Meeting{}).Select("meetings.id, meetings.adoption_id, meetings.user_id, meetings.time, meetings.date, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address").
+	err = md.db.Model(&Meeting{}).Select("meetings.id, meetings.adoption_id, meetings.user_id, meetings.time, meetings.date, pets.petname, pets.petphoto, users.fullname, users.photo_profile, users.address, adoptions.status").
 		Joins("join adoptions on meetings.adoption_id = adoptions.id").Joins("join pets on adoptions.pets_id = pets.id").Joins("join users on pets.userid = users.id").
 		Where("adoptions.user_id = ?", id).Scan(&data)
 
