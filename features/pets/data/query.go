@@ -33,14 +33,25 @@ func (pd *petsData) GetAllPetUser() []domain.PetUser {
 }
 
 // GetPetUser implements domain.PetsData
-func (pd *petsData) GetPetUser(userID int) domain.PetUser {
+func (pd *petsData) GetPetUser(userID, petID int) domain.PetUser {
 	var petuser PetUser
 
-	err := pd.db.Model(&Pets{}).Select("users.fullname, users.city, species.species").Joins("join users on pets.userid = users.id").Joins("join species on pets.speciesid = species.id").
-		Where("pets.userid = ?", userID).Limit(1).Scan(&petuser)
-	if err.Error != nil {
-		log.Println("cant get petuser data", err.Error.Error())
-		return domain.PetUser{}
+	if petID != 0 {
+		err := pd.db.Model(&Pets{}).Select("users.fullname, users.city, species.species").Joins("join users on pets.userid = users.id").Joins("join species on pets.speciesid = species.id").
+			Where("pets.userid = ? and pets.id = ?", userID, petID).Limit(1).Scan(&petuser)
+
+		if err.Error != nil {
+			log.Println("cant get petuser data", err.Error.Error())
+			return domain.PetUser{}
+		}
+	} else {
+		err := pd.db.Model(&Pets{}).Select("users.fullname, users.city, species.species").Joins("join users on pets.userid = users.id").Joins("join species on pets.speciesid = species.id").
+			Where("pets.userid = ?", userID).Limit(1).Scan(&petuser)
+
+		if err.Error != nil {
+			log.Println("cant get petuser data", err.Error.Error())
+			return domain.PetUser{}
+		}
 	}
 
 	return petuser.ToDomainPetUser()
