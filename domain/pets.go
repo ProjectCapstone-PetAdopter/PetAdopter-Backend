@@ -50,6 +50,6 @@ type PetsData interface {
 	Delete(IDPets int) bool
 	GetPetsID(PetsID int) []Pets
 	GetPetsbyuser(userID int) []Pets
-	GetPetUser(userID int) PetUser
+	GetPetUser(userID, petID int) PetUser
 	GetAllPetUser() []PetUser
 }

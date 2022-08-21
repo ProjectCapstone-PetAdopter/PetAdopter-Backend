@@ -69,7 +69,7 @@ func (pd *petsUseCase) GetSpecificPets(petsID int) (map[string]interface{}, erro
 		return nil, errors.New("error get Pet")
 	}
 
-	dataPetUser := pd.petsData.GetPetUser(data[0].Userid)
+	dataPetUser := pd.petsData.GetPetUser(data[0].Userid, petsID)
 	if dataPetUser == petUser { //jika isinya struct kosong
 		return nil, errors.New("error get Pet user")
 	}
@@ -162,7 +162,7 @@ func (pd *petsUseCase) GetmyPets(userID int) ([]map[string]interface{}, error) {
 	//membuat array of maps agar sama dengan swagger
 	var arrmap = []map[string]interface{}{}
 	data := pd.petsData.GetPetsbyuser(userID)
-	dataPetUser := pd.petsData.GetPetUser(userID)
+	dataPetUser := pd.petsData.GetPetUser(userID, 0)
 	if userID < 1 {
 		return nil, errors.New("error get data")
 	}
