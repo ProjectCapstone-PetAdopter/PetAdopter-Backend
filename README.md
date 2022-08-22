@@ -124,13 +124,13 @@ The following is a list of contributors to this project
 [Draw-url]: /readme/erd.png
 
 [OAuth]: https://img.shields.io/badge/OAuth-Google-informational
-[OAuth-url]: https://google.com
+[OAuth-url]: https://developers.google.com/identity/protocols/oauth2
 
 [Calender]: https://img.shields.io/badge/Calender-Google-blue
-[Calender-url]: https://google.com
+[Calender-url]: https://calendar.google.com/calendar/u/0/r?pli=1
 
 [Google Cloud]: https://img.shields.io/badge/Google%20Cloud-Google-informational
-[cgp-url]: https://google.com
+[cgp-url]: https://cloud.google.com
 
 [Docker]: https://img.shields.io/badge/Virtualization-Docker-blue
 [Docker-url]: https://www.docker.com/get-started/
