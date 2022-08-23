@@ -62,15 +62,14 @@ func (pd *petsUseCase) AddPets(newPets domain.Pets, userId int, form *multipart.
 func (pd *petsUseCase) GetSpecificPets(petsID int) (map[string]interface{}, error) {
 	//map untuk output API agar sama dengan swagger
 	var res = map[string]interface{}{}
-	var petUser = domain.PetUser{}
 
 	data := pd.petsData.GetPetsID(petsID)
 	if data == nil {
 		return nil, errors.New("error get Pet")
 	}
 
-	dataPetUser := pd.petsData.GetPetUser(data[0].Userid, petsID)
-	if dataPetUser == petUser { //jika isinya struct kosong
+	dataPetUser := pd.petsData.GetPetUser(0, petsID)
+	if dataPetUser.Fullname == "" { //jika isinya struct kosong
 		return nil, errors.New("error get Pet user")
 	}
 

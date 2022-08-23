@@ -87,7 +87,7 @@ func (us *userHandler) CallbackGoogleLogin() echo.HandlerFunc {
 		var dataLogin UserInfoFormat
 		var buf bytes.Buffer
 
-		urlred := "http://localhost:3000/auth/redirect"
+		urlred := "https://pet-adopter-capstone-project.vercel.app/auth/redirect"
 
 		dataInfo, err, token := google.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
 
@@ -135,7 +135,7 @@ func (us *userHandler) CallbackGoogleSignUp() echo.HandlerFunc {
 		var newuser UserFormat
 		var buf bytes.Buffer
 
-		urlred := "http://localhost:3000/auth/redirect"
+		urlred := "https://pet-adopter-capstone-project.vercel.app/auth/redirect"
 
 		data, err, token := google.GetUserInfo(us.oauth, c.FormValue("state"), c.FormValue("code"), oauthStateString)
 
