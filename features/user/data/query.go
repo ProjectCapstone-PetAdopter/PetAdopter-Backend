@@ -2,6 +2,7 @@ package data
 
 import (
 	"log"
+	"time"
 
 	"petadopter/domain"
 
@@ -55,15 +56,28 @@ func (ud *userData) Login(dataLogin domain.User, isToken bool) domain.User {
 }
 
 func (ud *userData) Delete(userID int) int {
+	time := time.Now()
+
 	err := ud.db.Where("ID = ?", userID).Delete(&User{})
 
 	if err.Error != nil {
-		log.Println("cannot delete data", err.Error.Error())
+		log.Println("cannot delete data", err.Error)
 		return 500
 	}
 	if err.RowsAffected < 1 {
-		log.Println("No data deleted", err.Error.Error())
+		log.Println("No data deleted", err.Error)
 		return 404
+	}
+
+	deleteData := ud.db.Exec("UPDATE pets SET pets.deleted_at=? WHERE pets.userid = ?;", time, userID)
+
+	if deleteData.Error != nil {
+		log.Println("cannot delete data", deleteData.Error)
+		return 500
+	}
+
+	if deleteData.RowsAffected < 1 {
+		log.Println("No data pets deleted", deleteData.Error)
 	}
 
 	return 200

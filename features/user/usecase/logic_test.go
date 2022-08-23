@@ -1,8 +1,12 @@
 package usecase
 
 import (
+	"bytes"
+	"fmt"
+	"log"
 	"mime/multipart"
-	"net/textproto"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"petadopter/config"
 	"petadopter/domain"
@@ -11,6 +15,7 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
@@ -36,9 +41,10 @@ func TestRegisterUser(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		repo.On("RegisterData", mock.Anything).Return(returnData).Once()
 		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
-		status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
+		res, status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
 
 		assert.Equal(t, 200, status)
+		assert.NotNil(t, res)
 		repo.AssertExpectations(t)
 	})
 
@@ -46,35 +52,39 @@ func TestRegisterUser(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		repo.On("RegisterData", mock.Anything).Return(returnData).Once()
 		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
-		status := useCase.RegisterUser(mockData, config.COST, &token, userInfo)
+		res, status := useCase.RegisterUser(mockData, config.COST, &token, userInfo)
 
 		assert.Equal(t, 200, status)
+		assert.NotNil(t, res)
 		repo.AssertExpectations(t)
 	})
 
 	t.Run("Validation error", func(t *testing.T) {
 		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
-		status := useCase.RegisterUser(invalidData, config.COST, nil, domain.UserInfo{})
+		res, status := useCase.RegisterUser(invalidData, config.COST, nil, domain.UserInfo{})
 
 		assert.Equal(t, 400, status)
+		assert.Nil(t, res)
 		repo.AssertExpectations(t)
 	})
 
 	t.Run("Duplicated data", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(true).Once()
 		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
-		status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
+		res, status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
 
 		assert.Equal(t, 409, status)
+		assert.Nil(t, res)
 		repo.AssertExpectations(t)
 	})
 
 	t.Run("Generate bcrypt error", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
-		status := useCase.RegisterUser(mockData, 40, nil, domain.UserInfo{})
+		res, status := useCase.RegisterUser(mockData, 40, nil, domain.UserInfo{})
 
 		assert.Equal(t, 500, status)
+		assert.Nil(t, res)
 		repo.AssertExpectations(t)
 	})
 
@@ -83,9 +93,10 @@ func TestRegisterUser(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		repo.On("RegisterData", mock.Anything).Return(returnData).Once()
 		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
-		status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
+		res, status := useCase.RegisterUser(mockData, config.COST, nil, domain.UserInfo{})
 
 		assert.Equal(t, 404, status)
+		assert.Nil(t, res)
 		repo.AssertExpectations(t)
 	})
 }
@@ -98,54 +109,100 @@ func TestUpdateUser(t *testing.T) {
 	returnData := mockData
 	returnData.ID = 1
 
-	// data, _ := os.Open("aki.png")
-	// defer data.Close()
-	// // user := &domain.User{
-	// // 	PhotoProfile: "data",
-	// // }
-	// req, _ := http.NewRequest(http.MethodPut, "http://localhost:8000/users/aki.png", data)
-	// _, form, _ := req.FormFile("photoprofile")
-	// //get, _ := http.Post("http://localhost:8000/users", "photoprofile", data)
-	// _, form, _ := get.Request.FormFile("photoprofile")
-	form := &multipart.FileHeader{
-		Filename: "b.JPG",
-		Header:   textproto.MIMEHeader{"Content-Disposition": {"form-data", "name=photoprofile", "filename=b.JPG"}, "Content-Type": {"image/jpeg"}},
-		Size:     1,
+	fileContents, _ := os.ReadFile("./aki.jpg")
+	body := new(bytes.Buffer)
+
+	_, _ = body.Read(fileContents)
+	writer := multipart.NewWriter(body)
+
+	part, _ := writer.CreateFormFile("photoprofile", "aki.jpg")
+
+	_, _ = part.Write(fileContents)
+	_ = writer.WriteField("halo", "jerry")
+
+	err := writer.Close()
+	if err != nil {
+		log.Println(1)
+	}
+
+	e := echo.New()
+
+	req := httptest.NewRequest(http.MethodPut, "/users", body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	form, err := c.FormFile("photoprofile")
+	if err != nil {
+
+		fmt.Println(err)
+	}
+
+	header := make(map[string][]string)
+
+	header["Content-Disposition"] = []string{` form-data; name="file"; filename="karthus.jpg"`}
+
+	header["Content-Type"] = []string{"image/jpeg"}
+	FileHeader := &multipart.FileHeader{
+
+		Filename: "karthus.jpg",
+
+		Header: header,
+
+		Size: 1289231,
 	}
 
 	t.Run("Success Update", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
 		repo.On("UpdateUserData", mock.Anything).Return(returnData).Once()
-		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", "be10-petdopter", "pet-adopter-358806"))
 		res := useCase.UpdateUser(mockData, 1, config.COST, form)
 
-		assert.Equal(t, form, res)
+		assert.Equal(t, 200, res)
 		repo.AssertExpectations(t)
 	})
 
 	t.Run("Data Not Found", func(t *testing.T) {
-		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", "be10-petdopter", "pet-adopter-358806"))
 		res := useCase.UpdateUser(mockData, 0, config.COST, nil)
 
 		assert.Equal(t, 404, res)
 		repo.AssertExpectations(t)
 	})
 
+	t.Run("Duplicate Data", func(t *testing.T) {
+		repo.On("CheckDuplicate", mock.Anything).Return(true).Once()
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", "be10-petdopter", "pet-adopter-358806"))
+		res := useCase.UpdateUser(mockData, 1, config.COST, nil)
+
+		assert.Equal(t, 409, res)
+		repo.AssertExpectations(t)
+	})
+
 	t.Run("Generate Hash Error", func(t *testing.T) {
 		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
-		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
-		res := useCase.UpdateUser(mockData, 1, 40, form)
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", "be10-petdopter", "pet-adopter-358806"))
+		res := useCase.UpdateUser(mockData, 1, 40, nil)
 
 		assert.Equal(t, 500, res)
 		repo.AssertExpectations(t)
 	})
 
-	t.Run("Duplicate Data", func(t *testing.T) {
-		repo.On("CheckDuplicate", mock.Anything).Return(true).Once()
-		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", os.Getenv("bucketName"), os.Getenv("projectID")))
+	t.Run("Cant Upload File", func(t *testing.T) {
+		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", "", ""))
 		res := useCase.UpdateUser(mockData, 1, config.COST, form)
 
-		assert.Equal(t, 409, res)
+		assert.Equal(t, 500, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Cant Open File", func(t *testing.T) {
+		form.Size = 1
+		repo.On("CheckDuplicate", mock.Anything).Return(false).Once()
+		useCase := New(repo, validator.New(), google.InitStorage("pet-adopter-358806-9e20643cb88d.json", "be10-petdopter", "pet-adopter-358806"))
+		res := useCase.UpdateUser(mockData, 1, config.COST, FileHeader)
+
+		assert.Equal(t, 500, res)
 		repo.AssertExpectations(t)
 	})
 }

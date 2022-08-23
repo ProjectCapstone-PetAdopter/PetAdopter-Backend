@@ -4,4 +4,4 @@ local.env
 *.env
 *.out
 *.json
-*.png
+*.jpg
